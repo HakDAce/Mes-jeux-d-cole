@@ -1,0 +1,1626 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#1f2a5c"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Jeux d'école"></head><body>
+<title>Mes jeux d'école</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Playwrite+FR+Moderne:wght@400&family=Playwrite+FR+Trad:wght@400&display=swap">
+<style id="css-on">
+/* Layout : une page de cahier Seyès, une carte-question au centre, gros boutons pour le pouce */
+:root{
+  --paper:#ffffff; --line:#d3def5; --margin:#ec8f9a; --ink:#1f2a5c; --soft:#5b6694;
+  --pink:#ff9fd0; --pinkd:#d63d8f; --ok:#1f9d63; --oklt:#dcf5e8; --ko:#d64545; --kolt:#fde3e3;
+  --tile:#eef2fd;
+  --f-script:"Playwrite FR Moderne", "Segoe Script", cursive;
+  --f-read:"Andika", "Comic Sans MS", system-ui, sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; color:var(--ink); font-family:var(--f-read); font-size:18px;
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(90deg, transparent 38px, var(--margin) 38px, var(--margin) 40px, transparent 40px),
+    repeating-linear-gradient(180deg, transparent 0 31px, var(--line) 31px 32px);
+  min-height:100vh;
+}
+.wrap{max-width:560px; margin:0 auto; padding-block:20px 40px; padding-inline:16px 16px; padding-left:52px}
+h1{font-family:var(--f-script); font-weight:400; font-size:1.6rem; margin:0 0 4px; line-height:1.6}
+.sub{color:var(--soft); margin:0 0 18px; font-size:1rem}
+.card{background:var(--paper); border:2px solid var(--ink); border-radius:14px; padding:20px 16px; box-shadow:4px 4px 0 var(--line)}
+.top{display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:14px; font-size:.95rem; color:var(--soft)}
+.bar{flex:1; height:10px; background:var(--tile); border-radius:6px; overflow:hidden}
+.bar i{display:block; height:100%; background:var(--pink); transition:width .3s}
+.q{font-size:1.15rem; margin:0 0 6px; font-weight:700}
+.hint{font-size:2.6rem; text-align:center; margin:6px 0 10px}
+.speak{display:inline-flex; align-items:center; gap:6px; font:inherit; font-size:1rem; background:var(--tile); color:var(--ink); border:2px solid var(--ink); border-radius:999px; padding:8px 16px; cursor:pointer}
+.center{text-align:center}
+.opts{display:grid; gap:10px; margin-top:14px}
+.opt{font:inherit; font-size:1.5rem; padding:14px; border:2px solid var(--ink); border-radius:12px; background:var(--paper); color:var(--ink); cursor:pointer; min-height:60px}
+.opt:focus-visible,.tl:focus-visible,.btn:focus-visible,.speak:focus-visible{outline:3px solid var(--pinkd); outline-offset:2px}
+.opt.good{background:var(--oklt); border-color:var(--ok)}
+.opt.bad{background:var(--kolt); border-color:var(--ko); text-decoration:line-through}
+.gap{font-size:2rem; text-align:center; margin:10px 0; letter-spacing:.02em}
+.gap b{display:inline-block; min-width:2.2em; border-bottom:3px dashed var(--pinkd); color:var(--pinkd)}
+.row{display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:12px}
+.row .opt{min-width:80px}
+.slots{display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin:12px 0}
+.slot{width:40px; height:48px; border-bottom:3px solid var(--ink); font-size:1.8rem; text-align:center; line-height:48px}
+.tiles{display:flex; flex-wrap:wrap; gap:8px; justify-content:center}
+.tl{font:inherit; font-size:1.6rem; width:48px; height:52px; border:2px solid var(--ink); border-radius:10px; background:var(--tile); color:var(--ink); cursor:pointer}
+.tl:disabled{opacity:.25}
+.fb{margin-top:16px; padding:12px; border-radius:10px; font-size:1.1rem; text-align:center}
+.fb.ok{background:var(--oklt); color:var(--ok)}
+.fb.ko{background:var(--kolt); color:var(--ko)}
+.fb .w{display:block; font-size:1.8rem; color:var(--ink); margin-top:4px}
+mark{background:var(--pink); color:inherit; border-radius:6px; padding:0 2px}
+.btn{font:inherit; font-weight:700; font-size:1.1rem; background:var(--ink); color:var(--paper); border:0; border-radius:12px; padding:14px 22px; cursor:pointer; width:100%; margin-top:14px}
+.btn.ghost{background:var(--paper); color:var(--ink); border:2px solid var(--ink)}
+.stars{font-size:2.6rem; text-align:center; letter-spacing:.1em}
+.list{display:grid; gap:6px; margin:10px 0 0; padding:0; list-style:none}
+.list li{display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:1.35rem; padding:6px 10px; border-bottom:1px solid var(--line)}
+.list button{font:inherit; font-size:1rem; background:var(--tile); border:1px solid var(--ink); color:var(--ink); border-radius:999px; padding:4px 10px; cursor:pointer}
+.rule{background:var(--tile); border-radius:10px; padding:12px 14px; margin-top:16px; font-size:1rem; line-height:1.5}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+@media (max-width:420px){.wrap{padding-left:48px}.tl{width:42px;height:48px;font-size:1.4rem}.slot{width:32px}}
+</style>
+<style id="css-mes">
+/* Layout : page de cahier Seyès, une carte-question, accent jaune « mètre ruban » */
+:root{
+  --paper:#ffffff; --line:#d3def5; --margin:#ec8f9a; --ink:#1f2a5c; --soft:#5b6694;
+  --tape:#f6c63b; --taped:#9a6f00; --ok:#1f9d63; --oklt:#dcf5e8; --ko:#d64545; --kolt:#fde3e3;
+  --tile:#eef2fd; --pencil:#4f7be8;
+  --f-script:"Playwrite FR Moderne","Segoe Script",cursive;
+  --f-read:"Andika","Comic Sans MS",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{margin:0;color:var(--ink);font-family:var(--f-read);font-size:18px;background-color:var(--paper);
+  background-image:linear-gradient(90deg,transparent 38px,var(--margin) 38px,var(--margin) 40px,transparent 40px),
+  repeating-linear-gradient(180deg,transparent 0 31px,var(--line) 31px 32px);min-height:100vh}
+.wrap{max-width:560px;margin:0 auto;padding-block:20px 40px;padding-left:52px;padding-right:16px}
+h1{font-family:var(--f-script);font-weight:400;font-size:1.6rem;margin:0 0 4px;line-height:1.6}
+.sub{color:var(--soft);margin:0 0 18px;font-size:1rem}
+.card{background:var(--paper);border:2px solid var(--ink);border-radius:14px;padding:20px 16px;box-shadow:4px 4px 0 var(--line)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:14px;font-size:.95rem;color:var(--soft)}
+.bar{flex:1;height:10px;background:var(--tile);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--tape);transition:width .3s}
+.q{font-size:1.15rem;margin:0 0 8px;font-weight:700}
+.big{font-size:1.6rem;text-align:center;margin:10px 0;line-height:1.4}
+.emo{font-size:2.8rem;text-align:center;margin:4px 0}
+.opts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px}
+.opt{font:inherit;font-size:1.45rem;padding:12px 18px;min-width:84px;min-height:60px;border:2px solid var(--ink);border-radius:12px;background:var(--paper);color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums}
+.opt:focus-visible,.btn:focus-visible{outline:3px solid var(--taped);outline-offset:2px}
+.opt.good{background:var(--oklt);border-color:var(--ok)}
+.opt.bad{background:var(--kolt);border-color:var(--ko);text-decoration:line-through}
+.blank{display:inline-block;min-width:2.4em;border-bottom:3px dashed var(--taped);color:var(--taped)}
+.ruler{overflow-x:auto;margin:6px 0}
+.ruler svg{display:block;width:100%;max-width:440px;height:auto;margin:0 auto}
+.fb{margin-top:16px;padding:12px;border-radius:10px;font-size:1.1rem;text-align:center;line-height:1.45}
+.fb.ok{background:var(--oklt);color:var(--ok)}
+.fb.ko{background:var(--kolt);color:var(--ko)}
+.fb small{display:block;color:var(--ink);font-size:1rem;margin-top:4px}
+.btn{font:inherit;font-weight:700;font-size:1.1rem;background:var(--ink);color:var(--paper);border:0;border-radius:12px;padding:14px 22px;cursor:pointer;width:100%;margin-top:14px}
+.stars{font-size:2.6rem;text-align:center;letter-spacing:.1em}
+.ladder{display:grid;gap:8px;margin:8px 0 4px}
+.step{display:grid;grid-template-columns:70px 1fr;align-items:center;gap:10px;border:2px solid var(--ink);border-radius:12px;padding:10px 12px}
+.step b{font-size:1.7rem;text-align:center;background:var(--tape);border-radius:8px;padding:2px 0}
+.step span{font-size:1rem;line-height:1.35;min-width:0}
+.arrow{text-align:center;color:var(--taped);font-weight:700;font-size:1rem}
+.list{display:grid;gap:6px;margin:10px 0 0;padding:0;list-style:none}
+.list li{font-size:1.05rem;padding:8px 10px;border-bottom:1px solid var(--line);line-height:1.4}
+.list li b{color:var(--ok)}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+@media (max-width:420px){.wrap{padding-left:48px}.opt{min-width:72px;padding:10px 12px;font-size:1.3rem}}
+</style>
+<style>
+.back{font:inherit;font-size:1rem;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;margin-bottom:12px}
+.menu{display:grid;gap:14px}
+.rule{background:#eef2fd;border-radius:10px;padding:12px 14px;line-height:1.55;font-size:1rem}
+.wl{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:1.05rem}
+.wl mark{background:#ffd0e4;border-radius:4px;padding:0 1px}
+.speak2{font:inherit;font-size:1rem;background:#eef2fd;color:#1f2a5c;border:2px solid #1f2a5c;border-radius:999px;padding:6px 14px;cursor:pointer}
+.gslots{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0}
+.gslot{width:38px;height:48px;border-bottom:3px solid #1f2a5c;font-size:1.8rem;text-align:center;line-height:48px}
+.gtiles{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.gtl{font:inherit;font-size:1.6rem;width:48px;height:52px;border:2px solid #1f2a5c;border-radius:10px;background:#eef2fd;color:#1f2a5c;cursor:pointer}
+.gtl:disabled{opacity:.25}
+.cs{display:inline-block;padding:2px 12px;line-height:1.3}
+.cs-entoure{border:3px solid #1f2a5c;border-radius:50%}
+.cs-souligne{border-bottom:3px solid #1f2a5c}
+.cs-barre{text-decoration:line-through;text-decoration-thickness:3px}
+.cs-encadre{border:3px solid #1f2a5c}
+.cs-surligne{background:#fff07a}
+.abc{display:flex;flex-wrap:wrap;gap:4px;font-size:1.3rem;margin:8px 0 12px}
+.abc span{width:30px;text-align:center;border-bottom:2px solid #d3def5}
+.abc span.v{background:#ffd0e4;border-radius:6px}
+.dz{display:flex;align-items:flex-end;justify-content:center;flex-wrap:wrap;gap:4px;margin:12px 0;min-height:60px}
+.diz{display:inline-block;width:12px;height:56px;background:repeating-linear-gradient(180deg,#4f7be8 0 4.6px,#fff 4.6px 5.6px);border:1px solid #4f7be8;border-radius:3px}
+.uni{display:inline-block;width:14px;height:14px;border-radius:50%;background:#ec8f9a}
+.cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.cat{display:flex;flex-direction:column;align-items:center;gap:4px;font:inherit;color:var(--ink);background:var(--cbg);border:2px solid var(--ink);border-radius:16px;padding:16px 8px;cursor:pointer;box-shadow:4px 4px 0 var(--line);text-align:center}
+.cat:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.cat .cic{font-size:2.4rem;line-height:1.2}
+.cat b{font-size:1.15rem}
+.cat span{font-size:.85rem;color:var(--soft)}
+.cat .prog{font-weight:700;color:#1f7a4f}
+.cat.alldone{box-shadow:4px 4px 0 #1f9d63;border-color:#1f9d63}
+.game.green{background:#e3f6ea;border-color:#1f9d63}
+.game.done{background:#c8eed7;border-color:#1f9d63;box-shadow:4px 4px 0 #1f9d63}
+.valid{margin:14px 0 4px;padding:12px;border-radius:12px;text-align:center;font-weight:700;font-size:1.05rem}
+.valid.yes{background:#dcf5e8;color:#1f7a4f}
+.valid.no{background:#fff3d6;color:#8a5a00}
+.bdg{display:inline-block;margin-top:4px;font-style:normal;font-weight:700;font-size:.85rem;color:#1f7a4f!important}
+.pbt{font-size:1.15rem!important;text-align:left!important;line-height:1.5}
+.pyr{display:flex;flex-direction:column;align-items:center;gap:4px;margin:12px 0}
+.prow{display:flex;gap:4px}
+.pc{width:52px;height:44px;display:grid;place-items:center;border:2px solid #1f2a5c;border-radius:6px;font-size:1.3rem;font-weight:700;background:#fff}
+.pc.ph{background:#fff4c2;color:#c0567a}
+.drow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:6px 0 10px}
+.drow .btn{width:auto;margin:0}
+.ghostd{background:#fff!important;color:#1f2a5c!important;border:2px solid #1f2a5c!important}
+.dbox{min-height:84px;border:2px solid #1f2a5c;border-radius:12px;padding:12px;font-size:1.6rem;line-height:1.6;background:#fff;word-break:break-word}
+.dbox .ph{color:#9aa6cf;font-size:1.1rem}
+.caret{display:inline-block;width:2px;height:1.2em;background:#1f2a5c;vertical-align:middle;margin-left:2px;animation:blk 1s steps(1) infinite}
+@keyframes blk{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.caret{animation:none}}
+.kb{display:grid;gap:6px;margin-top:12px;user-select:none;-webkit-user-select:none}
+.kr{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:5px}
+.kr.last{grid-template-columns:1fr 1fr 1fr 1fr 4fr}
+.key{font:inherit;font-size:1.35rem;min-height:50px;padding:0;border:2px solid #1f2a5c;border-radius:9px;background:#eef2fd;color:#1f2a5c;cursor:pointer;touch-action:manipulation}
+.key.on{background:#1f2a5c;color:#fff}
+.key.sp{font-size:1rem}
+.kr:nth-child(4) .key{background:#fff4c2}
+.dw{display:inline-flex;flex-direction:column;align-items:center;margin:0 4px;line-height:1.25;vertical-align:top}
+.dw.ok{color:#1f9d63}
+.dw.ko s{color:#d64545;font-size:1.1rem}
+.dw.ko b{color:#1f9d63;font-size:1.2rem}
+.carnet{display:flex;flex-wrap:wrap;gap:6px}
+.carnet span{background:#fde2d2;border-radius:999px;padding:4px 10px;font-size:1rem}
+.carnet i{font-style:normal;color:#c0567a;font-size:.8rem}
+.dlv{display:grid;gap:8px}
+.subj{margin-bottom:22px}
+.subj h2{font-family:var(--f-script);font-weight:400;font-size:1.35rem;margin:0 0 4px;line-height:1.7}
+.subj h3{font-size:.85rem;text-transform:uppercase;letter-spacing:.08em;color:var(--soft);margin:12px 0 8px}
+.seq{min-height:56px;font-size:1.6rem;text-align:center;margin:10px 0;padding:8px;border-bottom:2px dashed var(--line);font-variant-numeric:tabular-nums}
+.seq .ph{font-size:1rem;color:var(--soft)}
+.seq i{font-style:normal;color:var(--taped)}
+.seq b.no{color:var(--ko);text-decoration:line-through}
+.opt.done{text-decoration:line-through;opacity:.45}
+.dbl{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;margin-top:12px;font-size:1.05rem;font-variant-numeric:tabular-nums}
+.dbl span{border-bottom:1px solid var(--line);padding:4px 2px}
+
+.opts.col{flex-direction:column;align-items:stretch}.opts.col .opt{font-size:1.15rem;text-align:left}
+.step b{font-size:1.2rem!important}
+.game{display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:center;text-align:left;font:inherit;color:var(--ink);background:var(--paper);border:2px solid var(--ink);border-radius:14px;padding:16px;cursor:pointer;box-shadow:4px 4px 0 var(--line)}
+.game:focus-visible,.back:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.game .ic{font-size:2.4rem;text-align:center;border-radius:12px;padding:6px 0}
+.game b{display:block;font-size:1.25rem}
+.game span{color:var(--soft);font-size:.95rem}
+.week{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:10px 0;font-size:1.05rem}
+.week span{background:#e3f6ea;border:2px solid #1f9d63;border-radius:8px;padding:2px 8px}
+.week span.we{background:#fde3e3;border-color:#d64545}
+.week i{font-style:normal;color:var(--soft)}
+.lex{display:grid;gap:4px;margin-top:8px;font-size:1rem;line-height:1.3}
+.lex div{display:grid;grid-template-columns:1.1fr 1.3fr 1fr;align-items:center;gap:6px;border:2px solid var(--ink);border-radius:10px;padding:6px 8px}
+.lex div.now{background:#ffd0e4}
+.lex em{font-style:normal;color:var(--soft)}
+.lex strong{text-align:right}
+.mois{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:10px 0;font-size:.95rem}
+.mois span{border-bottom:1px solid var(--line);padding:3px 2px;min-width:0}
+.mois b{display:inline-block;min-width:1.6em;text-align:center;background:var(--ink);color:#fff;border-radius:999px;font-size:.8rem;margin-right:4px}
+.mois small{color:var(--soft)}
+.fist{display:block;width:100%;max-width:340px;margin:4px auto}
+/* Écriture */
+.wbox{margin:8px 0;overflow:hidden}
+.wtgt{font-family:"Playwrite FR Trad",var(--f-script);font-size:1.5em;font-weight:400;color:#1f3fbf}
+.whint{font-size:1rem;line-height:1.5;margin:6px 0;background:#fff4c2;border-radius:10px;padding:8px 12px}
+.whelp{font-size:.9rem;color:var(--soft);margin:4px 0}
+.wbtns{display:grid;grid-template-columns:1fr 2fr;gap:10px}.wbtns .btn{margin-top:6px}
+.ghost2{background:var(--paper)!important;color:var(--ink)!important;border:2px solid var(--ink)!important}
+/* Lisibilité tablette : tout en plus grand */
+html{font-size:19px}
+body{font-size:20px!important}
+.wrap{max-width:640px!important}
+@media (min-width:700px){
+  html{font-size:24px}
+  body{font-size:24px!important}
+  .wrap{max-width:880px!important;padding-left:64px!important;padding-right:24px!important}
+  .gtl,.tl{width:64px!important;height:68px!important;font-size:2rem!important}
+  .gslot,.slot{width:52px!important;height:62px!important;line-height:62px!important;font-size:2.2rem!important}
+  .cats{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))!important}
+  .step{grid-template-columns:100px 1fr!important}
+  .game{grid-template-columns:84px 1fr!important}
+  .opt{min-height:76px!important}
+  .fist{max-width:520px}
+  .q{font-size:1.35rem!important}
+  .opts.col .opt{font-size:1.3rem!important}
+  .big{font-size:1.9rem!important}
+}
+</style>
+<div class="wrap">
+  <h1 id="ttl">Mes jeux d'école</h1>
+  <p class="sub" id="sub">Choisis un jeu !</p>
+  <button class="back" id="back" hidden>← Menu des jeux</button>
+  <div id="stage"></div>
+</div>
+<script>
+const SH={on:document.getElementById("css-on"),mes:document.getElementById("css-mes")};
+function useCss(k){SH.on.disabled=(k!=="on"); SH.mes.disabled=(k!=="mes");}
+function gameOn(){ 
+const W = [
+ {w:"un nombre", e:"🔢", bad:["un nonbre","un nombr"], g:["un n","om","bre"], o:["om","on"]},
+ {w:"des nombres", e:"🔢🔢", bad:["des nombre","des nonbres"], g:["des nombre","s",""], o:["s","x","rien"]},
+ {w:"le garçon", e:"👦", bad:["le garson","le garçont"], g:["le gar","ç","on"], o:["ç","s","c"]},
+ {w:"les garçons", e:"👦👦", bad:["les garçon","les garsons"], g:["les garçon","s",""], o:["s","x","rien"]},
+ {w:"un monstre", e:"👹", bad:["un monstr","un momstre"], g:["un m","on","stre"], o:["on","om","an"]},
+ {w:"des monstres", e:"👹👹", bad:["des monstre","des monstrs"], g:["des monstre","s",""], o:["s","x","rien"]},
+ {w:"mon blouson", e:"🧥", bad:["mon blouzon","mon blousson"], g:["mon blou","s","on"], o:["s","z","ss"]},
+ {w:"la maison", e:"🏠", bad:["la maizon","la mèson"], g:["la m","ai","son"], o:["ai","è","é"]},
+ {w:"les maisons", e:"🏘️", bad:["les maison","les mèsons"], g:["les maison","s",""], o:["s","x","rien"]},
+ {w:"il monte", e:"⬆️", bad:["il mont","il montes"], g:["il mont","e",""], o:["e","es","t"]},
+ {w:"je montre", e:"👉", bad:["je montr","je momtre"], g:["je m","on","tre"], o:["on","om"]},
+ {w:"il tombe", e:"🍂", bad:["il tonbe","il tomb"], g:["il t","om","be"], o:["om","on"]},
+ {w:"rond", e:"⚪", bad:["ron","ront"], g:["ron","d",""], o:["d","t","rien"], tip:"Pense à « ronde » : on entend le d !"},
+ {w:"ronde", e:"🔵", bad:["ronte","ronnde"], g:["ron","d","e"], o:["d","t"]},
+ {w:"marron", e:"🌰", bad:["maron","marront"], g:["ma","rr","on"], o:["rr","r"]},
+ {w:"mon, ton, son", e:"🎒", bad:["mont, tont, sont","mom, tom, som"], g:["m","on",", ton, son"], o:["on","ont","om"]},
+ {w:"contre", e:"🤜🤛", bad:["comtre","contr"], g:["c","on","tre"], o:["on","om"]},
+ {w:"donc", e:"➡️", bad:["donque","don"], g:["don","c",""], o:["c","k","que"]},
+];
+const SAY = {"mon, ton, son":"mon. ton. son.", "il monte":"il monte", "je montre":"je montre"};
+const app = document.getElementById("app");
+const canSpeak = "speechSynthesis" in window;
+let qs=[], i=0, score=0, missed=[], N=10;
+
+const shuffle=a=>{a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]];}return a};
+const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const hl=s=>esc(s).replace(/(om|on)(?=[^aeiouyn]|$)/g,"<mark>$1</mark>");
+let frVoice=null;
+function pickVoice(){ try{ const v=speechSynthesis.getVoices(); frVoice=v.find(x=>/^fr[-_]FR/i.test(x.lang))||v.find(x=>/^fr/i.test(x.lang))||null; }catch(e){} }
+if(canSpeak){ pickVoice(); try{ speechSynthesis.onvoiceschanged=pickVoice; }catch(e){} }
+function say(t){
+  if(!canSpeak) return;
+  try{
+    if(!frVoice) pickVoice();
+    const u=new SpeechSynthesisUtterance(SAY[t]||t);
+    u.lang="fr-FR"; u.rate=.8; u.volume=1; if(frVoice) u.voice=frVoice;
+    if(speechSynthesis.speaking||speechSynthesis.pending){ speechSynthesis.cancel(); setTimeout(()=>{speechSynthesis.resume(); speechSynthesis.speak(u);},120); }
+    else { speechSynthesis.resume(); speechSynthesis.speak(u); }
+  }catch(e){}
+}
+const core=w=>w.split(" ").pop().replace(",","");
+
+function build(n){
+  let all=[];
+  W.forEach(it=>["choix","trou","lettres"].forEach(t=>{
+    if(t==="lettres" && (it.w.includes(",")||core(it.w).length>8)) return;
+    all.push({it,t});
+  }));
+  all=shuffle(all).slice(0,n);
+  for(let k=1;k<all.length;k++){
+    if(all[k].it===all[k-1].it){
+      const j=all.findIndex((x,m)=>m>k && x.it!==all[k-1].it && (!all[m-1]||all[m-1].it!==all[k].it));
+      if(j>0)[all[k],all[j]]=[all[j],all[k]];
+    }
+  }
+  return all;
+}
+
+function start(n){ N=n||N; qs=build(N); N=qs.length; i=0; score=0; missed=[]; show(); }
+
+function head(){
+  return `<div class="top"><span>Question ${i+1}/${N}</span><span class="bar"><i style="width:${i/N*100}%"></i></span><span>⭐ ${score}</span></div>`;
+}
+function hintBlock(it,label){
+  return `<p class="q">${label}</p><div class="hint" aria-hidden="true">${it.e}</div>`+
+    (canSpeak?`<div class="center"><button class="speak" id="sp">🔊 Écouter le mot</button></div>`:"");
+}
+
+function show(){
+  const {it,t}=qs[i];
+  if(t==="choix"){
+    const opts=shuffle([it.w,...it.bad]);
+    app.innerHTML=head()+hintBlock(it,"Quel mot est bien écrit ?")+
+      `<div class="opts">${opts.map((o,k)=>`<button class="opt" id="o${k}" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div><div id="fb"></div>`;
+    app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+      const ok=b.dataset.v===it.w;
+      app.querySelectorAll(".opt").forEach(x=>{x.disabled=true; if(x.dataset.v===it.w)x.classList.add("good")});
+      if(!ok)b.classList.add("bad");
+      done(ok,it);
+    });
+  }
+  if(t==="trou"){
+    const [a,m,z]=it.g;
+    app.innerHTML=head()+hintBlock(it,"Complète le mot :")+
+      `<div class="gap">${esc(a)}<b id="slot">?</b>${esc(z)}</div>
+       <div class="row">${shuffle(it.o).map((o,k)=>`<button class="opt" id="t${k}" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div><div id="fb"></div>`;
+    app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+      const v=b.dataset.v, ok=v===m;
+      document.getElementById("slot").textContent = v==="rien"?"∅":v;
+      app.querySelectorAll(".opt").forEach(x=>{x.disabled=true; if(x.dataset.v===m)x.classList.add("good")});
+      if(!ok)b.classList.add("bad");
+      done(ok,it);
+    });
+  }
+  if(t==="lettres"){
+    const word=core(it.w), art=it.w.slice(0,it.w.length-word.length);
+    const extra=shuffle(["m","n","s","t","d","e"].filter(x=>!word.includes(x))).slice(0,2);
+    const letters=shuffle([...word,...extra]);
+    let typed=[];
+    app.innerHTML=head()+hintBlock(it,"Écoute et écris le mot avec les lettres :")+
+      `<div class="center" style="margin-top:10px;font-size:1.3rem;color:var(--soft)">${esc(art.trim())||"&nbsp;"}</div>
+       <div class="slots" id="slots">${[...word].map(()=>`<span class="slot"></span>`).join("")}</div>
+       <div class="tiles">${letters.map((l,k)=>`<button class="tl" id="l${k}" data-v="${l}">${l}</button>`).join("")}</div>
+       <button class="btn ghost" id="del">⌫ Effacer une lettre</button><div id="fb"></div>`;
+    const slots=[...app.querySelectorAll(".slot")];
+    const tiles=[...app.querySelectorAll(".tl")];
+    const draw=()=>slots.forEach((s,k)=>s.textContent=typed[k]?typed[k].v:"");
+    tiles.forEach(b=>b.onclick=()=>{
+      typed.push({v:b.dataset.v,b}); b.disabled=true; draw();
+      if(typed.length===word.length){
+        const ok=typed.map(x=>x.v).join("")===word;
+        tiles.forEach(x=>x.disabled=true); document.getElementById("del").disabled=true;
+        done(ok,it);
+      }
+    });
+    document.getElementById("del").onclick=()=>{const x=typed.pop(); if(x){x.b.disabled=false; draw();}};
+    setTimeout(()=>say(it.w),300);
+  }
+  const sp=document.getElementById("sp"); if(sp) sp.onclick=()=>say(it.w);
+}
+
+function done(ok,it){
+  if(ok) score++; else missed.push(it.w);
+  const msgs=["Bravo !","Super !","Génial !","Parfait !"];
+  const fb=document.getElementById("fb");
+  fb.innerHTML=`<div class="fb ${ok?"ok":"ko"}">${ok?msgs[Math.floor(Math.random()*4)]:"Presque ! On écrit :"}<span class="w">${hl(it.w)}</span>${it.tip&&!ok?`<small>${it.tip}</small>`:""}</div>
+    <button class="btn" id="next">${i<N-1?"Question suivante →":"Voir mon score"}</button>`;
+  if(!ok) say(it.w);
+  const n=document.getElementById("next"); n.focus(); n.onclick=()=>{i++; i<N?show():end();};
+}
+
+function end(){markDone(N,score);
+  const r=score/N, s=r>=.9?3:r>=.6?2:1;
+  app.innerHTML=`<div class="stars">${"⭐".repeat(s)}${"☆".repeat(3-s)}</div>
+    <p class="center q">${score} / ${N} bonnes réponses</p>
+    <p class="center">${score===N?"Champion·ne de l'orthographe !":r>=.6?"Très bien ! Encore une partie ?":"On s'entraîne encore un peu !"}</p>
+    ${missed.length?`<p class="q" style="margin-top:16px">Mots à revoir :</p><ul class="list">${[...new Set(missed)].map(w=>`<li><span>${hl(w)}</span>${canSpeak?`<button data-w="${esc(w)}">🔊</button>`:""}</li>`).join("")}</ul>`:""}
+    <button class="btn" id="again">Rejouer</button><button class="btn ghost" id="study">Revoir tous les mots</button>`;
+  bindList(); document.getElementById("again").onclick=()=>start(N); document.getElementById("study").onclick=study;
+}
+
+function study(){
+  app.innerHTML=`<p class="q">Les mots de la leçon</p>
+    <ul class="list">${W.map(x=>`<li><span>${x.e} ${hl(x.w)}</span>${canSpeak?`<button data-w="${esc(x.w)}">🔊</button>`:""}</li>`).join("")}</ul>
+    <div class="rule"><b>La règle :</b> le son [on] s'écrit <mark>on</mark>, sauf devant <b>b</b> et <b>p</b> où il s'écrit <mark>om</mark> : n<mark>om</mark>bre, t<mark>om</mark>ber.<br>
+    <b>Astuces :</b> plusieurs → on ajoute un <b>s</b>. Pour <i>rond</i>, pense à <i>ronde</i>. <i>Marron</i> prend deux <b>r</b>.</div>
+    <p class="q" style="margin-top:18px">Je suis prêt·e, on joue ! Combien de questions ?</p>
+    <div class="row"><button class="opt" id="n10" data-n="10">10</button><button class="opt" id="n20" data-n="20">20</button><button class="opt" id="n30" data-n="30">30</button></div>`;
+  bindList(); app.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>start(+b.dataset.n));
+}
+function bindList(){ app.querySelectorAll(".list button").forEach(b=>b.onclick=()=>say(b.dataset.w)); }
+
+study(); }
+function gameMes(){ 
+const UNITS=[
+ ["un crayon","✏️",15,"cm"],["une gomme","🧽",4,"cm"],["une règle","📏",20,"cm"],["une fourchette","🍴",18,"cm"],
+ ["une coccinelle","🐞",1,"cm"],["un escargot","🐌",3,"cm"],["un cahier","📒",32,"cm"],["un chat","🐱",50,"cm"],
+ ["un lit","🛏️",2,"m"],["une porte","🚪",2,"m"],["une girafe","🦒",5,"m"],["un bus","🚌",12,"m"],
+ ["une piscine","🏊",25,"m"],["un arbre","🌳",10,"m"],["un terrain de foot","⚽",100,"m"],["la tour Eiffel","🗼",300,"m"],
+ ["la route de Lille à Paris","🚗",220,"km"],["la route de Lille à la mer","🏖️",80,"km"],["une course à pied","🏃",10,"km"],
+ ["le trajet Lille → Marseille","🚄",1000,"km"],["une balade à vélo","🚲",15,"km"]
+];
+const CONV=[
+ ["1 m","cm",100,[10,1000]],["1 km","m",1000,[100,10]],["2 m","cm",200,[20,2000]],["3 m","cm",300,[30,3000]],
+ ["2 km","m",2000,[200,20]],["5 km","m",5000,[500,50]],["100 cm","m",1,[10,100]],["1 000 m","km",1,[10,100]],
+ ["1 m 50 cm","cm",150,[15,105]],["1 m 20 cm","cm",120,[12,102]],["200 cm","m",2,[20,200]],["3 000 m","km",3,[30,300]]
+];
+const CMP=[
+ ["1 m","90 cm",0,"1 m = 100 cm, c'est plus que 90 cm."],["80 cm","1 m",1,"1 m = 100 cm, c'est plus que 80 cm."],
+ ["150 cm","1 m",0,"1 m = 100 cm, et 150 cm c'est plus."],["2 m","250 cm",1,"2 m = 200 cm, c'est moins que 250 cm."],
+ ["1 km","900 m",0,"1 km = 1 000 m, c'est plus que 900 m."],["4 000 m","5 km",1,"5 km = 5 000 m, c'est plus que 4 000 m."],
+ ["10 m","10 cm",0,"Le mètre est bien plus grand que le centimètre."],["3 km","300 m",0,"3 km = 3 000 m."],
+ ["1 m","100 cm",2,"1 m = 100 cm : c'est pareil !"],["1 km","1 000 m",2,"1 km = 1 000 m : c'est pareil !"]
+];
+const app=document.getElementById("app");
+let qs=[],i=0,score=0,missed=[],N=10;
+const shuffle=a=>{a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]];}return a};
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const fmt=n=>n>=1000?String(n).replace(/\B(?=(\d{3})+(?!\d))/g," "):String(n);
+
+function qUnit(u){
+  const [name,e,n,ans]=u;
+  return {emo:e,label:"Quelle est la bonne unité ?",body:`<div class="big">${name} mesure ${fmt(n)} <span class="blank">?</span></div>`,
+    opts:["cm","m","km"],ans,recap:`${name} : ${fmt(n)} ${ans}`,
+    tip:ans==="cm"?"Petit objet → cm.":ans==="m"?"Grand comme une maison → m.":"Un long trajet → km."};
+}
+function qConv(c){
+  const [from,to,ans,bad]=c;
+  return {label:"Convertis :",body:`<div class="big">${from} = <span class="blank">?</span> ${to}</div>`,
+    opts:shuffle([ans,...bad]).map(fmt),ans:fmt(ans),recap:`${from} = ${fmt(ans)} ${to}`,
+    tip:"1 m = 100 cm · 1 km = 1 000 m"};
+}
+function qCmp(c){
+  const [a,b,k,why]=c, labels=[a,b,"C'est pareil"];
+  return {label:"Lequel est le plus long ?",body:`<div class="big">${a} &nbsp;ou&nbsp; ${b}</div>`,
+    opts:labels,ans:labels[k],recap:k===2?`${a} = ${b}`:`${labels[k]} est le plus long`,tip:why};
+}
+function qRuler(){
+  const r=Math.random(), len=rnd(3,10), start=r<.25?rnd(1,3):0, end=start+len, ask=r<.45;
+  const S=24,X0=24,W=15*S+48;
+  let t="";
+  for(let c=0;c<=15;c++){
+    const x=X0+c*S;
+    t+=`<line x1="${x}" y1="70" x2="${x}" y2="88" stroke="#1f2a5c" stroke-width="1.5"/><text x="${x}" y="104" font-size="12" text-anchor="middle" fill="#1f2a5c" font-family="Andika,sans-serif">${c}</text>`;
+    if(c<15) t+=`<line x1="${x+S/2}" y1="70" x2="${x+S/2}" y2="80" stroke="#1f2a5c" stroke-width="1"/>`;
+  }
+  const xa=X0+start*S, xb=X0+end*S;
+  const svg=`<svg viewBox="0 0 ${W} 116" role="img" aria-label="Un crayon posé au-dessus d'une règle">
+    <rect x="8" y="66" width="${W-16}" height="46" rx="4" fill="#f6c63b" stroke="#9a6f00"/>
+    ${t}
+    <line x1="${xa}" y1="38" x2="${xa}" y2="70" stroke="#9a6f00" stroke-dasharray="3 3"/>
+    <line x1="${xb}" y1="38" x2="${xb}" y2="70" stroke="#9a6f00" stroke-dasharray="3 3"/>
+    <rect x="${xa}" y="18" width="${xb-xa-14}" height="20" fill="#4f7be8"/>
+    <rect x="${xa}" y="18" width="8" height="20" fill="#ec8f9a"/>
+    <polygon points="${xb-14},18 ${xb},28 ${xb-14},38" fill="#f3d9a8" stroke="#1f2a5c" stroke-width="1"/>
+  </svg>`;
+  const opts=shuffle([...new Set([len,end,len+1,Math.max(1,len-1)])]).slice(0,3);
+  if(!opts.includes(len)) opts[0]=len;
+  if(ask) return {label:"La règle est-elle bien placée ?",body:`<div class="ruler">${svg}</div>`,
+    opts:["Oui","Non"],ans:start?"Non":"Oui",recap:start?"Le crayon ne commence pas sur le 0 : la règle est mal placée.":"Le crayon commence sur le 0 : la règle est bien placée.",
+    tip:start?"Je place le 0 de la règle au début du segment.":"Oui ! Le début est sur le 0. Je lis à la fin."};
+  return {label:"Combien mesure le crayon ?",body:`<div class="ruler">${svg}</div>`,
+    opts:shuffle(opts).map(n=>n+" cm"),ans:len+" cm",recap:`crayon de 0 à ${len} : ${len} cm`,
+    tip:"Le début est sur le 0 : je lis la graduation à la fin du crayon."};
+}
+
+function build(n){
+  const u=shuffle(UNITS),c=shuffle(CONV),m=shuffle(CMP);
+  const out=[];let k=0;
+  while(out.length<n){
+    const kind=k%4;k++;
+    if(kind===0)out.push(qUnit(u[(k>>2)%u.length]));
+    if(kind===1)out.push(qConv(c[(k>>2)%c.length]));
+    if(kind===2)out.push(qRuler());
+    if(kind===3)out.push(qCmp(m[(k>>2)%m.length]));
+  }
+  return shuffle(out);
+}
+function start(n){N=n||N;qs=build(N);i=0;score=0;missed=[];show();}
+function head(){return `<div class="top"><span>Question ${i+1}/${N}</span><span class="bar"><i style="width:${i/N*100}%"></i></span><span>⭐ ${score}</span></div>`;}
+
+function show(){
+  const q=qs[i];
+  app.innerHTML=head()+`<p class="q">${q.label}</p>${q.emo?`<div class="emo" aria-hidden="true">${q.emo}</div>`:""}${q.body}
+    <div class="opts">${q.opts.map((o,k)=>`<button class="opt" id="o${k}" data-v="${o}">${o}</button>`).join("")}</div><div id="fb"></div>`;
+  app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    const ok=b.dataset.v===String(q.ans);
+    app.querySelectorAll(".opt").forEach(x=>{x.disabled=true;if(x.dataset.v===String(q.ans))x.classList.add("good")});
+    if(!ok)b.classList.add("bad");
+    const bl=app.querySelector(".blank"); if(bl) bl.textContent=q.ans;
+    if(ok)score++;else missed.push(q);
+    const msgs=["Bravo !","Super !","Génial !","Parfait !"];
+    document.getElementById("fb").innerHTML=`<div class="fb ${ok?"ok":"ko"}">${ok?msgs[rnd(0,3)]:"Presque ! La réponse : "+q.ans}<small>${q.tip}</small></div>
+      <button class="btn" id="next">${i<N-1?"Question suivante →":"Voir mon score"}</button>`;
+    const n=document.getElementById("next");n.focus();n.onclick=()=>{i++;i<N?show():end();};
+  });
+}
+
+function end(){markDone(N,score);
+  const r=score/N,s=r>=.9?3:r>=.6?2:1;
+  app.innerHTML=`<div class="stars">${"⭐".repeat(s)}${"☆".repeat(3-s)}</div>
+    <p class="big" style="font-size:1.3rem">${score} / ${N} bonnes réponses</p>
+    <p style="text-align:center">${score===N?"Champion·ne des mesures !":r>=.6?"Très bien ! Encore une partie ?":"On s'entraîne encore un peu !"}</p>
+    ${missed.length?`<p class="q" style="margin-top:16px">À retenir :</p><ul class="list">${missed.map(q=>`<li><b>✓</b> ${q.recap}<br><span style="color:var(--soft)">${q.tip}</span></li>`).join("")}</ul>`:""}
+    <button class="btn" id="again">Rejouer</button><button class="btn" id="home" style="background:var(--paper);color:var(--ink);border:2px solid var(--ink)">Revoir la leçon</button>`;
+  document.getElementById("again").onclick=()=>start(N);
+  document.getElementById("home").onclick=lesson;
+}
+
+function lesson(){
+  app.innerHTML=`<p class="q">Les 3 unités, de la plus grande à la plus petite</p>
+    <div class="ladder">
+      <div class="step"><b>km</b><span>Le <strong>kilomètre</strong> : pour les trajets. Environ 15 min de marche.</span></div>
+      <div class="arrow">1 km = 1 000 m</div>
+      <div class="step"><b>m</b><span>Le <strong>mètre</strong> : pour la maison. Un grand pas de papa.</span></div>
+      <div class="arrow">1 m = 100 cm</div>
+      <div class="step"><b>cm</b><span>Le <strong>centimètre</strong> : pour les petits objets. La largeur de ton petit doigt.</span></div>
+    </div>
+    <p style="font-size:1rem;line-height:1.5;margin:12px 0 0">Avec la règle, on part toujours du <strong>0</strong>. Et on écrit toujours l'unité !</p>
+    <p class="q" style="margin-top:18px">On joue ! Combien de questions ?</p>
+    <div class="opts"><button class="opt" id="n10" data-n="10">10</button><button class="opt" id="n20" data-n="20">20</button><button class="opt" id="n30" data-n="30">30</button></div>`;
+  app.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>start(+b.dataset.n));
+}
+lesson(); }
+function quizGame(cfg){
+  const app=document.getElementById("app");
+  const sh=a=>{a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]];}return a};
+  let qs=[],i=0,score=0,missed=[],N=10;
+  function build(n){
+    const decks=cfg.gens.map(()=>[]);
+    const out=[];
+    for(let k=0;out.length<n;k++){
+      const g=k%cfg.gens.length;
+      out.push(cfg.gens[g](sh));
+    }
+    return sh(out);
+  }
+  function start(n){N=n||N;qs=build(N);i=0;score=0;missed=[];show();}
+  function show(){
+    const q=qs[i];
+    const head=`<div class="top"><span>Question ${i+1}/${N}</span><span class="bar"><i style="width:${i/N*100}%"></i></span><span>⭐ ${score}</span></div><p class="q">${q.label}</p>${q.say?`<div style="text-align:center;margin:4px 0 8px"><button class="speak2" id="sp">🔊 Écouter</button></div>`:""}${q.body||""}`;
+    const bindSp=()=>{const sp=document.getElementById("sp");if(sp)sp.onclick=()=>sayFr(q.say);};
+    const after=ok=>{
+      const bl=app.querySelector(".blank"); if(bl&&q.fill) bl.innerHTML=q.fill;
+      if(ok)score++;else missed.push(q);
+      const msgs=["Bravo !","Super !","Génial !","Parfait !"];
+      document.getElementById("fb").innerHTML=`<div class="fb ${ok?"ok":"ko"}">${ok?msgs[Math.floor(Math.random()*4)]:"Presque ! La réponse : "+q.ans}<small>${q.tip}</small></div>
+        <button class="btn" id="next">${i<N-1?"Question suivante →":"Voir mon score"}</button>`;
+      if(!ok&&q.say)sayFr(q.say);
+      const n=document.getElementById("next");n.focus();n.onclick=()=>{i++;i<N?show():end();};
+    };
+    if(q.tiles){
+      const w=q.tiles,extra=sh("aeilnorstu".split("").filter(c=>!w.includes(c))).slice(0,2),letters=sh([...w,...extra]);let typed=[];
+      app.innerHTML=head+`<div class="gslots">${[...w].map(()=>'<span class="gslot"></span>').join("")}</div><div class="gtiles">${letters.map((l,k)=>`<button class="gtl" id="l${k}" data-v="${l}">${l}</button>`).join("")}</div><button class="btn" id="del" style="background:var(--paper);color:var(--ink);border:2px solid var(--ink)">⌫ Effacer une lettre</button><div id="fb"></div>`;
+      bindSp();
+      const slots=[...app.querySelectorAll(".gslot")],tiles=[...app.querySelectorAll(".gtl")];
+      const draw=()=>slots.forEach((x,k)=>x.textContent=typed[k]?typed[k].v:"");
+      tiles.forEach(b=>b.onclick=()=>{typed.push({v:b.dataset.v,b});b.disabled=true;draw();
+        if(typed.length===w.length){tiles.forEach(x=>x.disabled=true);document.getElementById("del").disabled=true;after(typed.map(x=>x.v).join("")===w);}});
+      document.getElementById("del").onclick=()=>{const x=typed.pop();if(x){x.b.disabled=false;draw();}};
+      setTimeout(()=>sayFr(q.say),300);
+      return;
+    }
+    if(q.order){
+      const sign=q.sep||(q.order[1]>q.order[0]?"&lt;":"&gt;");
+      app.innerHTML=head+`<div class="seq" id="seq"><span class="ph">Touche les nombres dans l'ordre…</span></div>
+        <div class="opts">${sh(q.order).map((n,k)=>`<button class="opt" id="o${k}" data-n="${n}">${n}</button>`).join("")}</div><div id="fb"></div>`;bindSp();
+      const seq=document.getElementById("seq"); let pos=0;
+      const btns=[...app.querySelectorAll(".opt")];
+      btns.forEach(b=>b.onclick=()=>{
+        const n=b.dataset.n, ok=n===String(q.order[pos]);
+        if(pos===0) seq.innerHTML="";
+        seq.innerHTML+=(pos?` <i>${sign}</i> `:"")+`<b class="${ok?"":"no"}">${n}</b>`;
+        b.disabled=true; b.classList.add(ok?"done":"bad");
+        pos++;
+        if(!ok||pos===q.order.length){ btns.forEach(x=>x.disabled=true); after(ok); }
+      });
+      return;
+    }
+    const opts=q.keep?q.opts:sh(q.opts);
+    app.innerHTML=head+`<div class="opts${q.col?" col":""}">${opts.map((o,k)=>`<button class="opt" id="o${k}" data-i="${k}">${o}</button>`).join("")}</div><div id="fb"></div>`;bindSp();
+    const btns=[...app.querySelectorAll(".opt")];
+    btns.forEach(b=>b.onclick=()=>{
+      const ok=opts[+b.dataset.i]===q.ans;
+      btns.forEach(x=>{x.disabled=true;if(opts[+x.dataset.i]===q.ans)x.classList.add("good")});
+      if(!ok)b.classList.add("bad");
+      after(ok);
+    });
+  }
+  function end(){markDone(N,score);
+    const r=score/N,s=r>=.9?3:r>=.6?2:1;
+    app.innerHTML=`<div class="stars">${"⭐".repeat(s)}${"☆".repeat(3-s)}</div>
+      <p class="big" style="font-size:1.3rem">${score} / ${N} bonnes réponses</p>
+      <p style="text-align:center">${score===N?"Champion·ne !":r>=.6?"Très bien ! Encore une partie ?":"On s'entraîne encore un peu !"}</p>
+      ${missed.length?`<p class="q" style="margin-top:16px">À retenir :</p><ul class="list">${missed.map(q=>`<li><b>✓</b> ${q.recap}<br><span style="color:var(--soft)">${q.tip}</span></li>`).join("")}</ul>`:""}
+      <button class="btn" id="again">Rejouer</button><button class="btn" id="home" style="background:var(--paper);color:var(--ink);border:2px solid var(--ink)">Revoir la leçon</button>`;
+    document.getElementById("again").onclick=()=>start(N);
+    document.getElementById("home").onclick=lesson;
+  }
+  function lesson(){
+    app.innerHTML=cfg.lesson+`<p class="q" style="margin-top:18px">On joue ! Combien de questions ?</p>
+      <div class="opts"><button class="opt" id="n10" data-n="10">10</button><button class="opt" id="n20" data-n="20">20</button><button class="opt" id="n30" data-n="30">30</button></div>`;
+    app.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>start(+b.dataset.n));
+  }
+  lesson();
+}
+function deck(arr){let d=[];return sh=>{if(!d.length)d=sh(arr);return d.pop();};}
+const pick=(arr,n,sh)=>sh(arr).slice(0,n);
+
+/* ---------- G5 : Les types de phrases ---------- */
+function gamePhrases(){
+  const DECL=["Le garçon gonfle un ballon.","Il pleut ce matin.","Mon chat dort sur le lit.","Nous allons à la piscine.","J'aime les fraises.","La maîtresse lit une histoire.","Ce film est très drôle.","Papa prépare le repas.","Les oiseaux chantent dans l'arbre.","Ma sœur a sept ans."];
+  const INTER=["Est-ce que tu as peur ?","Où est mon cartable ?","Veux-tu jouer avec moi ?","Quelle heure est-il ?","Est-ce que le chien a mangé ?","Comment t'appelles-tu ?","Pourquoi le ciel est-il bleu ?","Tu viens au parc ?","Qui a mangé le gâteau ?","As-tu fini tes devoirs ?"];
+  const IMP=["Stop ! Arrêtez-vous !","Écoute bien la maîtresse.","Range ta chambre.","Ne cours pas dans le couloir !","Mets ton manteau.","Viens ici !","Lave-toi les mains.","Ne touche pas le four !","Ferme la porte, s'il te plaît.","Prends ton goûter."];
+  const T={decl:"déclaratif",inter:"interrogatif",imp:"impératif"};
+  const WHY={decl:"Elle dit ou raconte quelque chose. Elle finit par un point.",inter:"Elle pose une question. Elle finit par un point d'interrogation ?",imp:"Elle donne un ordre, un conseil ou une interdiction. Elle finit par . ou !"};
+  const all=[...DECL.map(s=>[s,"decl"]),...INTER.map(s=>[s,"inter"]),...IMP.map(s=>[s,"imp"])];
+  const dAll=deck(all), dDI=deck([...DECL.map(s=>[s,"decl"]),...INTER.map(s=>[s,"inter"])]);
+  const ROLE={decl:"raconte quelque chose",inter:"pose une question",imp:"donne un ordre"};
+  quizGame({
+    lesson:`<p class="q">Les 3 types de phrases</p>
+      <div class="ladder">
+        <div class="step"><b>.</b><span><strong>Déclaratif</strong> : je dis, je raconte, je donne un avis.<br><i>Le garçon gonfle un ballon.</i></span></div>
+        <div class="step"><b>?</b><span><strong>Interrogatif</strong> : je pose une question.<br><i>Est-ce que tu as peur ?</i></span></div>
+        <div class="step"><b>! .</b><span><strong>Impératif</strong> : je donne un ordre, un conseil, une interdiction.<br><i>Stop ! Arrêtez-vous ! · Écoute bien la maîtresse.</i></span></div>
+      </div>`,
+    gens:[
+      sh=>{const [s,t]=dAll(sh);return {label:"Quel est le type de cette phrase ?",body:`<div class="big">${s}</div>`,opts:Object.values(T),ans:T[t],keep:true,recap:`« ${s} » → ${T[t]}`,tip:WHY[t]};},
+      sh=>{const [s,t]=dDI(sh);const cut=s.replace(/\s?[.?!]$/,"");const p=t==="decl"?".":"?";
+        return {label:"Quel signe mettre à la fin ?",body:`<div class="big">${cut} <span class="blank">…</span></div>`,fill:p,opts:[".","?","!"],ans:p,keep:true,recap:`${cut} ${p}`,tip:WHY[t]};},
+      sh=>{const t=sh(["decl","inter","imp"])[0];
+        const pool={decl:DECL,inter:INTER,imp:IMP};
+        const good=sh(pool[t])[0];
+        const others=Object.keys(pool).filter(k=>k!==t).map(k=>sh(pool[k])[0]);
+        return {label:`Quelle phrase ${ROLE[t]} ?`,opts:[good,...others],ans:good,col:true,recap:`« ${good} » → ${T[t]}`,tip:WHY[t]};}
+    ]
+  });
+}
+
+/* ---------- V7 : Les synonymes ---------- */
+function gameSyno(){
+  // [mot, synonyme, faux1, faux2]
+  const S=[["un blouson","une veste","un pantalon","une chaussure"],["aimer","adorer","détester","marcher"],["laid","moche","beau","grand"],
+    ["un bateau","un navire","une voiture","un avion"],["content","heureux","triste","fatigué"],["content","ravi","fâché","malade"],
+    ["content","satisfait","déçu","petit"],["content","comblé","malheureux","rapide"],["un vélo","une bicyclette","une moto","un ballon"],
+    ["une voiture","une automobile","un camion","une route"],["un cadeau","un présent","un gâteau","un jouet"],["commencer","débuter","finir","dormir"],
+    ["finir","terminer","commencer","sauter"],["crier","hurler","chuchoter","manger"],["regarder","observer","écouter","courir"],
+    ["joli","beau","laid","lent"],["triste","malheureux","joyeux","propre"],["drôle","amusant","ennuyeux","lourd"],["gentil","aimable","méchant","froid"],["la peur","la frayeur","le courage","la pluie"]];
+  const PH=[["Je suis <u>content</u> de te voir.","heureux",["triste","fatigué"]],["Le <u>bateau</u> part du port.","navire",["camion","train"]],
+    ["J'<u>adore</u> le chocolat.","aime",["déteste","mange"]],["Ce dessin est <u>moche</u>.","laid",["beau","grand"]],["Le film va <u>commencer</u>.","débuter",["finir","dormir"]],
+    ["Mets ta <u>veste</u>.","ton blouson",["ton pantalon","tes chaussettes"]],["Ce clown est <u>drôle</u>.","amusant",["triste","méchant"]],["Le bébé <u>hurle</u>.","crie",["chuchote","dort"]]];
+  const INTRUS=[["content",["heureux","ravi","satisfait"],"triste"],["beau",["joli","magnifique","superbe"],"laid"],["un bateau",["un navire","un paquebot","une barque"],"un vélo"],
+    ["crier",["hurler","s'écrier","brailler"],"chuchoter"],["finir",["terminer","achever","arrêter"],"commencer"]];
+  const d1=deck(S),d2=deck(PH),d3=deck(INTRUS);
+  quizGame({
+    lesson:`<p class="q">Les synonymes</p>
+      <div class="rule" style="background:var(--tile);border-radius:10px;padding:12px 14px;line-height:1.5">Deux mots sont <strong>synonymes</strong> quand ils ont <strong>le même sens</strong> ou un sens très proche.<br>
+      <i>un blouson / une veste · aimer / adorer · laid / moche · un bateau / un navire</i><br><br>
+      <strong>content</strong> = heureux = ravi = satisfait = comblé<br><br>
+      ⚠️ Toujours la <strong>même nature</strong> : un verbe avec un verbe, un nom avec un nom, un adjectif avec un adjectif.</div>`,
+    gens:[
+      sh=>{const [w,s,a,b]=d1(sh);return {label:`Quel est le synonyme de « ${w} » ?`,opts:[s,a,b],ans:s,recap:`${w} = ${s}`,tip:`« ${w} » et « ${s} » ont le même sens.`};},
+      sh=>{const [p,s,bad]=d2(sh);return {label:"Remplace le mot souligné par un synonyme :",body:`<div class="big">${p}</div>`,opts:[s,...bad],ans:s,recap:`${p.replace(/<\/?u>/g,"")} → ${s}`,tip:`On garde le même sens de la phrase.`};},
+      sh=>{const [w,syn,x]=d3(sh);return {label:`Quel mot n'est PAS un synonyme de « ${w} » ?`,opts:[...syn,x],ans:x,recap:`« ${x} » n'est pas un synonyme de « ${w} »`,tip:`« ${x} » veut dire autre chose. Les autres ont le même sens que « ${w} ».`};}
+    ]
+  });
+}
+
+/* ---------- V8 : Les contraires ---------- */
+function gameContr(){
+  const C=[["grand","petit","immense","gros"],["gagner","perdre","jouer","courir"],["dessous","dessus","dedans","devant"],["la méchanceté","la gentillesse","la colère","la tristesse"],
+    ["jeune","vieux","petit","joli"],["chaud","froid","tiède","brûlant"],["ouvrir","fermer","entrer","pousser"],["monter","descendre","grimper","sauter"],
+    ["le jour","la nuit","le matin","le soleil"],["lourd","léger","gros","dur"],["propre","sale","neuf","joli"],["plein","vide","gros","lourd"],
+    ["rapide","lent","vite","fort"],["heureux","malheureux","content","ravi"],["visible","invisible","clair","joli"],["poli","impoli","gentil","sage"]];
+  const P=[["visible","in","invisible"],["poli","im","impoli"],["couvert","dé","découvert"],["adroit","mal","maladroit"],["possible","im","impossible"],
+    ["connu","in","inconnu"],["faire","dé","défaire"],["heureux","mal","malheureux"],["patient","im","impatient"],["ranger","dé","déranger"],["juste","in","injuste"],["coller","dé","décoller"]];
+  const N=[["L'oiseau vole.","L'oiseau ne vole pas.",["L'oiseau vole pas.","L'oiseau ne vole."]],["Le chien aboie.","Le chien n'aboie pas.",["Le chien aboie pas.","Le chien pas aboie."]],
+    ["Elle chante.","Elle ne chante pas.",["Elle chante pas.","Elle ne chante."]],["Il aime le lait.","Il n'aime pas le lait.",["Il aime pas le lait.","Il ne aime pas le lait."]],
+    ["Nous jouons dehors.","Nous ne jouons pas dehors.",["Nous jouons pas dehors.","Nous ne jouons dehors."]],["Tu cours vite.","Tu ne cours pas vite.",["Tu cours pas vite.","Tu pas cours vite."]],
+    ["Je mange une pomme.","Je ne mange pas une pomme.",["Je mange pas une pomme.","Je ne mange une pomme."]],["Le bébé dort.","Le bébé ne dort pas.",["Le bébé dort pas.","Le bébé ne dort."]]];
+  const d1=deck(C),d2=deck(P),d3=deck(N);
+  quizGame({
+    lesson:`<p class="q">Les contraires (antonymes)</p>
+      <div class="rule" style="background:var(--tile);border-radius:10px;padding:12px 14px;line-height:1.5">Deux mots contraires ont un <strong>sens opposé</strong>.<br>
+      <i>grand / petit · gagner / perdre · chaud / froid · jeune / vieux</i></div>
+      <p class="q" style="margin-top:14px">Pour dire le contraire, on peut :</p>
+      <div class="ladder">
+        <div class="step"><b>ne…pas</b><span>Utiliser la <strong>forme négative</strong> : L'oiseau vole. → L'oiseau <strong>ne</strong> vole <strong>pas</strong>.</span></div>
+        <div class="step"><b>≠</b><span>Utiliser un <strong>mot différent</strong> : Il est grand. → Il est petit.</span></div>
+        <div class="step"><b>in im dé mal</b><span>Ajouter un <strong>préfixe</strong> : <strong>in</strong>visible, <strong>im</strong>poli, <strong>dé</strong>couvert, <strong>mal</strong>adroit.</span></div>
+      </div>`,
+    gens:[
+      sh=>{const [w,c,a,b]=d1(sh);return {label:`Quel est le contraire de « ${w} » ?`,opts:[c,a,b],ans:c,recap:`${w} ≠ ${c}`,tip:`« ${w} » et « ${c} » ont un sens opposé.`};},
+      sh=>{const [w,p,r]=d2(sh);return {label:"Quel préfixe pour dire le contraire ?",body:`<div class="big"><span class="blank">?</span>${w}</div>`,fill:p,opts:["in","im","dé","mal"],ans:p,keep:true,recap:`${w} → ${r}`,tip:`Le contraire de « ${w} », c'est « ${r} ».`};},
+      sh=>{const [s,g,bad]=d3(sh);return {label:"Quelle est la phrase à la forme négative ?",body:`<div class="big">${s}</div>`,opts:[g,...bad],ans:g,col:true,recap:`${s} → ${g}`,tip:`On entoure le verbe avec « ne … pas » (ou « n' … pas » devant une voyelle).`};}
+    ]
+  });
+}
+
+/* ---------- N8 / N9 : Ordre croissant et décroissant ---------- */
+function gameOrdre(){
+  const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+  const set=(n,max)=>{const s=new Set();while(s.size<n)s.add(rnd(0,max));return [...s];};
+  const inv=n=>{const d=n%10,t=Math.floor(n/10);return d&&d!==t?d*10+t:null;};
+  const CR="du plus petit au plus grand", DE="du plus grand au plus petit";
+  quizGame({
+    lesson:`<p class="q">Ranger des nombres</p>
+      <div class="ladder">
+        <div class="step"><b>↗</b><span><strong>Ordre croissant</strong> : je range du plus <strong>petit</strong> au plus <strong>grand</strong>.<br><i>5 &lt; 8 &lt; 10 &lt; 11 &lt; 13</i> (🐭 → 🦁 → 🦒)</span></div>
+        <div class="step"><b>↘</b><span><strong>Ordre décroissant</strong> : je range du plus <strong>grand</strong> au plus <strong>petit</strong>.<br><i>19 &gt; 16 &gt; 13 &gt; 11 &gt; 10</i> (🦒 → 🦁 → 🐭)</span></div>
+      </div>
+      <p style="font-size:1rem;line-height:1.5;margin:12px 0 0">Astuce : je <strong>barre</strong> les nombres au fur et à mesure que je les utilise. Dans le jeu, ils se grisent tout seuls !<br>Le signe <strong>&lt;</strong> veut dire « plus petit que ». Sa pointe montre le plus petit.</p>`,
+    gens:[
+      sh=>{const up=Math.random()<.5, n=rnd(4,5), arr=set(n,Math.random()<.4?30:99).sort((x,y)=>x-y); if(!up)arr.reverse();
+        const txt=arr.join(up?" &lt; ":" &gt; ");
+        return {label:`Range dans l'ordre <strong>${up?"croissant":"décroissant"}</strong> (${up?CR:DE}) :`,order:arr,ans:txt,recap:txt,tip:up?"Croissant : je commence par le plus petit.":"Décroissant : je commence par le plus grand."};},
+      sh=>{let a=rnd(1,99),b=inv(a);if(b===null||Math.random()<.5){do{b=rnd(1,99)}while(b===a)}
+        const s=a<b?"<":">";
+        return {label:"Quel signe ?",body:`<div class="big">${a} <span class="blank">?</span> ${b}</div>`,fill:s==="<"?"&lt;":"&gt;",opts:["<",">"],ans:s,keep:true,recap:`${a} ${s} ${b}`,tip:s==="<"?`${a} est plus petit que ${b}.`:`${a} est plus grand que ${b}.`};},
+      sh=>{const k=rnd(0,2), arr=set(5,99); if(k===0)arr.sort((x,y)=>x-y); else if(k===1)arr.sort((x,y)=>y-x); else { const s2=[...arr].sort((x,y)=>x-y); if(arr.join()===s2.join()||arr.join()===[...s2].reverse().join()) [arr[0],arr[1]]=[arr[1],arr[0]]; }
+        const ans=["croissant","décroissant","pas rangés"][k];
+        return {label:"Ces nombres sont rangés dans l'ordre…",body:`<div class="big">${arr.join(" – ")}</div>`,opts:["croissant","décroissant","pas rangés"],ans,keep:true,recap:`${arr.join(" – ")} : ${ans}`,tip:k===0?"Ils vont du plus petit au plus grand.":k===1?"Ils vont du plus grand au plus petit.":"Ils ne vont ni toujours en montant, ni toujours en descendant."};},
+      sh=>{const arr=set(5,99), big=Math.random()<.5, v=big?Math.max(...arr):Math.min(...arr);
+        return {label:`Quel est le plus ${big?"grand":"petit"} nombre ?`,opts:arr.map(String),ans:String(v),recap:`Le plus ${big?"grand":"petit"} : ${v}`,tip:"Je compare d'abord les dizaines, puis les unités."};}
+    ]
+  });
+}
+
+/* ---------- Cal 11 : Les doubles ---------- */
+function gameDoubles(){
+  const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+  const near=(v,arr)=>{const o=new Set([v]);for(const d of arr){if(o.size>=4)break;if(v+d>=0)o.add(v+d);}return [...o].map(String);};
+  const d1=deck([...Array(16).keys()]),d2=deck([...Array(16).keys()]),d3=deck([...Array(15).keys()].map(x=>x+1));
+  quizGame({
+    lesson:`<p class="q">Les doubles</p>
+      <div class="rule" style="background:var(--tile);border-radius:10px;padding:12px 14px;line-height:1.6">Le <strong>double</strong> d'un nombre, c'est ce nombre <strong>+ lui-même</strong>.<br>
+      <i>7 + 7 = 14 → le double de 7, c'est 14.</i></div>
+      <div class="dbl">${[...Array(16).keys()].map(n=>`<span>${n} + ${n} = <b>${2*n}</b></span>`).join("")}</div>`,
+    gens:[
+      sh=>{const n=d1(sh),v=2*n;return {label:`Le double de ${n}, c'est…`,opts:near(v,sh([1,2,-1,-2,n,-n||3])),ans:String(v),recap:`Le double de ${n}, c'est ${v}`,tip:`${n} + ${n} = ${v}`};},
+      sh=>{const n=d2(sh),v=2*n;return {label:"Calcule :",body:`<div class="big">${n} + ${n} = <span class="blank">?</span></div>`,fill:String(v),opts:near(v,sh([1,2,-1,-2,10])),ans:String(v),recap:`${n} + ${n} = ${v}`,tip:`Le double de ${n}, c'est ${v}.`};},
+      sh=>{const n=d3(sh),v=2*n;return {label:`${v} est le double de…`,opts:near(n,sh([1,-1,2,n])),ans:String(n),recap:`${v} est le double de ${n}`,tip:`${n} + ${n} = ${v}`};}
+    ]
+  });
+}
+
+/* ================= outils communs ================= */
+let FRV=null;
+function pickFR(){try{const v=speechSynthesis.getVoices();FRV=v.find(x=>/^fr[-_]FR/i.test(x.lang))||v.find(x=>/^fr/i.test(x.lang))||null;}catch(e){}}
+if("speechSynthesis" in window){pickFR();try{speechSynthesis.addEventListener("voiceschanged",pickFR)}catch(e){}}
+function sayFr(t){if(!("speechSynthesis" in window)||!t)return;try{if(!FRV)pickFR();const u=new SpeechSynthesisUtterance(t);u.lang="fr-FR";u.rate=.8;if(FRV)u.voice=FRV;speechSynthesis.cancel();setTimeout(()=>{speechSynthesis.resume();speechSynthesis.speak(u);},120);}catch(e){}}
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const uniq=a=>[...new Set(a)];
+function mk(ans,cands,n){n=n||3;return [ans,...uniq(cands.map(String)).filter(c=>c!==String(ans))].slice(0,n).map(String);}
+const near=(v,ds,min)=>ds.map(d=>v+d).filter(x=>x>=(min||0));
+
+/* nombres en lettres (comme dans le cahier : traits d'union, « et » sans trait) */
+const U=["zéro","un","deux","trois","quatre","cinq","six","sept","huit","neuf","dix","onze","douze","treize","quatorze","quinze","seize","dix-sept","dix-huit","dix-neuf"];
+const T={2:"vingt",3:"trente",4:"quarante",5:"cinquante",6:"soixante"};
+function enLettres(n){
+  if(n<20)return U[n];
+  if(n<70){const t=Math.floor(n/10),u=n%10;return u===0?T[t]:u===1?T[t]+" et un":T[t]+"-"+U[u];}
+  if(n<80)return n===71?"soixante et onze":"soixante-"+U[n-60];
+  if(n===80)return "quatre-vingts";
+  return "quatre-vingt-"+U[n-80];
+}
+function fauxLettres(n){
+  const f=[];
+  if(n>=72&&n<=76)f.push("soixante-dix-"+U[n-70]);
+  if(n===80)f.push("quatre-vingt");
+  if(n>80)f.push("quatre-vingts-"+U[n-80]);
+  if(n>=92&&n<=96)f.push("quatre-vingt-dix-"+U[n-90]);
+  return f;
+}
+
+/* ================= sons de la semaine (fabrique) ================= */
+function parseW(s){const m=s.match(/^(.*?)\[(.+?)\](.*)$/);const full=m[1]+m[2]+m[3];const core=full.split(" ").pop();return {pre:m[1],g:m[2],post:m[3],full,core};}
+const CLS=["un objet, une personne, un lieu…","une action","une information en plus","un mot outil"];
+function clsLesson(L){return `<p class="q" style="margin-top:14px">Je range les mots</p><div class="ladder">${CLS.map((c,k)=>`<div class="step"><b>${["📦","🏃","➕","🔧"][k]}</b><span><strong>${c}</strong><br>${L.filter(x=>x[1]===k).map(x=>x[0]).join(" · ")}</span></div>`).join("")}</div>`;}
+function clsGen(L){const d=deck(L);return sh=>{const [w,k]=d(sh);return {label:"Ce mot, c'est…",say:w,body:`<div class="big">${w}</div>`,opts:CLS,ans:CLS[k],keep:true,col:true,recap:`${w} : ${CLS[k]}`,tip:["On peut mettre un, une, le, la ou du devant.","On peut dire : je … ou il …","Il dit comment est quelque chose, ou où il est.","Un petit mot qui aide à faire la phrase."][k]};};}
+function sonGame(cfg){return function(){
+  const W=cfg.words.map(x=>typeof x==="string"?parseW(x):{...parseW(x.w),opts:x.opts});
+  const ok=w=>/^[a-zàâäéèêëîïôöùûüç]{3,8}$/.test(w.core);
+  const dA=deck(W),dB=deck(W),dC=deck(W.filter(ok));
+  const alt=w=>uniq([w.g,...(w.opts||cfg.opts)]);
+  quizGame({
+    lesson:`<p class="q">Le son ${cfg.son}</p><div class="rule">${cfg.rule}</div>
+      <div class="wl">${W.map(w=>`<span>${w.pre}<mark>${w.g}</mark>${w.post}</span>`).join("")}</div>${cfg.cls?clsLesson(cfg.cls):""}`,
+    gens:[...(cfg.cls?[clsGen(cfg.cls)]:[]),
+      sh=>{const w=dA(sh);const o=alt(w).slice(0,4);return {label:"Complète le mot :",say:w.full,body:`<div class="big">${w.pre}<span class="blank">?</span>${w.post}</div>`,fill:w.g,opts:o,ans:w.g,recap:w.full,tip:`On écrit « ${w.full} ».`};},
+      sh=>{const w=dB(sh);const bad=alt(w).filter(x=>x!==w.g).map(x=>w.pre+x+w.post);return {label:"Quel mot est bien écrit ?",say:w.full,opts:mk(w.full,sh(bad),3),ans:w.full,recap:w.full,tip:`On écrit « ${w.full} ».`};},
+      sh=>{const w=dC(sh);const art=w.full.slice(0,w.full.length-w.core.length).trim();return {label:"Écoute et écris le mot :",say:w.full,body:art?`<div class="big" style="color:var(--soft)">${art} …</div>`:"",tiles:w.core,ans:w.core,recap:w.full,tip:`On écrit « ${w.full} ».`};}
+    ]
+  });
+};}
+const gameSonA=sonGame({son:"[a]",opts:["a","â","à"],rule:"Le son [a] s'écrit <mark>a</mark> (un sac), <mark>â</mark> (l'âne), <mark>à</mark> (voilà), et parfois <mark>e</mark> (la femme).",
+  words:["un [a]mi","un [a]nimal","un [a]rbre","[a]vec","[a]lors","[a]près","[a]vant","m[a]rdi","s[a]medi","qu[a]tre","m[a]man","p[a]pa","un b[a]llon","un ch[a]t","une p[a]ge","la cl[a]sse","un j[a]rdin","un s[a]pin","la s[a]lade","un l[a]pin","du chocol[a]t","il v[a]","l'[â]ne","un g[â]teau","un ch[â]teau","un r[â]teau","voil[à]","l[à]-bas","déj[à]",{w:"la f[e]mme",opts:["e","a"]}]});
+const gameSonOU=sonGame({son:"[ou]",opts:["ou","où","oo"],rule:"Le son [ou] s'écrit <mark>ou</mark> (un loup), <mark>où</mark> seulement pour une question de lieu (Où es-tu ?), <mark>oo</mark> dans des mots anglais (le football).",
+  words:["[ou]i","il [ou]vre","bonj[ou]r","un j[ou]r","un j[ou]rnal","la b[ou]che","une b[ou]le","une p[ou]le","un f[ou]r","une p[ou]pée","la r[ou]te","une c[ou]leur","la c[ou]r","un m[ou]ton","la s[ou]pe","une s[ou]ris","r[ou]ge","p[ou]r","t[ou]jours","p[ou]voir","le c[ou]","un p[ou]","une j[ou]e","une r[ou]e","un hib[ou]","un tr[ou]","n[ou]s","v[ou]s","beauc[ou]p","s[ou]s","surt[ou]t","il j[ou]e","[Où] es-tu ?","le f[oo]tball","un igl[oo]"]});
+const gameSonP=sonGame({son:"[p]",opts:["p","pp","b"],rule:"Le son [p] s'écrit <mark>p</mark> (la pomme) et parfois <mark>pp</mark> (une nappe). Attention à ne pas confondre avec <mark>b</mark> !",
+  words:["mes [p]arents","mon [p]ère","du [p]apier","une [p]age","deux [p]ieds","quatre [p]attes","la [p]luie","une [p]lante","la [p]orte","un [p]oulet","la [p]eau","un [p]antalon","une [p]oule","[p]etit","[p]auvre","[p]ropre","[p]arce que","[p]eut-être","[p]endant que","[p]rès de","mon grand-[p]ère","l'a[p]rès-midi","un cha[p]eau","un hô[p]ital","un la[p]in","un s[p]ort","un sa[p]in","une pou[p]ée","a[p]rès","une échar[p]e","de la sou[p]e","une ju[p]e","une lam[p]e","une na[pp]e","a[pp]eler","a[pp]orter","une tra[pp]e","[p]oser","[p]orter","[p]ossible"]});
+const gameSonB=sonGame({son:"[b]",opts:["b","p","d"],rule:"Le son [b] s'écrit <mark>b</mark> (un bol). Attention à ne pas le confondre avec <mark>p</mark> ou <mark>d</mark> !",
+  words:["une [b]alle","un [b]ateau","le [b]ébé","un [b]ec","une [b]ête","un [b]onnet","du [b]ois","le [b]ord","une [b]otte","la [b]ouche","un [b]ras","une [b]ranche","[b]eau","[b]elle","[b]lanc","[b]leu","[b]onjour","[b]eaucoup","[b]ien","un al[b]um","un ar[b]re","une cham[b]re","un nom[b]re","du sa[b]le","une ta[b]le","un tim[b]re","un sa[b]ot","un lava[b]o","tom[b]er","de l'her[b]e","une jam[b]e","une ro[b]e","un tu[b]e","une bar[b]e","le [b]ijou","[b]ouger"]});
+const gameSonT=sonGame({son:"[t]",opts:["t","tt","d"],rule:"Le son [t] s'écrit <mark>t</mark> (une tarte) et parfois <mark>tt</mark> (les bottes).",
+  words:["[t]reize","[t]rente","une [t]able","un [t]ableau","la [t]erre","du [t]ravail","une [t]artine","un [t]rain","le [t]éléphone","un [t]apis","[t]riste","[t]oujours","[t]rès","[t]rop","[t]ôt","[t]ard","il [t]ombe","qua[t]orze","la maî[t]resse","un s[t]ylo","la mon[t]agne","un man[t]eau","l'hôpi[t]al","le doc[t]eur","une dic[t]ée","une fenê[t]re","un châ[t]eau","le ven[t]re","une [t]ortue","con[t]ent","au[t]re","sep[t]","hui[t]","une plan[t]e","la rou[t]e","vi[t]e","a[tt]raper","des lune[tt]es","une trompe[tt]e","une caro[tt]e","les bo[tt]es","le [t]alon","la [t]ête","[t]oucher","[t]enir"]});
+const gameSonD=sonGame({son:"[d]",opts:["d","dd","t"],rule:"Le son [d] s'écrit <mark>d</mark> (le judo) et parfois <mark>dd</mark> (l'addition).",
+  words:["[d]imanche","[d]eux","[d]ix","[d]ouze","une [d]ame","un [d]essin","le [d]irecteur","la [d]ate","le [d]octeur","le [d]os","une [d]ent","[d]roit","[d]emain","[d]ans","[d]edans","[d]ehors","[d]essus","[d]essous","[d]evant","[d]errière","[d]anser","[d]onner","[d]ire","[d]essiner","lun[d]i","mar[d]i","mercre[d]i","jeu[d]i","ven[d]redi","same[d]i","ma[d]ame","le jar[d]in","un ca[d]eau","un ra[d]is","aujour[d]'hui","sou[d]ain","pen[d]ant","pren[d]re","regar[d]er","la sala[d]e","le mon[d]e","une ron[d]e","le cou[d]e","le sta[d]e","mala[d]e","timi[d]e","rapi[d]e","chau[d]e","froi[d]e","l'a[dd]ition","a[dd]itionner"]});
+
+const gameSonCH=sonGame({son:"[ch]",opts:["ch","j","s"],rule:"Le son [ch] s'écrit <mark>ch</mark> (une ruche). On l'entend au début (une chambre), au milieu (un cochon) ou à la fin du mot (une vache). Attention à ne pas le confondre avec <mark>j</mark> !",
+  words:["une [ch]ambre","une [ch]anson","un [ch]anteur","une [ch]anteuse","un [ch]apeau","des [ch]apeaux","un [ch]emin","une [ch]emise","un [ch]at","une [ch]atte","un [ch]ien","une [ch]ienne","un [ch]eval","des [ch]evaux","un [ch]eveu","des [ch]eveux","du [ch]ocolat","[ch]aud","[ch]aude","[ch]ez","[ch]aque","[ch]anter","je [ch]ante","[ch]oisir","je [ch]oisis","un co[ch]on","une é[ch]arpe","une ma[ch]ine","au mar[ch]é","mé[ch]ant","mé[ch]ante","mar[ch]er","il mar[ch]e","cher[ch]er","il cher[ch]e","a[ch]eter","tu a[ch]ètes","diman[ch]e","la mousta[ch]e","une va[ch]e","la bou[ch]e","des bran[ch]es","ri[ch]e","à gau[ch]e"],
+  cls:[["une chambre",0],["un chapeau",0],["le chemin",0],["du chocolat",0],["la chanson",0],["un cochon",0],["une vache",0],["un cheval",0],["chanter",1],["choisir",1],["chercher",1],["marcher",1],["acheter",1],["méchant",2],["méchante",2],["à gauche",2],["chaud",2],["chaude",2],["riche",2],["chez",3],["chaque",3]]});
+
+/* ================= O1 : m devant m, b, p ================= */
+function gameMBP(){
+  const L=[["to_ber","m"],["cha_bre","m"],["i_portant","m"],["e_mener","m"],["co_bien","m"],["no_bre","m"],["ja_be","m"],["la_pe","m"],["ca_per","m"],["po_pier","m"],["e_porter","m"],["i_possible","m"],["te_ps","m"],["si_ple","m"],
+    ["co_tent","n"],["mo_tagne","n"],["ma_ger","n"],["e_fant","n"],["cha_son","n"],["bo_jour","n"],["co_fiture","n"],["pi_ceau","n"],["ma_teau","n"],["bo_bon","n"]];
+  const d1=deck(L),d2=deck(L);
+  const tip=(w,l)=>w==="bo_bon"?"Attention, bonbon est une exception : on écrit bonbon avec un n !":l==="m"?`Devant ${w.split("_")[1][0]}, le n devient m.`:`Devant ${w.split("_")[1][0]}, on garde le n.`;
+  quizGame({
+    lesson:`<p class="q">M devant m, b, p (O1)</p><div class="rule">Devant un <strong>m</strong>, un <strong>b</strong> ou un <strong>p</strong>, le <strong>n</strong> devient <strong>m</strong> :<br>
+      en → <mark>em</mark> · an → <mark>am</mark> · on → <mark>om</mark> · in → <mark>im</mark><br><br>
+      <i>e<mark>mm</mark>ener · to<mark>mb</mark>er · une cha<mark>mb</mark>re · i<mark>mp</mark>ortant</i><br><br>⚠️ Exception : <strong>bonbon</strong> !</div>`,
+    gens:[
+      sh=>{const [w,l]=d1(sh);const [a,b]=w.split("_");return {label:"n ou m ?",body:`<div class="big">${a}<span class="blank">?</span>${b}</div>`,fill:l,opts:["n","m"],ans:l,keep:true,recap:a+l+b,tip:tip(w,l)};},
+      sh=>{const [w,l]=d2(sh);const good=w.replace("_",l),bad=w.replace("_",l==="m"?"n":"m");return {label:"Quel mot est bien écrit ?",opts:[good,bad],ans:good,recap:good,tip:tip(w,l)};}
+    ]
+  });
+}
+
+/* ================= O3 / O4 : les lettres S et C ================= */
+function gameSC(){
+  const S1=[["salade","s","s"],["escargot","s","s"],["cactus","s","s"],["poison","s","z"],["maison","s","z"],["une rose","s","z"],["une cerise","s","z"],["une chemise","s","z"],["une valise","s","z"],["poisson","ss","s"],["la soupe","s","s"],["un vase","s","z"],["un sapin","s","s"],["un oiseau","s","z"],["un hérisson","ss","s"]];
+  const S2=[["poi_on","ss","🐟"],["poi_on","s","☠️"],["cou_in","ss","🛋️"],["cou_in","s","👦"],["chau_ette","ss","🧦"],["mai_on","s","🏠"],["héri_on","ss","🦔"],["fu_ée","s","🚀"],["ta_e","ss","☕"],["ro_e","s","🌹"]];
+  const C1=[["une carotte","k"],["un cube","k"],["un coq","k"],["une glace","s"],["un citron","s"],["un cygne","s"],["un garçon","s"],["une cerise","s"],["un café","k"],["le cinéma","s"],["la colle","k"],["une leçon","s"]];
+  const C2=[["gar_on","ç"],["le_on","ç"],["ma_on","ç"],["re_u","ç"],["fran_ais","ç"],["cale_on","ç"],["_ube","c"],["_arotte","c"],["_itron","c"],["gla_e","c"],["_inéma","c"],["pou_e","c"]];
+  const d1=deck(S1),d2=deck(S2),d3=deck(C1),d4=deck(C2);
+  const hlS=(w,l)=>w.replace(new RegExp("(.*)"+l),(m,a)=>a.replace(/(.*)$/,"$1")+"<mark>"+l+"</mark>").replace(/<mark>(s+)<\/mark>(.*)$/,"<mark>$1</mark>$2");
+  quizGame({
+    lesson:`<p class="q">Les lettres S et C (O3, O4)</p>
+      <div class="ladder">
+        <div class="step"><b>s</b><span>Le <strong>s</strong> chante [s] le plus souvent (salade, cactus).<br>Entre deux voyelles, il chante [z] (poi<mark>s</mark>on).<br>Pour avoir [s] entre deux voyelles, je double : poi<mark>ss</mark>on.</span></div>
+        <div class="step"><b>c</b><span>Le <strong>c</strong> chante [k] devant a, o, u (carotte, coq, cube).<br>Il chante [s] devant e, i, y (glace, citron, cygne).<br>Pour avoir [s] devant a, o, u, j'ajoute une cédille : gar<mark>ç</mark>on.</span></div>
+      </div>`,
+    gens:[
+      sh=>{const [w,l,s]=d1(sh);return {label:`Dans « ${w} », la lettre s chante…`,say:w,body:`<div class="big">${w.replace(l==="ss"?"ss":/s(?=[^s]*$)|s/,m=>"<mark>"+m+"</mark>")}</div>`,opts:["[s] comme le serpent","[z] comme l'abeille"],ans:s==="s"?"[s] comme le serpent":"[z] comme l'abeille",keep:true,recap:`${w} → [${s}]`,tip:s==="z"?"Le s est entre deux voyelles : il chante [z].":l==="ss"?"Deux s : on entend [s].":"Ici, le s chante [s]."};},
+      sh=>{const [w,l,e]=d2(sh);const [a,b]=w.split("_");return {label:"s ou ss ?",body:`<div class="emo">${e}</div><div class="big">${a}<span class="blank">?</span>${b}</div>`,fill:l,opts:["s","ss"],ans:l,keep:true,recap:`${e} ${a+l+b}`,tip:l==="ss"?"On entend [s] entre deux voyelles : on double le s.":"On entend [z] entre deux voyelles : un seul s."};},
+      sh=>{const [w,s]=d3(sh);return {label:`Dans « ${w} », la lettre c chante…`,say:w,body:`<div class="big">${w.replace(/[cç](?=[^cç]*$)/,m=>"<mark>"+m+"</mark>")}</div>`,opts:["[k] comme la poule (cot cot)","[s] comme le serpent"],ans:s==="k"?"[k] comme la poule (cot cot)":"[s] comme le serpent",keep:true,recap:`${w} → [${s}]`,tip:/ç/.test(w)?"Avec la cédille, le c chante [s].":s==="k"?"Devant a, o, u, le c chante [k].":"Devant e, i, y, le c chante [s]."};},
+      sh=>{const [w,l]=d4(sh);const [a,b]=w.split("_");return {label:"c ou ç ?",body:`<div class="big">${a}<span class="blank">?</span>${b}</div>`,fill:l,opts:["c","ç"],ans:l,keep:true,recap:a+l+b,tip:l==="ç"?"On entend [s] devant a, o, u : il faut une cédille.":/^[eiy]/.test(b)?"Devant e, i, y, le c chante déjà [s] : pas de cédille.":"Devant a, o, u, le c chante [k]."};}
+    ]
+  });
+}
+
+/* ================= O3 : les liaisons ================= */
+function gameLiaison(){
+  const Y=[["un","éléphant","n"],["un petit","éléphant","t"],["un gros","éléphant","z"],["les","amis","z"],["des","oiseaux","z"],["mon","ami","n"],["deux","ours","z"],["un grand","arbre","t"],["trois","ânes","z"],["vous","avez","z"],["nous","allons","z"],["un","avion","n"],["les","enfants","z"],["un petit","oiseau","t"]];
+  const N=[["un","chat"],["les","chats"],["un petit","chien"],["deux","lapins"],["des","tables"],["mon","livre"],["un gros","ballon"],["trois","poules"]];
+  const d1=deck([...Y.map(x=>[x[0],x[1],1]),...N.map(x=>[x[0],x[1],0])]),d2=deck(Y),d3=deck(Y);
+  quizGame({
+    lesson:`<p class="q">Les liaisons (O3)</p><div class="rule">À l'oral, on fait une <strong>liaison</strong> quand le premier mot finit par une <strong>consonne</strong> et que le second commence par une <strong>voyelle</strong>.<br><br>
+      un‿éléphant [n] · un petit‿éléphant [t] · un gros‿éléphant [z]<br><br>J'<strong>entends</strong> les liaisons, mais je ne les <strong>écris</strong> pas !</div>`,
+    gens:[
+      sh=>{const [a,b,y]=d1(sh);return {label:"Entends-tu une liaison ?",say:`${a} ${b}`,body:`<div class="big">${a} ${b}</div>`,opts:["Oui","Non"],ans:y?"Oui":"Non",keep:true,recap:y?`${a}‿${b}`:`${a} ${b} (pas de liaison)`,tip:y?`« ${b} » commence par une voyelle : on fait la liaison.`:`« ${b} » commence par une consonne : pas de liaison.`};},
+      sh=>{const [a,b,s]=d2(sh);return {label:"Quel son fait la liaison ?",say:`${a} ${b}`,body:`<div class="big">${a}‿${b}</div>`,opts:["[n]","[t]","[z]"],ans:`[${s}]`,keep:true,recap:`${a}‿${b} → [${s}]`,tip:`On dit « ${a} ${s}${b} ».`};},
+      sh=>{const [a,b,s]=d3(sh);const good=`${a} ${b}`;return {label:`Tu entends « ${a}-${s}-${b} ». Comment l'écrit-on ?`,say:good,opts:[good,`${a} ${s}${b}`,`${a} ${s}'${b}`],ans:good,recap:good,tip:"On entend la liaison, mais on ne l'écrit pas."};}
+    ]
+  });
+}
+
+/* ================= G1 à G4 : lettre, mot, phrase, ponctuation ================= */
+function gamePhrase(){
+  const LMP=[["b","une lettre"],["k","une lettre"],["m","une lettre"],["chat","un mot"],["maison","un mot"],["école","un mot"],["Le soleil brille dans le ciel.","une phrase"],["Le chat mange la souris.","une phrase"],["Le chien joue avec la chaussure.","une phrase"]];
+  const PH=["Le chat mange la souris.","Le chien joue avec la chaussure.","Le soleil brille dans le ciel.","Agathe est en retard à l'école.","Elle a peur de se faire gronder.","Papa lit une histoire.","Les oiseaux chantent le matin.","Ma sœur aime le chocolat."];
+  const NB=["chat","école","ballon","souris","lapin","crayon","robe","table","jardin","fleur"];
+  const PONC=[["Quelle belle surprise","!"],["Comme il fait chaud","!"],["Bravo, tu as gagné","!"],["Oh, quel beau dessin","!"],["Quel âge a ta sœur","?"],["Où est mon livre","?"],["Veux-tu une pomme","?"],["Ta sœur a dix ans","."],["Le chat dort sur le lit","."],["Nous allons à l'école","."]];
+  const d1=deck(LMP),d2=deck(PH),d3=deck(NB),d4=deck(PONC);
+  const WHY={".":"Le point termine une phrase qui raconte.","?":"Le point d'interrogation termine une question.","!":"Le point d'exclamation montre la surprise, l'étonnement ou un ordre."};
+  quizGame({
+    lesson:`<p class="q">Lettre, mot, phrase (G1 à G4)</p>
+      <div class="ladder">
+        <div class="step"><b>a</b><span>L'alphabet a <strong>26 lettres</strong>. Un <strong>mot</strong> a plusieurs lettres : chat → c, h, a, t.</span></div>
+        <div class="step"><b>L…</b><span>Une <strong>phrase</strong> commence par une <strong>majuscule</strong>, finit par un <strong>point</strong> et <strong>a un sens</strong>. Elle peut tenir sur plusieurs lignes.</span></div>
+        <div class="step"><b>. ? !</b><span><strong>.</strong> pour raconter · <strong>?</strong> pour une question · <strong>!</strong> pour la surprise ou un ordre.<br>Dans un dialogue : guillemets « … » et tirets –.</span></div>
+      </div>`,
+    gens:[
+      sh=>{const [x,a]=d1(sh);return {label:"Lettre, mot ou phrase ?",body:`<div class="big">${x}</div>`,opts:["une lettre","un mot","une phrase"],ans:a,keep:true,recap:`${x} → ${a}`,tip:a==="une lettre"?"C'est une seule lettre de l'alphabet.":a==="un mot"?"Plusieurs lettres forment un mot.":"Majuscule, point, et ça veut dire quelque chose."};},
+      sh=>{const p=d2(sh);const k=R(0,3);let s=p,why="Majuscule, point et un sens : c'est une phrase !";
+        if(k===1){s=p[0].toLowerCase()+p.slice(1);why="Il manque la majuscule au début.";}
+        if(k===2){s=p.slice(0,-1);why="Il manque le point à la fin.";}
+        if(k===3){const w=p.slice(0,-1).split(" ");const m=sh(w.slice(1));s=w[0]+" "+m.join(" ")+".";if(s===p){s=w[0]+" "+m.reverse().join(" ")+".";}why=s===p?why:"Les mots sont mélangés : la phrase n'a pas de sens.";}
+        const yes=s===p;return {label:"Est-ce une phrase correcte ?",body:`<div class="big">${s}</div>`,opts:["Oui","Non"],ans:yes?"Oui":"Non",keep:true,recap:p,tip:why};},
+      sh=>{const w=d3(sh),n=w.length;return {label:`Combien de lettres dans le mot « ${w} » ?`,opts:mk(n,sh([n+1,n-1,n+2]),3),ans:String(n),recap:`${w} → ${n} lettres : ${[...w].join(", ")}`,tip:`${[...w].join(" – ")}`};},
+      sh=>{const [s,p]=d4(sh);return {label:"Quel signe à la fin ?",body:`<div class="big">${s} <span class="blank">…</span></div>`,fill:p,opts:[".","?","!"],ans:p,keep:true,recap:`${s} ${p}`,tip:WHY[p]};},
+      sh=>{const k=R(2,4);const t=sh(PH).slice(0,k).join(" ");return {label:"Combien de phrases dans ce texte ?",body:`<div class="big" style="font-size:1.15rem;text-align:left">${t}</div>`,opts:mk(k,sh([k+1,k-1,k+2]),3),ans:String(k),recap:`${k} phrases`,tip:"Je compte les majuscules… ou les points !"};}
+    ]
+  });
+}
+
+/* ================= C1 : passé, présent, futur ================= */
+function gameTemps(){
+  const P=["Hier, j'ai mangé une pomme.","Autrefois, il n'y avait pas de voitures.","La semaine dernière, nous sommes allés à la mer.","Il y a longtemps, les dinosaures vivaient sur la Terre.","J'étais un bébé.","L'année dernière, j'étais au CP.","Avant-hier, il a neigé.","Aujourd'hui, j'ai pris mon petit déjeuner avec ma sœur."];
+  const Pr=["Maintenant, je lis un livre.","En ce moment, il pleut.","Je suis un enfant.","Actuellement, ma sœur dort.","Aujourd'hui, je mange à la cantine.","En ce moment, le chat joue dans le jardin."];
+  const F=["Demain, j'irai à la piscine.","Je serai un adulte.","Jeudi prochain, nous partirons en vacances.","Ce soir, papa préparera des crêpes.","Bientôt, il fera froid.","Dans deux jours, ce sera mon anniversaire.","Après-demain, tu iras chez mamie.","Aujourd'hui, je ferai mes devoirs chez mamie."];
+  const MOTS={passé:["hier","avant-hier","autrefois","jadis","il y a longtemps","l'année dernière","la veille","le mois dernier","la nuit dernière","hier matin","il y a deux jours","il y a dix ans","l'hiver dernier"],présent:["maintenant","en ce moment","actuellement","à l'instant"],futur:["demain","après-demain","dans une semaine","jeudi prochain","ce soir","bientôt","dans deux jours","la nuit prochaine","plus tard","la semaine prochaine"]};
+  const all=[...P.map(s=>[s,"passé"]),...Pr.map(s=>[s,"présent"]),...F.map(s=>[s,"futur"])];
+  const d1=deck(all);
+  quizGame({
+    lesson:`<p class="q">Passé, présent, futur (C1)</p>
+      <div class="ladder">
+        <div class="step"><b>avant</b><span><strong>Passé</strong> : J'étais un bébé.<br><i>hier, autrefois, jadis, l'année dernière…</i></span></div>
+        <div class="step"><b>là</b><span><strong>Présent</strong> : Je suis un enfant.<br><i>maintenant, en ce moment, actuellement</i></span></div>
+        <div class="step"><b>après</b><span><strong>Futur</strong> : Je serai un adulte.<br><i>demain, bientôt, ce soir, jeudi prochain…</i></span></div>
+      </div><p style="font-size:1rem;margin-top:10px">⚠️ <strong>Aujourd'hui</strong> marche avec les trois ! Il faut alors regarder le verbe.</p>`,
+    gens:[
+      sh=>{const [s,t]=d1(sh);return {label:"Cette phrase est au…",say:s,body:`<div class="big" style="font-size:1.3rem">${s}</div>`,opts:["passé","présent","futur"],ans:t,keep:true,recap:`${s} → ${t}`,tip:/Aujourd'hui/.test(s)?"Avec « aujourd'hui », je regarde le verbe.":t==="passé"?"C'était avant.":t==="présent"?"C'est maintenant.":"C'est plus tard."};},
+      sh=>{const t=sh(["passé","présent","futur"])[0];const good=sh(MOTS[t])[0];const others=Object.keys(MOTS).filter(k=>k!==t).map(k=>sh(MOTS[k])[0]);return {label:`Quel petit mot parle du <strong>${t}</strong> ?`,opts:[good,...others],ans:good,recap:`« ${good} » → ${t}`,tip:`« ${good} » nous dit que c'est ${t==="passé"?"avant":t==="présent"?"maintenant":"plus tard"}.`};},
+      sh=>{const t=sh(["passé","présent","futur"])[0];const w=sh(MOTS[t])[0];return {label:"Ce petit mot parle du…",body:`<div class="big">${w}</div>`,opts:["passé","présent","futur"],ans:t,keep:true,recap:`« ${w} » → ${t}`,tip:`On le range dans la colonne ${t}.`};}
+    ]
+  });
+}
+
+/* ================= V2 / V3 : l'alphabet ================= */
+function gameAlpha(){
+  const A="abcdefghijklmnopqrstuvwxyz".split(""),V="aeiouy";
+  const MOTS=["abeille","papillon","lion","loup","chat","chien","lapin","souris","poule","mouton","cochon","hibou","tortue","girafe","zèbre","vache","renard","ours","dauphin","cheval","canard","lézard","koala","requin"];
+  const so=a=>[...a].sort((x,y)=>x.localeCompare(y,"fr"));
+  quizGame({
+    lesson:`<p class="q">L'alphabet (V2, V3)</p><div class="abc">${A.map(l=>`<span class="${V.includes(l)?"v":""}">${l}</span>`).join("")}</div>
+      <div class="rule">Les <strong>6 voyelles</strong> : a, e, i, o, u, y. Toutes les autres lettres sont des <strong>consonnes</strong>.<br><br>
+      Pour ranger des mots dans l'<strong>ordre alphabétique</strong>, je regarde la 1ʳᵉ lettre. Si elle est pareille, je regarde la 2ᵉ, puis la 3ᵉ…<br><i>abeille → papillon · lion → loup · chat → chien</i></div>`,
+    gens:[
+      sh=>{const l=sh(A)[0];const v=V.includes(l);return {label:"Voyelle ou consonne ?",body:`<div class="big" style="font-size:3rem">${l}</div>`,opts:["voyelle","consonne"],ans:v?"voyelle":"consonne",keep:true,recap:`${l} → ${v?"voyelle":"consonne"}`,tip:"Les voyelles : a, e, i, o, u, y."};},
+      sh=>{const i=R(1,24),aft=Math.random()<.6,l=A[i],ans=aft?A[i+1]:A[i-1];return {label:`Quelle lettre vient juste ${aft?"après":"avant"} « ${l} » ?`,opts:mk(ans,sh([aft?A[i-1]:A[i+1],A[Math.min(25,i+2)],A[Math.max(0,i-2)]]),3),ans,recap:`${A[i-1]} – ${l} – ${A[i+1]}`,tip:`Dans l'alphabet : ${A.slice(Math.max(0,i-2),i+3).join(" ")}`};},
+      sh=>{let w;const same=Math.random()<.35;if(same){const g=sh([["lion","loup","lapin","lézard"],["chat","chien","cheval","cochon","canard"],["poule","papillon","pingouin"],["requin","renard"]])[0];w=sh(g).slice(0,3);}else w=sh(MOTS).slice(0,R(3,4));
+        const o=so(w);return {label:"Range dans l'ordre alphabétique :",order:o,sep:"→",ans:o.join(" → "),recap:o.join(" → "),tip:same?"Même 1ʳᵉ lettre : je regarde la 2ᵉ lettre.":"Je regarde la 1ʳᵉ lettre de chaque mot."};},
+      sh=>{const w=sh(MOTS).slice(0,3),f=so(w)[0];return {label:"Quel mot vient en premier dans le dictionnaire ?",opts:w,ans:f,recap:`${so(w).join(" → ")}`,tip:"Je compare les premières lettres."};}
+    ]
+  });
+}
+
+/* ================= V1 / V4 : consignes et lexique de l'école ================= */
+function gameEcole(){
+  const OBJ=[["🎒","un cartable"],["📖","un livre"],["📒","un cahier"],["✏️","un crayon"],["🖊️","un stylo"],["📏","une règle"],["📐","une équerre"],["✂️","des ciseaux"],["🌍","un globe"],["💻","un ordinateur"],["📎","un trombone"],["📌","des punaises"],["🪑","une chaise"],["📅","un agenda"],["🗂️","un classeur"],["🚌","un bus / un car"],["🏫","l'école"],["👩‍🏫","la maîtresse"],["👨‍🏫","le maître"],["👩‍🍳","la cuisinière"],["🧒","un écolier"],["👧","une écolière"]];
+  const G=[["trousse","une"],["gomme","une"],["cartable","un"],["livre","un"],["cahier","un"],["classeur","un"],["taille-crayon","un"],["stylo","un"],["surligneur","un"],["crayon","un"],["agenda","un"],["règle","une"],["équerre","une"],["compas","un"],["dictionnaire","un"],["bureau","un"],["table","une"],["chaise","une"],["porte-vues","un"],["ardoise","une"],["agrafeuse","une"],["ordinateur","un"],["trombone","un"],["globe","un"]];
+  const CS=[["entoure","<span class='cs cs-entoure'>papa</span>"],["souligne","<span class='cs cs-souligne'>papa</span>"],["barre","<span class='cs cs-barre'>papa</span>"],["encadre","<span class='cs cs-encadre'>papa</span>"],["surligne","<span class='cs cs-surligne'>papa</span>"],["coche","<span class='cs'>☐ ☑ ☐</span>"],["relie","<span class='cs'>•──────•</span>"],["sépare","<span class='cs'>le|loup|mange</span>"]];
+  const d1=deck(OBJ),d2=deck(G),d3=deck(CS);
+  quizGame({
+    lesson:`<p class="q">L'école (V1, V4)</p><div class="wl">${OBJ.map(o=>`<span>${o[0]} ${o[1]}</span>`).join("")}</div>
+      <p class="q" style="margin-top:12px">Les consignes</p><div class="wl">${CS.map(c=>`<span><strong>${c[0]}</strong> ${c[1]}</span>`).join("")}</div>`,
+    gens:[
+      sh=>{const [e,n]=d1(sh);return {label:"Comment s'appelle-t-il ?",say:n.split(" /")[0],body:`<div class="emo" style="font-size:3.4rem">${e}</div>`,opts:mk(n,sh(OBJ.map(o=>o[1])),3),ans:n,recap:`${e} ${n}`,tip:`C'est ${n}.`};},
+      sh=>{const [w,g]=d2(sh);return {label:"un ou une ?",body:`<div class="big"><span class="blank">?</span> ${w}</div>`,fill:g,opts:["un","une"],ans:g,keep:true,recap:`${g} ${w}`,tip:`On dit « ${g} ${w} ».`};},
+      sh=>{const [c,h]=d3(sh);return {label:"Quelle consigne a-t-on suivie ?",body:`<div class="big" style="font-size:1.8rem">${h}</div>`,opts:mk(c,sh(CS.map(x=>x[0])),4),ans:c,recap:`${c}`,tip:`On a fait : ${c}.`};}
+    ]
+  });
+}
+
+/* ================= N3, N5, N6, N7, N10 : les nombres jusqu'à 99 ================= */
+function gameNombres(){
+  const pick=()=>Math.random()<.5?R(70,99):R(11,69);
+  const diz=n=>`<div class="dz">${"<span class='diz'></span>".repeat(Math.floor(n/10))}<span style="width:10px"></span>${"<span class='uni'></span>".repeat(n%10)}</div>`;
+  quizGame({
+    lesson:`<p class="q">Les nombres jusqu'à 99</p>
+      <div class="ladder">
+        <div class="step"><b>38</b><span>38 = <strong>3 dizaines</strong> et <strong>8 unités</strong> = 10 + 10 + 10 + 8. Une dizaine, c'est un paquet de 10.</span></div>
+        <div class="step"><b>±1</b><span>Le nombre <strong>avant</strong> = −1 · le nombre <strong>après</strong> = +1. Avant 20, c'est 19 ; après 19, c'est 20.</span></div>
+        <div class="step"><b>&lt; &gt;</b><span>Je compare d'abord les <strong>dizaines</strong>, puis les <strong>unités</strong>. La pointe montre le plus petit. 35 &gt; 28 · 42 &lt; 48 · 60 + 5 = 65</span></div>
+        <div class="step"><b>abc</b><span>71 soixante et onze · 74 soixante-quatorze · 80 quatre-ving<strong>ts</strong> · 85 quatre-vingt-cinq · 97 quatre-vingt-dix-sept</span></div>
+      </div>`,
+    gens:[
+      sh=>{const n=pick(),w=enLettres(n);return {label:`Comment s'écrit <strong>${n}</strong> ?`,say:String(n),opts:mk(w,sh([...fauxLettres(n),enLettres(n+1>99?n-1:n+1),enLettres(n>20?n-10:n+10),enLettres(n<90?n+10:n-20)]),3),ans:w,col:true,recap:`${n} : ${w}`,tip:n===80?"80 : vingt prend un s quand rien ne suit.":"On met des traits d'union entre les mots (sauf avec « et »)."};},
+      sh=>{const n=pick(),w=enLettres(n);const c=[n+1,n-1,n>=70&&n<80?n+20:n>=90?n-20:n+10,n-10].filter(x=>x>0&&x<100);return {label:"Quel nombre est écrit ?",say:String(n),body:`<div class="big">${w}</div>`,opts:mk(n,sh(c),3),ans:String(n),recap:`${w} = ${n}`,tip:n>=70?`${w} → ${n}`:`${Math.floor(n/10)} dizaines et ${n%10} unités`};},
+      sh=>{const n=R(11,69),k=R(0,2),d=Math.floor(n/10),u=n%10;
+        if(k===0)return {label:`Combien de <strong>dizaines</strong> dans ${n} ?`,opts:mk(d,sh([u,d+1,n]),3),ans:String(d),recap:`${n} = ${d} dizaines et ${u} unités`,tip:`Le chiffre des dizaines est à gauche : ${d}.`};
+        if(k===1)return {label:`Combien d'<strong>unités</strong> dans ${n} ?`,opts:mk(u,sh([d,u+1,n]),3),ans:String(u),recap:`${n} = ${d} dizaines et ${u} unités`,tip:`Le chiffre des unités est à droite : ${u}.`};
+        return {label:"Quel nombre est représenté ?",body:diz(n),opts:mk(n,sh([u*10+d,n+10,n+1]).filter(x=>x!==String(n)),3),ans:String(n),recap:`${d} dizaines et ${u} unités = ${n}`,tip:`${d} barres de 10 et ${u} points : ${n}.`};},
+      sh=>{const n=R(2,98),aft=Math.random()<.5,a=aft?n+1:n-1;return {label:`Quel nombre vient juste <strong>${aft?"après":"avant"}</strong> ${n} ?`,opts:mk(a,sh([aft?n-1:n+1,aft?n+10:n-10,n]),3),ans:String(a),recap:`${n-1} – ${n} – ${n+1}`,tip:aft?"Le nombre après : +1.":"Le nombre avant : −1."};},
+      sh=>{const k=R(0,3);let L,Rt,lv,rv;
+        if(k===0){const d=R(1,5)*10,u=R(1,9);L=`${d} + ${u}`;lv=d+u;rv=Math.random()<.6?lv:lv+R(1,3);Rt=String(rv);}
+        else{lv=R(10,99);const inv=(lv%10)*10+Math.floor(lv/10);rv=(k===1&&lv%10&&inv!==lv)?inv:R(10,99);L=String(lv);Rt=String(rv);}
+        const s=lv<rv?"<":lv>rv?">":"=";return {label:"Quel signe ?",body:`<div class="big">${L} <span class="blank">?</span> ${Rt}</div>`,fill:s==="<"?"&lt;":s===">"?"&gt;":"=",opts:["<",">","="],ans:s,keep:true,recap:`${L} ${s} ${Rt}`,tip:s==="="?"Les deux côtés valent la même chose.":"Je compare d'abord les dizaines, puis les unités."};}
+    ]
+  });
+}
+
+/* ================= Cal 4 à 10 : tables d'addition et sommes à 10 ================= */
+function gameTables(){
+  quizGame({
+    lesson:`<p class="q">Les tables d'addition (Cal 4 à Cal 10)</p>
+      <div class="rule"><strong>Sommes égales à 10</strong> : 0+10 · 1+9 · 2+8 · 3+7 · 4+6 · 5+5<br><br>
+      <strong>Tables du 1 au 7</strong> : 9 + 7 = 16 · 7 + 5 = 12 · 8 + 6 = 14 · 9 + 4 = 13…<br><br>
+      Astuce : 10 + 6 = 16, donc 9 + 6 = un de moins = <strong>15</strong>.<br>Et 5 + 7 = 7 + 5 : on peut tourner l'addition.</div>`,
+    gens:[
+      sh=>{const b=R(1,7),a=R(0,10),s=a+b;return {label:"Calcule :",body:`<div class="big">${a} + ${b} = <span class="blank">?</span></div>`,fill:String(s),opts:mk(s,sh(near(s,[1,-1,2,-2,10])),4),ans:String(s),recap:`${a} + ${b} = ${s}`,tip:a===9?`10 + ${b} = ${10+b}, donc 9 + ${b} = ${s}.`:`Table du ${b} : ${a} + ${b} = ${s}.`};},
+      sh=>{const a=R(0,10),c=10-a;return {label:"Combien pour faire 10 ?",body:`<div class="big">${a} + <span class="blank">?</span> = 10</div>`,fill:String(c),opts:mk(c,sh(near(c,[1,-1,2,-2])),4),ans:String(c),recap:`${a} + ${c} = 10`,tip:`${a} et ${c} font 10.`};},
+      sh=>{const a=R(1,6),b=R(5,9),s=a+b;return {label:"Complète :",body:`<div class="big">${b} + ${a} = ${a} + <span class="blank">?</span></div>`,fill:String(b),opts:mk(b,sh([s,a,b+1]),3),ans:String(b),recap:`${b} + ${a} = ${a} + ${b} = ${s}`,tip:"On peut changer l'ordre dans une addition : le résultat est le même."};}
+    ]
+  });
+}
+
+/* ================= Cal 2, Cal 3 : ajouter et retrancher ================= */
+function gameAddSub(){
+  quizGame({
+    lesson:`<p class="q">Ajouter et retrancher (Cal 2, Cal 3)</p>
+      <div class="ladder">
+        <div class="step"><b>+</b><span>Pour <strong>ajouter</strong>, je peux compter dans ma tête, avec mes doigts, ou <strong>avancer</strong> sur la bande numérique : 8 + 5 → 8, +2 = 10, +3 = 13.</span></div>
+        <div class="step"><b>−</b><span>Pour <strong>enlever</strong> un petit nombre, je <strong>recule</strong> sur la bande numérique : 8 − 3 = 5.<br>Pour enlever 9 : j'enlève 10, puis j'ajoute 1. 16 − 10 = 6, 6 + 1 = 7.</span></div>
+      </div>`,
+    gens:[
+      sh=>{const a=R(5,16),b=R(2,9),s=a+b;return {label:"Calcule :",body:`<div class="big">${a} + ${b} = <span class="blank">?</span></div>`,fill:String(s),opts:mk(s,sh(near(s,[1,-1,2,10])),4),ans:String(s),recap:`${a} + ${b} = ${s}`,tip:b===9?`Pour ajouter 9 : ${a} + 10 = ${a+10}, puis −1 = ${s}.`:`J'avance de ${b} : ${a} → ${s}.`};},
+      sh=>{const b=R(2,9),a=R(b+1,20),r=a-b;return {label:"Calcule :",body:`<div class="big">${a} − ${b} = <span class="blank">?</span></div>`,fill:String(r),opts:mk(r,sh(near(r,[1,-1,2,a])),4),ans:String(r),recap:`${a} − ${b} = ${r}`,tip:b===9&&a>=10?`Pour enlever 9 : ${a} − 10 = ${a-10}, puis +1 = ${r}.`:`Je recule de ${b} : ${a} → ${r}.`};}
+    ]
+  });
+}
+
+/* ================= Cal 12 : ajouter ou enlever 10 ================= */
+function gameDix(){
+  const dz=n=>{const s=String(n);return s.length<2?s:`<mark>${s[0]}</mark>${s.slice(1)}`;};
+  quizGame({
+    lesson:`<p class="q">Ajouter ou enlever 10 (Cal 12)</p>
+      <div class="ladder">
+        <div class="step"><b>+ 10</b><span>J'ajoute <strong>1</strong> au chiffre des <strong>dizaines</strong>. Le chiffre des <strong>unités ne change pas</strong>.<br><i>${dz(51)} + 10 = ${dz(61)}</i></span></div>
+        <div class="step"><b>− 10</b><span>J'enlève <strong>1</strong> au chiffre des <strong>dizaines</strong>. Le chiffre des <strong>unités ne change pas</strong>.<br><i>${dz(44)} − 10 = ${dz(34)}</i></span></div>
+      </div>`,
+    gens:[
+      sh=>{const a=R(3,89),s=a+10;return {label:"Calcule :",body:`<div class="big">${a} + 10 = <span class="blank">?</span></div>`,fill:String(s),opts:mk(s,sh([a+1,a+20,a+11]),3),ans:String(s),recap:`${a} + 10 = ${s}`,tip:`Le chiffre des dizaines augmente de 1, le ${a%10} des unités ne bouge pas.`};},
+      sh=>{const a=R(10,99),r=a-10;return {label:"Calcule :",body:`<div class="big">${a} − 10 = <span class="blank">?</span></div>`,fill:String(r),opts:mk(r,sh([a-1,a-11,a>=20?a-20:a+10].filter(x=>x>=0)),3),ans:String(r),recap:`${a} − 10 = ${r}`,tip:`Le chiffre des dizaines baisse de 1, le ${a%10} des unités ne bouge pas.`};},
+      sh=>{const a=R(10,89),up=Math.random()<.5,b=up?a+10:a-10;return {label:"Quel signe ?",body:`<div class="big">${a} <span class="blank">?</span> 10 = ${b}</div>`,fill:up?"+":"−",opts:["+","−"],ans:up?"+":"−",keep:true,recap:`${a} ${up?"+":"−"} 10 = ${b}`,tip:up?"Les dizaines augmentent : j'ai ajouté 10.":"Les dizaines baissent : j'ai enlevé 10."};},
+      sh=>{const a=R(11,89),up=Math.random()<.5;const o=["le chiffre des dizaines","le chiffre des unités","les deux chiffres"];return {label:`Dans ${a} ${up?"+":"−"} 10, quel chiffre change ?`,opts:o,ans:o[0],keep:true,col:true,recap:`${a} ${up?"+":"−"} 10 = ${up?a+10:a-10}`,tip:"Seul le chiffre des dizaines change. Les unités restent pareilles."};}
+    ]
+  });
+}
+
+/* ================= EG1, EG3 : tracer à la règle, points alignés ================= */
+function ptsSvg(pts){return `<svg viewBox="0 0 320 190" style="width:100%;max-width:380px;display:block;margin:6px auto" role="img" aria-label="Des points sur une feuille">`+pts.map(p=>`<g stroke="#1f2a5c" stroke-width="3" stroke-linecap="round"><line x1="${p.x-7}" y1="${p.y-7}" x2="${p.x+7}" y2="${p.y+7}"/><line x1="${p.x-7}" y1="${p.y+7}" x2="${p.x+7}" y2="${p.y-7}"/></g><text x="${p.x+8}" y="${p.y-12}" font-size="18" fill="#1f2a5c" font-family="Andika,sans-serif">${p.l}</text>`).join("")+`</svg>`;}
+function gameGeo(){
+  const Q=[["Pour relier deux points, j'utilise…",["ma règle","mon compas","ma gomme"]],["Je place ma règle…",["légèrement sous les points","sur un seul point","loin des points"]],["Je tiens ma règle…",["au milieu en appuyant","par le bout","sans appuyer"]],["Je trace le trait…",["d'un point à l'autre sans dépasser","en dépassant les points","en tremblant"]],["Trois points sont alignés quand…",["ils sont sur la même droite","ils sont proches","ils ont des lettres qui se suivent"]]];
+  const d3=deck(Q);
+  const line=(a,t,off)=>{const c=[160,95],L=230,dx=Math.cos(a),dy=Math.sin(a);return {x:Math.round(c[0]+dx*L*t-dy*off),y:Math.round(c[1]+dy*L*t+dx*off)};};
+  quizGame({
+    lesson:`<p class="q">Géométrie (EG1, EG3)</p>
+      <div class="ladder">
+        <div class="step"><b>📏</b><span>Pour <strong>tracer</strong> un trait entre deux points : je place ma règle <strong>légèrement sous</strong> les points, je la tiens <strong>au milieu en appuyant</strong>, je trace d'un point à l'autre <strong>sans dépasser</strong>.</span></div>
+        <div class="step"><b>×××</b><span>Trois points sont <strong>alignés</strong> s'ils sont sur <strong>la même droite</strong>. Pour vérifier, je pose ma règle dessus !</span></div>
+      </div>`,
+    gens:[
+      sh=>{const a=(Math.random()-.5)*.7,al=Math.random()<.5,off=al?0:(Math.random()<.5?-1:1)*R(24,34);const L=sh(["A","B","C","D","E","F","G","H","K","M"]).slice(0,3);
+        const pts=[{...line(a,-.5,0),l:L[0]},{...line(a,(Math.random()-.5)*.3,off),l:L[1]},{...line(a,.5,0),l:L[2]}];
+        return {label:"Ces trois points sont-ils alignés ?",body:ptsSvg(pts),opts:["Oui","Non"],ans:al?"Oui":"Non",keep:true,recap:`${L.join(", ")} : ${al?"alignés":"pas alignés"}`,tip:al?"Ils sont sur la même droite.":`Le point ${L[1]} n'est pas sur la droite des deux autres.`};},
+      sh=>{const a=(Math.random()-.5)*.7;const lab=sh(["C","D","E"]);const t=sh([.12,.58]);
+        const pts=[{...line(a,-.5,0),l:"A"},{...line(a,-.2,0),l:"B"},{...line(a,.38,0),l:lab[0]},{...line(a,t[0],44),l:lab[1]},{...line(a,t[1],-44),l:lab[2]}];
+        return {label:"Quel point est aligné avec A et B ?",body:ptsSvg(pts),opts:["C","D","E"],ans:lab[0],keep:true,recap:`A, B et ${lab[0]} sont alignés`,tip:`Si je pose ma règle sur A et B, elle passe par ${lab[0]}.`};},
+      sh=>{const [q,o]=d3(sh);return {label:q,opts:o,ans:o[0],col:true,recap:`${q} ${o[0]}`,tip:o[0].charAt(0).toUpperCase()+o[0].slice(1)+"."};}
+    ]
+  });
+}
+
+/* ================= Questionner le monde : le temps ================= */
+const JOURS=["lundi","mardi","mercredi","jeudi","vendredi","samedi","dimanche"];
+const MOIS=["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+const NBJ=["31","28 ou 29","31","30","31","30","31","31","30","31","30","31"];
+const cyc=(a,i)=>a[((i%a.length)+a.length)%a.length];
+const factGen=F=>{const d=deck(F);return sh=>{const [q,o,t]=d(sh);return {label:q,opts:o,ans:o[0],col:o.some(x=>x.length>12),recap:`${q} ${o[0]}`,tip:t};};};
+
+function gameSemaine(){
+  const REL=[["L'avant-veille","avant-hier",-2],["La veille","hier",-1],["Le lendemain","demain",1],["Le surlendemain","après-demain",2]];
+  const AUJ=[["Avant-hier","c'était",-2],["Hier","c'était",-1],["Demain","ce sera",1],["Après-demain","ce sera",2]];
+  const dR=deck(REL),dA=deck(AUJ);
+  const opt3=(i,d)=>[cyc(JOURS,i-d),cyc(JOURS,i+(d>0?d-1:d+1)),cyc(JOURS,i+(d>0?d+1:d-1))];
+  const F=[["Combien y a-t-il de jours dans une semaine ?",["7","5","12"],"Il y a 7 jours dans une semaine."],
+    ["Le weekend, ce sont les jours…",["samedi et dimanche","lundi et mardi","vendredi et samedi"],"Le weekend : samedi et dimanche. En général, on ne travaille pas."],
+    ["« Weekend » est un mot anglais qui veut dire…",["fin de semaine","jour de fête","début de semaine"],"Weekend = fin de semaine."],
+    ["Après dimanche, c'est…",["lundi : une nouvelle semaine","samedi","plus aucun jour"],"Quand une semaine se termine, une autre commence."],
+    ["« Demain », c'est un jour du…",["futur","passé","présent"],"Demain, je ne l'ai pas encore vécu : c'est le futur."],
+    ["« Hier », c'est un jour du…",["passé","présent","futur"],"Hier est terminé : c'est le passé."],
+    ["« Aujourd'hui », c'est…",["le jour actuel, le présent","le jour d'avant","le jour d'après"],"Aujourd'hui, c'est le jour que je vis : le présent."],
+    ["« La veille » veut dire…",["le jour d'avant","le jour d'après","deux jours avant"],"La veille = hier = le jour d'avant."],
+    ["« Le lendemain » veut dire…",["le jour d'après","le jour d'avant","deux jours après"],"Le lendemain = demain = le jour d'après."],
+    ["« Le surlendemain » veut dire…",["deux jours après","le jour d'après","deux jours avant"],"Le surlendemain = après-demain."],
+    ["« L'avant-veille » veut dire…",["deux jours avant","le jour d'avant","deux jours après"],"L'avant-veille = avant-hier."]];
+  const EX=[["avant-hier","l'avant-veille","lundi"],["hier","la veille","mardi"],["aujourd'hui","le jour actuel","mercredi"],["demain","le lendemain","jeudi"],["après-demain","le surlendemain","vendredi"]];
+  quizGame({
+    lesson:`<p class="q">La semaine</p>
+      <div class="rule">Il y a <strong>7 jours</strong> dans une semaine. Ils suivent <strong>toujours le même ordre</strong>.<br>Quand une semaine se termine, une autre commence.</div>
+      <div class="week">${JOURS.map((j,k)=>`<span class="${k>4?"we":""}">${j}</span>`).join("<i>→</i>")}<i>→ lundi…</i></div>
+      <p style="font-size:1rem;line-height:1.5;margin:0">Le <strong>weekend</strong> (« fin de semaine » en anglais) : <strong>samedi et dimanche</strong>.</p>
+      <p class="q" style="margin-top:14px">Si aujourd'hui, c'est mercredi :</p>
+      <div class="lex">${EX.map((e,k)=>`<div class="${k===2?"now":""}"><b>${e[0]}</b><em>${e[1]}</em><strong>${e[2]}</strong></div>`).join("")}</div>`,
+    gens:[
+      sh=>{const i=R(0,6),aft=Math.random()<.5,a=cyc(JOURS,i+(aft?1:-1));return {label:`Quel jour vient juste <strong>${aft?"après":"avant"}</strong> ${JOURS[i]} ?`,opts:mk(a,sh([cyc(JOURS,i+(aft?-1:1)),cyc(JOURS,i+(aft?2:-2))]),3),ans:a,recap:`${cyc(JOURS,i-1)} → ${JOURS[i]} → ${cyc(JOURS,i+1)}`,tip:JOURS[i]==="dimanche"&&aft?"Après dimanche, une nouvelle semaine commence : lundi !":JOURS[i]==="lundi"&&!aft?"Avant lundi, c'est le dimanche de la semaine d'avant.":"Les jours suivent toujours le même ordre."};},
+      sh=>{const [r,w,d]=dR(sh),i=R(0,6),a=cyc(JOURS,i+d);return {label:`${r} de <strong>${JOURS[i]}</strong>, c'est…`,opts:mk(a,sh(opt3(i,d)),3),ans:a,recap:`${r} de ${JOURS[i]} : ${a}`,tip:`${r} = ${w} : ${Math.abs(d)===1?"le jour":"deux jours"} ${d<0?"avant":"après"}.`};},
+      sh=>{const [w,v,d]=dA(sh),i=R(0,6),a=cyc(JOURS,i+d);return {label:`Aujourd'hui, c'est <strong>${JOURS[i]}</strong>.<br>${w}, ${v}…`,opts:mk(a,sh(opt3(i,d)),3),ans:a,recap:`Aujourd'hui ${JOURS[i]} → ${w.toLowerCase()} : ${a}`,tip:`${w} : ${Math.abs(d)===1?"un jour":"deux jours"} ${d<0?"avant":"après"} aujourd'hui.`};},
+      sh=>{const st=R(0,3),o=JOURS.slice(st,st+4);return {label:"Range les jours dans l'ordre de la semaine :",order:o,sep:"→",ans:o.join(" → "),recap:o.join(" → "),tip:"lundi, mardi, mercredi, jeudi, vendredi, samedi, dimanche."};},
+      factGen(F)
+    ]
+  });
+}
+
+function fistSvg(from,to){
+  const n=to-from+1,W=344,x0=(W-46*(n-1))/2,pts=[];for(let k=from;k<=to;k++){const j=k-from;pts.push({x:x0+46*j,y:j%2?58:30,k});}
+  const f=pts[0],last=pts[n-1];
+  let d=`M${f.x-26} 106 L${f.x-22} ${f.y+12} Q${f.x-18} ${f.y} ${f.x} ${f.y}`;
+  for(let k=1;k<n;k++){const a=pts[k-1],b=pts[k];d+=` C${a.x+23} ${a.y} ${b.x-23} ${b.y} ${b.x} ${b.y}`;}
+  d+=` Q${last.x+18} ${last.y} ${last.x+22} ${last.y+12} L${last.x+26} 106 Z`;
+  const T=(x,y,t,c,w)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="${w?15:13}" ${w?'font-weight="700"':""} fill="${c}" font-family="Andika,sans-serif">${t}</text>`;
+  const lab=pts.map(p=>{const up=p.y===30,c=p.k===1?"#d63d8f":up?"#1f7a4f":"#3b5bc4",nb=p.k===1?"28/29":NBJ[p.k];
+    return up?T(p.x,18,MOIS[p.k],c)+T(p.x,50,nb,c,1):T(p.x,80,MOIS[p.k],c)+T(p.x,98,nb,c,1);}).join("");
+  return `<svg class="fist" viewBox="0 0 ${W} 110" role="img" aria-label="Les mois sur les bosses et les creux du poing"><path d="${d}" fill="#fcebb0" stroke="#1f2a5c" stroke-width="2"/>${lab}</svg>`;
+}
+function gameMois(){
+  const F=[["Combien y a-t-il de mois dans une année ?",["12","7","10"],"Il y a 12 mois dans une année."],
+    ["Un mois, c'est environ…",["4 semaines et quelques jours","7 jours","12 semaines"],"Un mois = 4 semaines + quelques jours."],
+    ["L'année civile commence en…",["janvier","septembre","décembre"],"L'année civile va de janvier à décembre."],
+    ["L'année civile se termine en…",["décembre","août","janvier"],"L'année civile va de janvier à décembre."],
+    ["L'année scolaire commence en…",["septembre","janvier","août"],"L'année scolaire va de septembre à août."],
+    ["L'année scolaire se termine en…",["août","décembre","janvier"],"L'année scolaire va de septembre à août."],
+    ["Après décembre, c'est…",["janvier : une nouvelle année","novembre","plus aucun mois"],"Quand une année se termine, une autre commence."],
+    ["Sur mon poing, un mois sur une bosse a…",["31 jours","30 jours","28 jours"],"Bosse = 31 jours. Creux = 30 jours."],
+    ["Le mois le plus court, c'est…",["février","juin","avril"],"Février a 28 jours, ou 29 certaines années."]];
+  const dD=deck([...Array(12).keys()]),dT=deck([...Array(12).keys()].filter(i=>i!==7));
+  quizGame({
+    lesson:`<p class="q">Les mois</p>
+      <div class="rule">Il y a <strong>12 mois</strong> dans une année. Un mois = 4 semaines + quelques jours.<br>Ils suivent <strong>toujours le même ordre</strong>. Quand une année se termine, une autre commence.</div>
+      <div class="mois">${MOIS.map((m,k)=>`<span><b>${k+1}</b>${m}</span>`).join("")}</div>
+      <p class="q" style="margin-top:12px">Combien de jours ? Je compte sur mes poings !</p>
+      ${fistSvg(0,6)}${fistSvg(7,11)}
+      <p style="font-size:1rem;line-height:1.5;margin:6px 0 0"><strong style="color:#1f7a4f">Bosse = 31 jours</strong> · <strong style="color:#3b5bc4">Creux = 30 jours</strong> · <strong style="color:#d63d8f">février = 28 ou 29</strong></p>
+      <div class="rule" style="margin-top:10px">⚠️ L'année <strong>civile</strong> : de <strong>janvier</strong> à <strong>décembre</strong>.<br>L'année <strong>scolaire</strong> : de <strong>septembre</strong> à <strong>août</strong>.</div>`,
+    gens:[
+      sh=>{const i=R(0,11);if(Math.random()<.5)return {label:`Quel est le numéro du mois de <strong>${MOIS[i]}</strong> ?`,opts:mk(i+1,sh([i,i+2,i+3].filter(x=>x>=1&&x<=12)),3),ans:String(i+1),recap:`${MOIS[i]} : mois n°${i+1}`,tip:`${cyc(MOIS,i-1)} (${(i+11)%12+1}), ${MOIS[i]} (${i+1}), ${cyc(MOIS,i+1)} (${(i+1)%12+1})`};
+        return {label:`Quel mois porte le numéro <strong>${i+1}</strong> ?`,opts:mk(MOIS[i],sh([cyc(MOIS,i-1),cyc(MOIS,i+1),cyc(MOIS,i+2)]),3),ans:MOIS[i],recap:`mois n°${i+1} : ${MOIS[i]}`,tip:`Je compte : janvier 1, février 2, mars 3…`};},
+      sh=>{const i=R(0,11),aft=Math.random()<.5,a=cyc(MOIS,i+(aft?1:-1));return {label:`Quel mois vient juste <strong>${aft?"après":"avant"}</strong> ${MOIS[i]} ?`,opts:mk(a,sh([cyc(MOIS,i+(aft?-1:1)),cyc(MOIS,i+(aft?2:-2))]),3),ans:a,recap:`${cyc(MOIS,i-1)} → ${MOIS[i]} → ${cyc(MOIS,i+1)}`,tip:i===11&&aft?"Après décembre, une nouvelle année commence : janvier !":i===0&&!aft?"Avant janvier, c'est le décembre de l'année d'avant.":"Les mois suivent toujours le même ordre."};},
+      sh=>{const i=dD(sh);return {label:`Combien de jours en <strong>${MOIS[i]}</strong> ?`,opts:["31","30","28 ou 29"],ans:NBJ[i],keep:true,recap:`${MOIS[i]} : ${NBJ[i]} jours`,tip:i===1?"Février est le seul mois de 28 ou 29 jours.":NBJ[i]==="31"?`Sur le poing, ${MOIS[i]} est sur une bosse : 31 jours.`:`Sur le poing, ${MOIS[i]} est dans un creux : 30 jours.`};},
+      sh=>{const i=dT(sh);return {label:"Écoute et écris le mois :",say:MOIS[i],tiles:MOIS[i],ans:MOIS[i],recap:`mois n°${i+1} : ${MOIS[i]}`,tip:`On écrit « ${MOIS[i]} ».`};},
+      sh=>{const st=R(0,8),o=MOIS.slice(st,st+4);return {label:"Range les mois dans l'ordre :",order:o,sep:"→",ans:o.join(" → "),recap:o.join(" → "),tip:"janvier, février, mars, avril, mai, juin, juillet, août, septembre, octobre, novembre, décembre."};},
+      factGen(F)
+    ]
+  });
+}
+
+/* ================= Écriture : la hauteur des lettres sur Seyès ================= */
+const HT={};"aceimnorsuvwx".split("").forEach(c=>HT[c]=[1,0]);"td".split("").forEach(c=>HT[c]=[2,0]);"bhkl".split("").forEach(c=>HT[c]=[3,0]);HT.f=[3,-3];HT.p=[1,-2];HT.q=[1,-2];"gjyz".split("").forEach(c=>HT[c]=[1,-3]);
+const baseCh=c=>c.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
+const hOf=s=>{let t=1,b=0;for(const c of s){const h=HT[baseCh(c)];if(h){t=Math.max(t,h[0]);b=Math.min(b,h[1]);}}return [t,b];};
+const WFONT='"Playwrite FR Trad","Playwrite FR Moderne","Segoe Script",cursive';
+let WM=null,PEN=false;
+function wMetrics(){if(WM)return WM;const c=document.createElement("canvas").getContext("2d");c.font="100px "+WFONT;WM={xh:(c.measureText("x").actualBoundingBoxAscent||50)/100,c};return WM;}
+function glyphM(ch){const {c,xh}=wMetrics();const m=c.measureText(ch);return [m.actualBoundingBoxAscent/(xh*100),m.actualBoundingBoxDescent/(xh*100)];}
+function wReady(cb){let done=false;const go=()=>{if(done)return;done=true;WM=null;cb();};try{document.fonts.load("40px "+WFONT).then(go,go);}catch(e){go();}setTimeout(go,1500);}
+/* Le modèle : la police cursive, étirée lettre par lettre pour respecter les hauteurs du cahier */
+function drawModel(ctx,text,x0,base,IL,color){
+  const fs=IL/wMetrics().xh,dpr=window.devicePixelRatio||1;
+  const m=document.createElement("canvas").getContext("2d");m.font=`${fs}px ${WFONT}`;
+  const tw=m.measureText(text).width,pad=IL,W=Math.ceil(tw+2*pad),oy=Math.ceil(IL*2.6),H=Math.ceil(oy+IL*1.6);
+  const oc=document.createElement("canvas");oc.width=W*dpr;oc.height=H*dpr;const o=oc.getContext("2d");o.scale(dpr,dpr);o.font=`${fs}px ${WFONT}`;o.fillStyle=color;o.strokeStyle=color;o.lineWidth=IL*.11;o.lineJoin="round";o.fillText(text,pad,oy);o.strokeText(text,pad,oy);
+  const xs=[pad];for(let k=1;k<text.length;k++)xs.push(pad+m.measureText(text.slice(0,k)).width);xs.push(W);
+  const S=v=>v*dpr,ha=oy-IL,hb=H-oy;
+  ctx.drawImage(oc,0,S(ha),S(W),S(IL),x0-pad,base-IL,W,IL);
+  const g=document.createElement("canvas"),gw=Math.ceil(IL*4);g.width=S(gw);g.height=S(H);const go=g.getContext("2d");go.scale(dpr,dpr);go.font=`${fs}px ${WFONT}`;go.fillStyle=color;
+  for(let k=0;k<text.length;k++){
+    const ch=text[k];if(ch===" ")continue;
+    const [T,B]=HT[baseCh(ch)]||[1,0],[a,d]=glyphM(ch);
+    const sa=T>1&&a>1.05?(T-1)/(a-1):1,sb=B<0&&d>.2?(-B)/d:1;
+    go.clearRect(0,0,gw,H);go.strokeStyle=color;go.lineWidth=IL*.11;go.lineJoin="round";go.fillText(ch,IL,oy);go.strokeText(ch,IL,oy);
+    const dx=x0+xs[k]-pad-IL;
+    ctx.drawImage(g,0,0,S(gw),S(ha),dx,base-IL-ha*sa,gw,ha*sa);
+    ctx.drawImage(g,0,S(oy),S(gw),S(hb),dx,base,gw,hb*sb);
+  }
+  return tw;
+}
+function board(host,opt){
+  const W=host.clientWidth||320,IL=Math.max(16,Math.min(30,Math.round(W/22))),H=Math.round(IL*9),base=IL*4.5,dpr=window.devicePixelRatio||1;
+  const cv=document.createElement("canvas");cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
+  cv.style.cssText=`width:${W}px;height:${H}px;display:block;touch-action:none;border-radius:10px;border:2px solid #1f2a5c;background:#fff;box-sizing:border-box`;
+  host.innerHTML="";host.appendChild(cv);const ctx=cv.getContext("2d");ctx.scale(dpr,dpr);
+  const st={strokes:[],IL,W,H,base,sep:W,ctx,check:null,locked:false};
+  const seg=(a,b)=>{ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x+.01,b.y);ctx.lineWidth=b.w;ctx.strokeStyle="#1f3fbf";ctx.lineCap="round";ctx.stroke();};
+  const drawStroke=s=>{seg(s.pts[0],s.pts[0]);for(let k=1;k<s.pts.length;k++)seg(s.pts[k-1],s.pts[k]);};
+  st.redraw=()=>{
+    ctx.fillStyle="#fff";ctx.fillRect(0,0,W,H);
+    const L0=Math.round(IL*1.1);
+    if(opt.tgt){const [T,B]=opt.tgt;ctx.fillStyle="#fff4c2";ctx.fillRect(L0,base-T*IL,W-L0,(T-B)*IL);}
+    for(let k=-4;k<=4;k++){const y=base-k*IL;ctx.beginPath();ctx.moveTo(L0,y);ctx.lineTo(W,y);ctx.lineWidth=k===0?2.6:k%4===0?1.6:1;ctx.strokeStyle=k%4===0?"#7d93d6":"#cdd7f2";ctx.stroke();}
+    ctx.beginPath();ctx.moveTo(L0,0);ctx.lineTo(L0,H);ctx.strokeStyle="#ec8f9a";ctx.lineWidth=1.5;ctx.stroke();
+    ctx.font=`700 ${Math.round(IL*.6)}px Andika,sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";
+    for(let k=1;k<=3;k++){ctx.fillStyle="#4f6bc4";ctx.fillText(k,L0/2,base-(k-.5)*IL);ctx.fillStyle="#c0567a";ctx.fillText(k,L0/2,base+(k-.5)*IL);}
+    ctx.textAlign="start";ctx.textBaseline="alphabetic";
+    let x=L0+IL*.7;
+    if(opt.model){x+=drawModel(ctx,opt.model,x,base,IL,opt.write?"#b9c3e6":"#1f2a5c")+IL*.9;}
+    st.sep=opt.write&&!opt.trace?(opt.model?x:L0):W;
+    if(opt.write&&opt.model&&!opt.trace){ctx.setLineDash([6,6]);ctx.beginPath();ctx.moveTo(x,IL*.3);ctx.lineTo(x,H-IL*.3);ctx.strokeStyle="#9aa6cf";ctx.lineWidth=1.5;ctx.stroke();ctx.setLineDash([]);}
+    st.strokes.forEach(drawStroke);
+    if(st.check)st.check();
+  };
+  st.redraw();
+  if(opt.write){let cur=null;
+    const P=e=>{const r=cv.getBoundingClientRect(),pen=e.pointerType==="pen";return {x:e.clientX-r.left,y:e.clientY-r.top,w:IL*.3*(pen?.85+(e.pressure||.5)*.3:1)};};
+    cv.addEventListener("pointerdown",e=>{if(e.pointerType==="pen")PEN=true;if(PEN&&e.pointerType==="touch")return;if(cur||st.locked)return;e.preventDefault();try{cv.setPointerCapture(e.pointerId)}catch(_){}cur={id:e.pointerId,pts:[P(e)]};st.strokes.push(cur);drawStroke(cur);});
+    cv.addEventListener("pointermove",e=>{if(!cur||e.pointerId!==cur.id)return;e.preventDefault();const ev=(e.getCoalescedEvents&&e.getCoalescedEvents().length)?e.getCoalescedEvents():[e];for(const v of ev){const p=P(v),q=cur.pts[cur.pts.length-1];cur.pts.push(p);seg(q,p);}});
+    const up=e=>{if(cur&&e.pointerId===cur.id)cur=null;};
+    cv.addEventListener("pointerup",up);cv.addEventListener("pointercancel",up);
+  }
+  st.eval=()=>{
+    const ws=st.strokes.filter(s=>{const xs=s.pts.map(p=>p.x);return (Math.min(...xs)+Math.max(...xs))/2>st.sep;});
+    if(!ws.length)return {none:true};
+    const big=ws.filter(s=>{const xs=s.pts.map(p=>p.x),ys=s.pts.map(p=>p.y);return Math.max(Math.max(...xs)-Math.min(...xs),Math.max(...ys)-Math.min(...ys))>=IL*.6;});
+    if(!big.length)return {tiny:true};
+    let top=-9,bot=9;big.forEach(s=>s.pts.forEach(p=>{const h=(base-p.y)/IL;top=Math.max(top,h);bot=Math.min(bot,h);}));
+    return {top,bot};
+  };
+  return st;
+}
+const nIL=n=>`${n} interligne${n>1?"s":""}`;
+function rule(ch){const [T,B]=HT[baseCh(ch)]||[1,0];
+  if(B<0&&T>1)return `<b>${ch}</b> monte à <b>${T}</b> et descend à <b>${-B}</b> sous la ligne`;
+  if(B<0)return `<b>${ch}</b> descend à <b>${-B}</b> sous la ligne`;
+  if(T>1)return `<b>${ch}</b> monte à <b>${T}</b>`;
+  return `<b>${ch}</b> est courte : elle reste dans <b>1</b> interligne`;}
+function wordRule(w){const sp=[...new Set([...w].map(baseCh).filter(c=>{const h=HT[c];return h&&(h[0]>1||h[1]<0);}))];
+  return sp.length?"Les lettres courtes restent dans 1 interligne. Attention : "+sp.map(rule).join(" · ")+".":"Que des lettres courtes : tout reste dans 1 interligne.";}
+function verdict(r,[T,B]){const t=.5,m=[];
+  if(r.top>T+t)m.push(`C'est trop haut : on s'arrête au <b>${T}</b> (${nIL(T)}).`);
+  else if(r.top<T-t)m.push(T===1?"C'est trop petit : monte jusqu'à la 1ʳᵉ ligne fine.":`Pas assez haut : monte jusqu'au <b>${T}</b>.`);
+  if(B===0){if(r.bot<-t)m.push("Ça descend sous la grosse ligne : pose bien sur la ligne.");else if(r.bot>t)m.push("Ça flotte : pose bien sur la grosse ligne.");}
+  else{if(r.bot>B+t)m.push(`Descends plus bas : jusqu'au <b>${-B}</b> sous la ligne.`);else if(r.bot<B-t)m.push(`Ça descend trop bas : seulement jusqu'au <b>${-B}</b>.`);}
+  return [!m.length,m.join("<br>")];}
+function writeGame(cfg){return function(){
+  const app=document.getElementById("app");
+  const sh=a=>{a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]];}return a};
+  let qs=[],i=0,score=0,missed=[],N=10,bd=null;
+  const mot=cfg.kind==="mot";
+  function start(n){N=n||N;const d=deck(cfg.items);qs=[];for(let k=0;k<N;k++)qs.push(d(sh));i=0;score=0;missed=[];show();}
+  function show(){
+    const it=qs[i],tgt=hOf(it);
+    app.innerHTML=`<div class="top"><span>Question ${i+1}/${N}</span><span class="bar"><i style="width:${i/N*100}%"></i></span><span>⭐ ${score}</span></div>
+      <p class="q">${mot?`Écris le mot <span class="wtgt">${it}</span>`:`Écris la lettre <span class="wtgt">${it}</span> 3 fois`} <button class="speak2" id="sp">🔊</button></p>
+      <p class="whint">${mot?wordRule(it):rule(it)+"."}</p>
+      <p class="whelp">① Je repasse sur le modèle gris :</p><div class="wbox" id="wb1"></div>
+      <p class="whelp">② J'écris tout seul${mot?"":" (3 fois)"} :</p><div class="wbox" id="wb"></div>
+      <div class="wbtns"><button class="btn ghost2" id="er">🧽 Effacer</button><button class="btn" id="ok">✓ J'ai fini</button></div><div id="fb"></div>`;
+    let tr=null;wReady(()=>{tr=board(document.getElementById("wb1"),{model:mot?it:[it,it,it].join("   "),tgt,write:true,trace:true});bd=board(document.getElementById("wb"),{tgt,write:true});});
+    document.getElementById("sp").onclick=()=>sayFr(it);
+    const fb=document.getElementById("fb");
+    document.getElementById("er").onclick=()=>{if(!bd)return;bd.strokes.length=0;bd.check=null;bd.locked=false;bd.redraw();if(tr){tr.strokes.length=0;tr.redraw();}fb.innerHTML="";document.getElementById("ok").hidden=false;};
+    document.getElementById("ok").onclick=()=>{
+      if(!bd)return;const r=bd.eval();
+      if(r.none||r.tiny){fb.innerHTML=`<div class="fb ko">${r.none?"Écris d'abord tout seul dans la 2ᵉ ligne !":"Écris plus grand !"}</div>`;return;}
+      const [good,msg]=verdict(r,tgt);
+      bd.locked=true;
+      bd.check=()=>{const c=bd.ctx,x=bd.sep,L=(h,col)=>{c.beginPath();c.moveTo(x,bd.base-h*bd.IL);c.lineTo(bd.W,bd.base-h*bd.IL);c.strokeStyle=col;c.lineWidth=3;c.stroke();};
+        c.setLineDash([9,6]);L(tgt[0],"#1f9d63");L(tgt[1],"#1f9d63");
+        if(Math.abs(r.top-tgt[0])>.5)L(r.top,"#d64545");if(Math.abs(r.bot-tgt[1])>.5)L(r.bot,"#d64545");c.setLineDash([]);};
+      bd.redraw();
+      if(!show.tried){if(good)score++;else missed.push({it,msg});}
+      show.tried=true;
+      const msgs=["Bravo !","Super !","Génial !","Parfait !"];
+      document.getElementById("ok").hidden=true;
+      fb.innerHTML=`<div class="fb ${good?"ok":"ko"}">${good?msgs[Math.floor(Math.random()*4)]+"<small>La hauteur est bonne : tu restes entre les lignes vertes.</small>":"Presque !<small>"+msg+"<br>Les pointillés verts montent jusqu'où il faut.</small>"}</div>
+        ${good?"":`<button class="btn ghost2" id="re">↺ Réessayer</button>`}<button class="btn" id="next">${i<N-1?"Question suivante →":"Voir mon score"}</button>`;
+      const re=document.getElementById("re");if(re)re.onclick=()=>document.getElementById("er").onclick();
+      document.getElementById("next").onclick=()=>{show.tried=false;i++;i<N?show():end();};
+    };
+  }
+  function end(){markDone(N,score);
+    const r=score/N,s=r>=.9?3:r>=.6?2:1;
+    app.innerHTML=`<div class="stars">${"⭐".repeat(s)}${"☆".repeat(3-s)}</div>
+      <p class="big" style="font-size:1.3rem">${score} / ${N} bien écrits du premier coup</p>
+      <p style="text-align:center">${score===N?"Champion·ne de l'écriture !":r>=.6?"Très bien ! Encore une partie ?":"On s'entraîne encore un peu !"}</p>
+      ${missed.length?`<p class="q" style="margin-top:16px">À retravailler :</p><ul class="list">${missed.map(q=>`<li><b class="wtgt" style="color:#1f3fbf">${q.it}</b><br><span style="color:var(--soft)">${q.msg}</span></li>`).join("")}</ul>`:""}
+      <button class="btn" id="again">Rejouer</button><button class="btn ghost2" id="home">Revoir la leçon</button>`;
+    document.getElementById("again").onclick=()=>start(N);
+    document.getElementById("home").onclick=lesson;
+  }
+  function lesson(){
+    app.innerHTML=cfg.lesson+`<p class="q" style="margin-top:18px">On écrit ! Combien de questions ?</p>
+      <div class="opts"><button class="opt" id="n10" data-n="10">10</button><button class="opt" id="n20" data-n="20">20</button><button class="opt" id="n30" data-n="30">30</button></div>`;
+    app.querySelectorAll("[data-n]").forEach(b=>b.onclick=()=>start(+b.dataset.n));
+    wReady(()=>app.querySelectorAll("[data-demo]").forEach(el=>board(el,{model:el.dataset.demo,tgt:el.dataset.t?el.dataset.t.split(",").map(Number):null,write:false})));
+  }
+  lesson();
+};}
+const SEYES=`<div class="rule">Sur mon cahier, je compte les <strong>interlignes</strong> à partir de la <strong>grosse ligne</strong>. Les chiffres à gauche m'aident : <b style="color:#4f6bc4">1 2 3</b> au-dessus, <b style="color:#c0567a">1 2 3</b> en dessous.</div>`;
+const gameEcCourtes=writeGame({items:"aceimnorsuvx".split(""),lesson:`<p class="q">Les lettres courtes</p>${SEYES}
+  <div class="ladder"><div class="step"><b>1</b><span>Les lettres courtes restent dans <strong>1 interligne</strong> : posées sur la grosse ligne, elles touchent la 1ʳᵉ ligne fine.</span></div></div>
+  <div class="wbox" data-demo="a c e i m n o" data-t="1,0"></div><div class="wbox" data-demo="r s u v x" data-t="1,0"></div>`});
+const gameEcMontent=writeGame({items:"tdbhkl".split(""),lesson:`<p class="q">Les lettres qui montent</p>${SEYES}
+  <div class="ladder"><div class="step"><b>2</b><span><strong>t</strong> et <strong>d</strong> montent à <strong>2 interlignes</strong>.</span></div>
+  <div class="step"><b>3</b><span><strong>b, h, k, l</strong> montent à <strong>3 interlignes</strong>, avec une boucle.</span></div></div>
+  <div class="wbox" data-demo="t d" data-t="2,0"></div><div class="wbox" data-demo="b h k l" data-t="3,0"></div>`});
+const gameEcDescendent=writeGame({items:"pqgjyzf".split(""),lesson:`<p class="q">Les lettres qui descendent</p>${SEYES}
+  <div class="ladder"><div class="step"><b>2</b><span><strong>p</strong> et <strong>q</strong> descendent à <strong>2 interlignes</strong> sous la ligne.</span></div>
+  <div class="step"><b>3</b><span><strong>g, j, y, z</strong> descendent à <strong>3 interlignes</strong>, avec une boucle.</span></div>
+  <div class="step"><b>f</b><span><strong>f</strong> monte à <strong>3</strong> et descend à <strong>3</strong> !</span></div></div>
+  <div class="wbox" data-demo="p q" data-t="1,-2"></div><div class="wbox" data-demo="g j y z" data-t="1,-3"></div><div class="wbox" data-demo="f" data-t="3,-3"></div>`});
+const gameEcMots=writeGame({kind:"mot",items:["lundi","mardi","jeudi","samedi","dimanche","mai","juin","mars","avril","août","le chat","la vache","le chien","chaud","le cochon","il marche","un nombre","rond","la maison","bonjour","le jardin","la poule"],lesson:`<p class="q">J'écris des mots</p>${SEYES}
+  <div class="ladder"><div class="step"><b>👀</b><span>Avant d'écrire, je regarde chaque lettre : est-elle <strong>courte</strong> (1), est-ce qu'elle <strong>monte</strong> (2 ou 3) ou est-ce qu'elle <strong>descend</strong> (2 ou 3) ?</span></div></div>
+  <div class="wbox" data-demo="lundi"></div><div class="wbox" data-demo="jeudi"></div>`});
+
+/* ================= O5 : le pluriel des mots ================= */
+function gamePluriel(){
+  const PL=[["un tuyau","tuyaux","eau",0],["un chapeau","chapeaux","eau",0],["un cheveu","cheveux","eau",0],["un bateau","bateaux","eau",0],["un gâteau","gâteaux","eau",0],["un oiseau","oiseaux","eau",0],["un cadeau","cadeaux","eau",0],["un jeu","jeux","eau",0],["un feu","feux","eau",0],["un château","châteaux","eau",0],
+    ["un landau","landaus","eau",1],["un pneu","pneus","eau",1],["un bleu","bleus","eau",1],
+    ["un clou","clous","ou",0],["un trou","trous","ou",0],["un cou","cous","ou",0],["un bisou","bisous","ou",0],["un kangourou","kangourous","ou",0],["un fou","fous","ou",0],
+    ["un bijou","bijoux","ou",1],["un hibou","hiboux","ou",1],["un caillou","cailloux","ou",1],["un chou","choux","ou",1],["un genou","genoux","ou",1],["un pou","poux","ou",1],["un joujou","joujoux","ou",1],
+    ["un cheval","chevaux","al",0],["un journal","journaux","al",0],["un animal","animaux","al",0],["un hôpital","hôpitaux","al",0],["un bocal","bocaux","al",0],["un signal","signaux","al",0],
+    ["un bal","bals","al",1],["un festival","festivals","al",1],["un carnaval","carnavals","al",1],["un chacal","chacals","al",1],["un régal","régals","al",1]];
+  const GEN=[["un chat","chats"],["une table","tables"],["une fleur","fleurs"],["un ami","amis"],["une maison","maisons"],["un crayon","crayons"]];
+  const FAM={eau:"-au, -eau, -eu",ou:"-ou",al:"-al"};
+  const SAUF={eau:"des landaus, des pneus, des bleus",ou:"bijoux, cailloux, choux, genoux, hiboux, joujoux, poux",al:"des bals, festivals, carnavals, chacals, régals"};
+  const sg=e=>e[0].split(" ").pop();
+  const tip=e=>{const [s1,p1,f,x]=e;if(!f)return "En règle générale, on ajoute un -s.";
+    if(x)return `« ${sg(e)} » est un SAUF des mots en ${FAM[f]} : ${SAUF[f]}.`;
+    return f==="eau"?`Les mots en ${FAM[f]} prennent un -x.`:f==="ou"?"Les mots en -ou prennent un -s (sauf les 7 en -x).":"Les mots en -al deviennent -aux.";};
+  const ALL=[...PL,...GEN.map(g=>[g[0],g[1],"",0])];
+  const d1=deck(ALL),d2=deck(PL),d4=deck(PL.filter(e=>e[1].length<=9));
+  const F=[["En règle générale, au pluriel, on ajoute…",["un -s","un -x","rien"],"En général : un chat → des chats."],
+    ["Les mots en -au, -eau, -eu prennent au pluriel…",["un -x","un -s","-aux"],"un chapeau → des chapeaux (sauf landaus, pneus, bleus)."],
+    ["Les mots en -ou prennent au pluriel…",["un -s","un -x","-aux"],"un clou → des clous… sauf les 7 en -x !"],
+    ["Les mots en -al font leur pluriel en…",["-aux","-als","-alx"],"un cheval → des chevaux (sauf bals, festivals, carnavals, chacals, régals)."],
+    ["Combien de mots en -ou prennent un -x ?",["7","3","5"],"bijou, caillou, chou, genou, hibou, joujou, pou."],
+    ["Quels mots en -eu prennent un -s ?",["pneu et bleu","jeu et feu","cheveu et jeu"],"des pneus, des bleus (et des landaus)."]];
+  quizGame({
+    lesson:`<p class="q">Le pluriel des mots (O5)</p>
+      <div class="rule">En règle générale, on ajoute un <strong>-s</strong> au pluriel : un chat → des chat<mark>s</mark>. Mais…</div>
+      <div class="ladder">
+        <div class="step"><b>-au -eau -eu</b><span>prennent un <strong>-x</strong> : des tuyau<mark>x</mark>, des chapeau<mark>x</mark>, des cheveu<mark>x</mark>.<br><strong>SAUF</strong> : des landau<mark>s</mark>, des pneu<mark>s</mark>, des bleu<mark>s</mark>.</span></div>
+        <div class="step"><b>-ou</b><span>prennent un <strong>-s</strong> : des clou<mark>s</mark>, des trou<mark>s</mark>.<br><strong>SAUF</strong> ces 7 mots en -x : bijou<mark>x</mark>, caillou<mark>x</mark>, chou<mark>x</mark>, genou<mark>x</mark>, hibou<mark>x</mark>, joujou<mark>x</mark>, pou<mark>x</mark>.</span></div>
+        <div class="step"><b>-al</b><span>deviennent <strong>-aux</strong> : des cheva<mark>ux</mark>, des journa<mark>ux</mark>.<br><strong>SAUF</strong> : des bal<mark>s</mark>, festival<mark>s</mark>, carnaval<mark>s</mark>, chacal<mark>s</mark>, régal<mark>s</mark>.</span></div>
+      </div>
+      <p style="font-size:1rem;line-height:1.5;margin:12px 0 0">💡 Pour retenir les 7 en -x : « Viens mon <strong>chou</strong>, mon <strong>bijou</strong>, mon <strong>joujou</strong>, sur mes <strong>genoux</strong>, et jette des <strong>cailloux</strong> à ce <strong>hibou</strong> plein de <strong>poux</strong> ! »</p>`,
+    gens:[
+      sh=>{const e=d1(sh),w=sg(e),c=[w+"s",w+"x",w];if(e[2]==="al")c.push(w.slice(0,-2)+"aux");
+        return {label:`Quel est le pluriel de « ${e[0]} » ?`,say:"des "+e[1],opts:mk("des "+e[1],sh(c.map(x=>"des "+x)),3),ans:"des "+e[1],recap:`${e[0]} → des ${e[1]}`,tip:tip(e)};},
+      sh=>{const e=d2(sh),w=sg(e),al=e[2]==="al",base=al?w.slice(0,-2):w,end=e[1].slice(base.length);
+        return {label:"Complète la fin du mot :",body:`<div class="big">${e[0]} → des ${base}<span class="blank">?</span></div>`,fill:end,opts:al?["aux","als"]:["s","x"],ans:end,keep:true,recap:`${e[0]} → des ${e[1]}`,tip:tip(e)};},
+      sh=>{const f=sh(["eau","ou","al"])[0],ex=sh(PL.filter(e=>e[2]===f&&e[3]))[0],rg=sh(PL.filter(e=>e[2]===f&&!e[3])).slice(0,2);
+        return {label:`Mots en ${FAM[f]} : lequel est un <strong>SAUF</strong> ?`,opts:[ex,...rg].map(e=>"des "+e[1]),ans:"des "+ex[1],recap:`des ${ex[1]} : c'est un SAUF`,tip:`Les SAUF des mots en ${FAM[f]} : ${SAUF[f]}.`};},
+      sh=>{const e=d4(sh);return {label:"Écoute et écris le pluriel :",say:"des "+e[1],body:`<div class="big" style="color:var(--soft)">${e[0]} → des …</div>`,tiles:e[1],ans:e[1],recap:`${e[0]} → des ${e[1]}`,tip:tip(e)};},
+      factGen(F)
+    ]
+  });
+}
+
+/* ================= Exercices et problèmes ================= */
+function gameProblemes(){
+  const T=[
+    ()=>{const a=R(12,34);return {t:`2 classes participent au spectacle. Dans chaque classe, il y a ${a} élèves. Combien d'élèves participent au spectacle ?`,a,b:a,op:"+",u:"élèves",rep:r=>`Il y a ${r} élèves au spectacle.`};},
+    ()=>{const a=R(11,29),b=R(10,19);return {t:`À la fête, Tirobot gagne ${a} bonbons et Robotine en gagne ${b}. Combien ont-ils gagné de bonbons en tout ?`,a,b,op:"+",u:"bonbons",rep:r=>`Ils ont gagné ${r} bonbons en tout.`};},
+    ()=>{const a=R(12,35),b=R(3,9);return {t:`Dans le bus, il y a ${a} enfants. À l'arrêt, ${b} enfants montent. Combien d'enfants y a-t-il dans le bus maintenant ?`,a,b,op:"+",u:"enfants",rep:r=>`Il y a ${r} enfants dans le bus.`};},
+    ()=>{const a=R(12,25),b=R(2,9);return {t:`Léa a ${a} billes. Elle en donne ${b} à son amie. Combien de billes lui reste-t-il ?`,a,b,op:"−",u:"billes",rep:r=>`Il lui reste ${r} billes.`};},
+    ()=>{const a=R(14,30),b=R(3,9);return {t:`Sur l'arbre, il y a ${a} pommes. ${b} pommes tombent. Combien de pommes reste-t-il sur l'arbre ?`,a,b,op:"−",u:"pommes",rep:r=>`Il reste ${r} pommes sur l'arbre.`};},
+    ()=>{const a=R(20,40),b=R(10,30);return {t:`Papa achète ${a} œufs le lundi et ${b} œufs le samedi. Combien d'œufs a-t-il achetés ?`,a,b,op:"+",u:"œufs",rep:r=>`Il a acheté ${r} œufs.`};}
+  ];
+  const res=p=>p.op==="+"?p.a+p.b:p.a-p.b;
+  quizGame({
+    lesson:`<p class="q">Résoudre un problème</p>
+      <div class="ladder">
+        <div class="step"><b>1</b><span>Je <strong>lis</strong> l'énoncé et j'<strong>entoure la question</strong>.</span></div>
+        <div class="step"><b>2</b><span>Je cherche : est-ce qu'on <strong>ajoute</strong> (en tout, montent, gagnent) ou qu'on <strong>enlève</strong> (donne, tombent, reste) ?</span></div>
+        <div class="step"><b>3</b><span>Je <strong>calcule</strong> : 23 + 23 = 46.</span></div>
+        <div class="step"><b>4</b><span>Je <strong>réponds à la question</strong> par une phrase : « Il y a 46 élèves au spectacle. »</span></div>
+      </div>`,
+    gens:[
+      sh=>{const p=sh(T)[0]();const r=res(p),good=`${p.a} ${p.op} ${p.b}`,bad=p.op==="+"?`${Math.max(p.a,p.b)} − ${Math.min(p.a,p.b)}`:`${p.a} + ${p.b}`;
+        return {label:"Quelle opération faut-il faire ?",say:p.t,body:`<div class="big pbt">${p.t}</div>`,opts:[good,bad],ans:good,recap:`${good} = ${r}`,tip:p.op==="+"?"On réunit les deux quantités : on ajoute.":"On enlève une partie : on soustrait."};},
+      sh=>{const p=sh(T)[0]();const r=res(p);
+        return {label:"Combien ? Calcule.",say:p.t,body:`<div class="big pbt">${p.t}</div><div class="big">${p.a} ${p.op} ${p.b} = <span class="blank">?</span></div>`,fill:String(r),opts:mk(r,sh(near(r,[1,-1,10,-10,2])),4),ans:String(r),recap:`${p.a} ${p.op} ${p.b} = ${r}`,tip:`${p.a} ${p.op} ${p.b} = ${r}`};},
+      sh=>{const p=sh(T)[0]();const r=res(p),good=p.rep(r);
+        return {label:"Quelle est la bonne phrase réponse ?",say:p.t,body:`<div class="big pbt">${p.t}</div>`,opts:[good,String(r),p.rep(p.a)],ans:good,col:true,recap:good,tip:"On répond à la question par une phrase, avec le bon nombre."};}
+    ]
+  });
+}
+function gameMental10(){
+  quizGame({
+    lesson:`<p class="q">Calcul mental : + 10 et − 10</p><div class="rule">Quand j'ajoute 10, seul le chiffre des <strong>dizaines</strong> augmente de 1 : 45 + 10 = <strong>5</strong>5.<br>Quand j'enlève 10, il diminue de 1 : 45 − 10 = <strong>3</strong>5.<br>Le chiffre des <strong>unités ne bouge pas</strong> !</div>`,
+    gens:[sh=>{const p=Math.random()<.5,a=p?R(3,89):R(13,99),r=p?a+10:a-10;
+      return {label:"Calcule de tête :",body:`<div class="big">${a} ${p?"+":"−"} 10 = <span class="blank">?</span></div>`,fill:String(r),opts:mk(r,sh([p?a-10:a+10,r+1,r-1,a+1]),4),ans:String(r),recap:`${a} ${p?"+":"−"} 10 = ${r}`,tip:`Les dizaines ${p?"augmentent":"diminuent"} de 1, les unités restent ${a%10}.`};}]
+  });
+}
+function gamePyramide(){
+  const pyr=(rows,hid)=>`<div class="pyr">${rows.slice().reverse().map((row,ri)=>{const r=rows.length-1-ri;return `<div class="prow">${row.map((v,c)=>`<span class="pc${r===hid[0]&&c===hid[1]?" ph":""}">${r===hid[0]&&c===hid[1]?"?":v}</span>`).join("")}</div>`;}).join("")}</div>`;
+  quizGame({
+    lesson:`<p class="q">La pyramide mathématique</p><div class="rule">Chaque case contient la <strong>somme des deux cases en dessous</strong>.<br>Si 3 et 5 sont en bas, la case au-dessus vaut 3 + 5 = <strong>8</strong>.<br>Si je connais le haut et une case du bas, j'enlève : 8 − 3 = 5.</div>`,
+    gens:[sh=>{const n=Math.random()<.5?3:4,b=[];for(let k=0;k<n;k++)b.push(R(0,9));const rows=[b];while(rows[rows.length-1].length>1){const l=rows[rows.length-1];rows.push(l.slice(1).map((v,k)=>l[k]+v));}
+      const down=Math.random()<.25;let hid,ans,tip;
+      if(down){const c=R(0,n-2);hid=[0,c];ans=rows[0][c];tip=`${rows[1][c]} − ${rows[0][c+1]} = ${ans}`;}
+      else{const r=R(1,rows.length-1),c=R(0,rows[r].length-1);hid=[r,c];ans=rows[r][c];tip=`${rows[r-1][c]} + ${rows[r-1][c+1]} = ${ans}`;}
+      return {label:"Quel nombre va dans la case « ? » ?",body:pyr(rows,hid),opts:mk(ans,sh(near(ans,[1,-1,2,10,-2]).filter(x=>x>=0)),4),ans:String(ans),recap:tip,tip};}]
+  });
+}
+function gameDizUni(){
+  quizGame({
+    lesson:`<p class="q">Dizaines et unités : les pièges</p><div class="rule">1 dizaine = 10 unités.<br>
+      <strong>4 dizaines 12 unités</strong> = 40 + 12 = <strong>52</strong> (12 unités = 1 dizaine et 2 unités).<br>
+      <strong>6u 4d</strong> : attention à l'ordre ! 4 dizaines et 6 unités = <strong>46</strong>.<br>
+      <strong>3d + 4d + 8</strong> = 30 + 40 + 8 = <strong>78</strong>.<br>
+      <strong>8 paquets de 10</strong> = <strong>80</strong>.</div>`,
+    gens:[
+      sh=>{const d=R(1,7),u=R(10,19),r=d*10+u;return {label:"Quel est ce nombre ?",body:`<div class="big">${d} dizaines ${u} unités</div>`,opts:mk(r,sh([d*10+u%10,d*100+u,r+10]),3),ans:String(r),recap:`${d} dizaines ${u} unités = ${r}`,tip:`${d*10} + ${u} = ${r}`};},
+      sh=>{const d=R(1,9),u=R(1,9);if(d===u)return null;const r=d*10+u;return {label:"Quel est ce nombre ?",body:`<div class="big">${u}u ${d}d</div>`,opts:mk(r,[u*10+d,d+u]),ans:String(r),recap:`${u}u ${d}d = ${r}`,tip:`Attention à l'ordre : ${d} dizaines et ${u} unités = ${r}.`};},
+      sh=>{const a=R(1,4),b=R(1,4),u=R(1,9),r=(a+b)*10+u;return {label:"Calcule :",body:`<div class="big">${a}d + ${b}d + ${u}</div>`,opts:mk(r,sh([a*10+b*10,a+b+u,r+10]),3),ans:String(r),recap:`${a}d + ${b}d + ${u} = ${r}`,tip:`${a*10} + ${b*10} + ${u} = ${r}`};},
+      sh=>{const n=R(2,9);return {label:"Quel est ce nombre ?",body:`<div class="big">${n} paquets de 10</div>`,opts:mk(n*10,[n,n+10,n*10+1]),ans:String(n*10),recap:`${n} paquets de 10 = ${n*10}`,tip:`${n} dizaines = ${n*10}`};},
+      sh=>{const d=R(2,9),u=R(0,9),l=d*10+u,k=R(0,2),rv=k===0?l:k===1?l+R(1,5):l-R(1,5),s=l<rv?"<":l>rv?">":"=";return {label:"Quel signe ?",body:`<div class="big">${d}d ${u}u <span class="blank">?</span> ${rv}u</div>`,fill:s==="<"?"&lt;":s===">"?"&gt;":"=",opts:["<",">","="],ans:s,keep:true,recap:`${d}d ${u}u = ${l}, donc ${l} ${s} ${rv}`,tip:`${d}d ${u}u = ${l}.`};}
+    ].map(g=>sh=>{let q;do{q=g(sh)}while(!q);return q;})
+  });
+}
+
+/* ================= La dictée du soir ================= */
+const DICT={
+  mots:["un chapeau","des chapeaux","la maison","un garçon","le jardin","une dent","beaucoup","toujours","parce que","chez","chaque","la bouche","un cadeau","des cadeaux","du chocolat","une chambre","tomber","un nombre","un poisson","un hibou","des hiboux","un cheval","des chevaux","marron","avec","après","pourquoi","dimanche","la tête","trop","très","bien","une robe","la porte","petit","propre","un journal","des journaux","la cour","le cou","une écharpe","un blouson","des blousons","méchant","à gauche","la chanson","les lunettes","aujourd'hui","demain","dedans"],
+  simples:["Le petit lapin mange de la salade dans le jardin.","Mon oncle a un blouson marron.","La poule et le mouton sont dans la cour.","Le bébé joue avec une balle bleue.","Ma maîtresse a des lunettes rouges.","Le chat cherche du chocolat dans la chambre.","Le garçon tombe dans la chambre.","Le poisson nage près de la maison.","Papa porte une écharpe.","Je dessine un cadeau pour maman.","Le chien joue avec la chaussure.","Mon ami a un ballon rouge."],
+  pieges:["À gauche des blousons, il y a les chapeaux.","Les chevaux marchent sur le chemin.","Mes cadeaux sont sur la table.","Le hibou et les hiboux dorment dans l'arbre.","Chaque jour, je vais chez mamie parce que je l'aime beaucoup.","Demain, nous irons au marché avec papa.","Est-ce que tu as un chapeau ?","Les journaux sont toujours sur la table.","Hier, les enfants ont chanté une chanson.","Pourquoi les chats sont-ils méchants ?","Aujourd'hui, les garçons jouent dehors.","Mes amis ont des dents blanches."]
+};
+const CKEY="mes-jeux-carnet";
+function getCarnet(){try{return JSON.parse(localStorage.getItem(CKEY)||"{}")}catch(e){return {}}}
+function setCarnet(c){try{localStorage.setItem(CKEY,JSON.stringify(c))}catch(e){}}
+const noAcc=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"");
+const normQ=s=>s.replace(/[’`]/g,"'");
+function toks(s){return normQ(s).replace(/([,.?!])/g," $1 ").split(/\s+/).filter(Boolean);}
+function sayChunks(chunks){
+  if(!("speechSynthesis" in window))return;
+  try{if(!FRV)pickFR();speechSynthesis.cancel();
+    setTimeout(()=>{chunks.forEach(c=>{const u=new SpeechSynthesisUtterance(c);u.lang="fr-FR";u.rate=.65;if(FRV)u.voice=FRV;speechSynthesis.speak(u);});},120);}catch(e){}
+}
+function slowChunks(s){
+  const parts=normQ(s).replace(/[.?!]$/,"").split(/,\s*/);const out=[];
+  parts.forEach(p=>{const w=p.split(" ");for(let k=0;k<w.length;k+=3)out.push(w.slice(k,k+3).join(" "));});
+  return out;
+}
+/* aligne les mots tapés sur les mots attendus (distance d'édition) */
+function alignWords(tgt,got){
+  const n=tgt.length,m=got.length,eq=(a,b)=>a.toLowerCase()===b.toLowerCase(),near=(a,b)=>noAcc(a.toLowerCase())===noAcc(b.toLowerCase());
+  const D=[...Array(n+1)].map(()=>Array(m+1).fill(0));
+  for(let i=0;i<=n;i++)D[i][0]=i;for(let j=0;j<=m;j++)D[0][j]=j;
+  for(let i=1;i<=n;i++)for(let j=1;j<=m;j++){const c=eq(tgt[i-1],got[j-1])?0:near(tgt[i-1],got[j-1])?.4:.9;D[i][j]=Math.min(D[i-1][j-1]+c,D[i-1][j]+1,D[i][j-1]+1);}
+  const res=Array(n).fill(null);let i=n,j=m;
+  while(i>0&&j>0){const c=eq(tgt[i-1],got[j-1])?0:near(tgt[i-1],got[j-1])?.4:.9;
+    if(Math.abs(D[i][j]-(D[i-1][j-1]+c))<1e-9){res[i-1]=got[j-1];i--;j--;}
+    else if(Math.abs(D[i][j]-(D[i-1][j]+1))<1e-9){i--;}else{j--;}}
+  return res;
+}
+function why(t,g){
+  if(!g)return "Mot oublié.";
+  const tl=t.toLowerCase(),gl=g.toLowerCase();
+  if(noAcc(tl)===noAcc(gl))return `Presque ! Attention à l'accent : <b>${t}</b>.`;
+  if(/[sx]$/.test(tl)&&tl.slice(0,-1)===gl)return `Plusieurs → <b>${tl.slice(-1)}</b> à la fin : <b>${t}</b>.`;
+  if(/aux$/.test(tl)&&gl===tl.replace(/aux$/,"al"))return `Plusieurs : un cheval → des chevaux, un journal → des journaux.`;
+  if(gl.replace(/(.)\1/g,"$1")===tl.replace(/(.)\1/g,"$1"))return `Attention aux lettres doubles : <b>${t}</b>.`;
+  return `On écrit <b>${t}</b>.`;
+}
+function gameDictee(){
+  const app=document.getElementById("app");
+  const sh=a=>{a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]];}return a};
+  let lv=1,items=[],i=0,okW=0,totW=0,txt="",shift=true,done=false;
+  function pick(level){
+    const car=Object.keys(getCarnet());
+    if(level===1){const fromC=sh(car.filter(w=>!w.includes(" ")||DICT.mots.includes(w))).slice(0,4);return sh([...fromC,...sh(DICT.mots.filter(w=>!fromC.includes(w)))].slice(0,8));}
+    const pool=level===2?DICT.simples:DICT.pieges;
+    const withC=sh(pool.filter(p=>toks(p).some(w=>car.includes(w.toLowerCase()))));
+    return [...new Set([...withC,...sh(pool)])].slice(0,3);
+  }
+  function lesson(){
+    const c=getCarnet(),ws=Object.keys(c);
+    app.innerHTML=`<p class="q">La dictée du soir</p>
+      <div class="rule">J'écoute, j'écris avec le clavier, je vérifie.<br>Une phrase commence par une <strong>majuscule</strong> et finit par un <strong>point</strong>.<br>Les mots que je rate vont dans mon <strong>carnet</strong> : ils reviennent jusqu'à ce que je les réussisse 3 fois.</div>
+      <p class="q" style="margin-top:16px">Mon carnet de mots difficiles ${ws.length?`(${ws.length})`:""}</p>
+      ${ws.length?`<div class="carnet">${ws.map(w=>`<span>${w} <i>${"●".repeat(c[w])}${"○".repeat(3-c[w])}</i></span>`).join("")}</div>`:`<p class="note" style="color:var(--soft)">Vide pour l'instant. Bravo !</p>`}
+      <p class="q" style="margin-top:16px">Choisis ta dictée :</p>
+      <div class="dlv"><button class="btn" data-lv="1">1 · Les mots (8 mots)</button><button class="btn" data-lv="2">2 · Les phrases (3 phrases)</button><button class="btn" data-lv="3">3 · Les phrases pièges (3 phrases)</button></div>`;
+    app.querySelectorAll("[data-lv]").forEach(b=>b.onclick=()=>{lv=+b.dataset.lv;items=pick(lv);i=0;okW=0;totW=0;show();});
+  }
+  const ROWS=[["a","z","e","r","t","y","u","i","o","p"],["q","s","d","f","g","h","j","k","l","m"],["⇧","w","x","c","v","b","n","'","-","⌫"],["é","è","ê","à","ç","ù","â","î","ô","ë"],[",",".","?","!","␣"]];
+  function kb(){return `<div class="kb">${ROWS.map((r,ri)=>`<div class="kr${ri===4?" last":""}">${r.map(k=>`<button class="key${k==="⇧"&&shift?" on":""}${k==="␣"?" sp":""}" data-k="${k}">${k==="␣"?"espace":k==="⇧"?"⇧ Maj":/^[a-zéèêàçùâîôë]$/.test(k)&&shift?k.toUpperCase():k}</button>`).join("")}</div>`).join("")}</div>`;}
+  function show(){
+    const it=items[i];txt="";shift=lv>1;done=false;
+    app.innerHTML=`<div class="top"><span>${lv===1?"Mot":"Phrase"} ${i+1}/${items.length}</span><span class="bar"><i style="width:${i/items.length*100}%"></i></span><span>✓ ${okW}</span></div>
+      <div class="drow"><button class="btn" id="d-ec">🔊 Écouter</button>${lv>1?`<button class="btn ghostd" id="d-sl">🐢 Lentement</button>`:""}</div>
+      <div class="dbox" id="d-box" aria-live="polite"></div>
+      <div id="d-kb">${kb()}</div>
+      <div id="fb"></div><button class="btn" id="d-ok" style="width:100%;margin-top:10px">✓ J'ai fini</button>`;
+    const box=document.getElementById("d-box");
+    const paint=()=>{box.innerHTML=(txt?txt.replace(/&/g,"&amp;").replace(/</g,"&lt;"):`<span class="ph">Écoute, puis écris ici…</span>`)+`<span class="caret"></span>`;};
+    paint();
+    const bindKb=()=>document.querySelectorAll("#d-kb .key").forEach(b=>b.onclick=()=>{
+      if(done)return;const k=b.dataset.k;
+      if(k==="⌫")txt=txt.slice(0,-1);else if(k==="⇧"){shift=!shift;document.getElementById("d-kb").innerHTML=kb();bindKb();return;}
+      else if(k==="␣")txt+=" ";else{const ch=shift&&/^[a-zéèêàçùâîôë]$/.test(k)?k.toUpperCase():k;txt+=ch;if(shift){shift=false;document.getElementById("d-kb").innerHTML=kb();bindKb();}}
+      paint();});
+    bindKb();
+    document.getElementById("d-ec").onclick=()=>sayFr(it);
+    const sl=document.getElementById("d-sl");if(sl)sl.onclick=()=>sayChunks(slowChunks(it));
+    setTimeout(()=>sayFr(it),300);
+    document.getElementById("d-ok").onclick=()=>{
+      if(!txt.trim()){document.getElementById("fb").innerHTML=`<div class="fb ko">Écris d'abord ${lv===1?"le mot":"la phrase"} !</div>`;return;}
+      done=true;check(it);};
+  }
+  function check(it){
+    const T=toks(it),G=toks(txt.trim());
+    const W=T.filter(w=>!/^[,.?!]$/.test(w)),Gw=G.filter(w=>!/^[,.?!]$/.test(w));
+    const al=alignWords(W,Gw);const c=getCarnet();const msgs=[];let allOk=true;
+    const html=W.map((w,k)=>{const g=al[k],ok=!!g&&g.toLowerCase()===w.toLowerCase();const key=w.toLowerCase();totW++;
+      if(ok){okW++;if(c[key]!=null){c[key]++;if(c[key]>=3)delete c[key];}return `<span class="dw ok">${g}</span>`;}
+      allOk=false;if(g&&key.length>2)c[key]=0;msgs.push(why(w,g));
+      return `<span class="dw ko"><s>${g||"…"}</s><b>${w}</b></span>`;}).join(" ");
+    setCarnet(c);
+    if(lv>1){const gt=txt.trim();
+      if(gt&&gt[0]!==gt[0].toUpperCase()){msgs.push("N'oublie pas la <b>majuscule</b> au début de la phrase.");allOk=false;}
+      const p=it.trim().slice(-1);if(!gt.endsWith(p)){msgs.push(`N'oublie pas le <b>${p}</b> à la fin.`);allOk=false;}}
+    document.getElementById("d-kb").innerHTML="";document.getElementById("d-ok").remove();
+    document.getElementById("d-box").innerHTML=html;
+    const praise=["Bravo !","Super !","Parfait !","Génial !"][Math.floor(Math.random()*4)];
+    document.getElementById("fb").innerHTML=`<div class="fb ${allOk?"ok":"ko"}">${allOk?praise+"<small>Tout est juste.</small>":`Regarde bien :<small>${[...new Set(msgs)].join("<br>")}</small>`}</div>
+      <p class="note" style="text-align:center;margin:8px 0 0">La bonne écriture : <b>${it}</b></p>
+      <button class="btn" id="next" style="width:100%;margin-top:10px">${i<items.length-1?"Suivant →":"Voir mon score"}</button>`;
+    document.getElementById("next").onclick=()=>{i++;i<items.length?show():end();};
+  }
+  function end(){
+    const r=totW?okW/totW:0,s=r>=.9?3:r>=.7?2:1;
+    markDone(10,Math.round(r*10));
+    const n=Object.keys(getCarnet()).length;
+    app.innerHTML=`<div class="stars">${"⭐".repeat(s)}${"☆".repeat(3-s)}</div>
+      <p class="big" style="font-size:1.3rem">${okW} mots justes sur ${totW}</p>
+      <p style="text-align:center">${r>=.9?"Champion·ne de la dictée !":r>=.7?"Très bien ! Les mots ratés vont dans ton carnet.":"On s'entraîne encore : ton carnet t'aidera."}</p>
+      <p style="text-align:center;color:var(--soft)">Mon carnet : ${n} mot${n>1?"s":""} à retravailler</p>
+      <button class="btn" id="again" style="width:100%">Une autre dictée</button>`;
+    document.getElementById("again").onclick=lesson;
+  }
+  lesson();
+}
+
+const GAMES=[
+ {id:"sa",cat:"sons",ic:"🎒",bg:"#ffe3ef",t:"Le son [a]",d:"Mots de la semaine · fiche 01",sub:"a, â, à… un sac, l'âne, voilà",run:gameSonA,css:"mes",accent:"#ff8fb8"},
+ {id:"sou",cat:"sons",ic:"🐺",bg:"#ffe3ef",t:"Le son [ou]",d:"Mots de la semaine · fiche 02",sub:"ou, où, oo… un loup, le football",run:gameSonOU,css:"mes",accent:"#ff8fb8"},
+ {id:"sp",cat:"sons",ic:"🚪",bg:"#ffe3ef",t:"Le son [p]",d:"Mots de la semaine · fiche 03",sub:"p, pp… la pomme, une nappe",run:gameSonP,css:"mes",accent:"#ff8fb8"},
+ {id:"sb",cat:"sons",ic:"🥣",bg:"#ffe3ef",t:"Le son [b]",d:"Mots de la semaine · fiche 04",sub:"b… un bol, une robe",run:gameSonB,css:"mes",accent:"#ff8fb8"},
+ {id:"st",cat:"sons",ic:"🥧",bg:"#ffe3ef",t:"Le son [t]",d:"Mots de la semaine · fiche 05",sub:"t, tt… une tarte, les bottes",run:gameSonT,css:"mes",accent:"#ff8fb8"},
+ {id:"sd",cat:"sons",ic:"🥋",bg:"#ffe3ef",t:"Le son [d]",d:"Mots de la semaine · fiche 06",sub:"d, dd… le judo, l'addition",run:gameSonD,css:"mes",accent:"#ff8fb8"},
+ {id:"on",cat:"sons",ic:"✏️",bg:"#ffd6ec",t:"Le son [on]",d:"Mots de la semaine · fiche 07",sub:"Leçon n°7 · 10, 20 ou 30 questions · Écoute, choisis, écris !",run:gameOn},
+ {id:"sch",cat:"sons",ic:"🐄",bg:"#ffe3ef",t:"Le son [ch]",d:"Mots de la semaine · fiche 08",sub:"ch… une ruche, un cochon, une vache",run:gameSonCH,css:"mes",accent:"#ff8fb8"},
+ {id:"dictee",cat:"orth",ic:"✏️",bg:"#ffe9d6",t:"La dictée du soir",d:"J'écoute, j'écris, je vérifie · carnet de mots",sub:"Mots et phrases de tout ton cahier",run:gameDictee,css:"mes",accent:"#ffb066"},
+ {id:"mbp",cat:"orth",ic:"🍬",bg:"#ffe9d6",t:"M devant m, b, p",d:"tomber, chambre, important · O1",sub:"Le n devient m… sauf bonbon !",run:gameMBP,css:"mes",accent:"#ffb066"},
+ {id:"liaison",cat:"orth",ic:"🐘",bg:"#ffe9d6",t:"Les liaisons",d:"un‿éléphant · O3",sub:"Je les entends, je ne les écris pas",run:gameLiaison,css:"mes",accent:"#ffb066"},
+ {id:"sc",cat:"orth",ic:"🐍",bg:"#ffe9d6",t:"Les lettres S et C",d:"poison / poisson · coq / glace / garçon · O3, O4",sub:"[s], [z], [k]… et la cédille",run:gameSC,css:"mes",accent:"#ffb066"},
+ {id:"pluriel",cat:"orth",ic:"🦉",bg:"#ffe9d6",t:"Le pluriel des mots",d:"-s, -x, -aux… et les SAUF · O5",sub:"des chapeaux, des clous, des chevaux",run:gamePluriel,css:"mes",accent:"#ffb066"},
+ {id:"phrase",cat:"gram",ic:"📝",bg:"#d7e6ff",t:"Lettre, mot, phrase",d:"Majuscule, point, ponctuation · G1 à G4",sub:"Majuscule, point, et un sens",run:gamePhrase,css:"mes",accent:"#7aa7ff"},
+ {id:"phrases",cat:"gram",ic:"❓",bg:"#d7e6ff",t:"Les types de phrases",d:"Déclaratif, interrogatif, impératif · G5",sub:"Déclaratif · interrogatif · impératif",run:gamePhrases,css:"mes",accent:"#7aa7ff"},
+ {id:"temps",cat:"conj",ic:"⏳",bg:"#e6f0d4",t:"Passé, présent, futur",d:"hier, maintenant, demain · C1",sub:"Avant, maintenant, plus tard",run:gameTemps,css:"mes",accent:"#8fc06a"},
+ {id:"alpha",cat:"voc",ic:"🔤",bg:"#d9f3e3",t:"L'alphabet",d:"Voyelles, consonnes, ordre alphabétique · V2, V3",sub:"26 lettres, 6 voyelles",run:gameAlpha,css:"mes",accent:"#4fc489"},
+ {id:"ecole",cat:"voc",ic:"🏫",bg:"#d9f3e3",t:"L'école",d:"Les consignes et le matériel · V1, V4",sub:"Entoure, souligne… et le cartable !",run:gameEcole,css:"mes",accent:"#4fc489"},
+ {id:"syno",cat:"voc",ic:"🟰",bg:"#d9f3e3",t:"Les synonymes",d:"Même sens · V7",sub:"Même sens ou sens très proche",run:gameSyno,css:"mes",accent:"#4fc489"},
+ {id:"contr",cat:"voc",ic:"↔️",bg:"#d9f3e3",t:"Les contraires",d:"Sens opposé · V8",sub:"Sens opposé : mot différent, ne…pas, préfixe",run:gameContr,css:"mes",accent:"#4fc489"},
+ {id:"ec1",cat:"ecri",ic:"🐌",bg:"#e9e3ff",t:"Les lettres courtes",d:"a, c, e, i, m, n, o… · 1 interligne",sub:"Elles restent dans le premier interligne",run:gameEcCourtes,css:"mes",accent:"#9b87f5"},
+ {id:"ec2",cat:"ecri",ic:"⬆️",bg:"#e9e3ff",t:"Les lettres qui montent",d:"t, d → 2 · b, h, k, l → 3",sub:"Jusqu'où monte ma lettre ?",run:gameEcMontent,css:"mes",accent:"#9b87f5"},
+ {id:"ec3",cat:"ecri",ic:"⬇️",bg:"#e9e3ff",t:"Les lettres qui descendent",d:"p, q → 2 · g, j, y, z → 3 · f",sub:"Jusqu'où descend ma lettre ?",run:gameEcDescendent,css:"mes",accent:"#9b87f5"},
+ {id:"ec4",cat:"ecri",ic:"📝",bg:"#e9e3ff",t:"J'écris des mots",d:"Les jours, les mois, les sons…",sub:"Chaque lettre à la bonne hauteur",run:gameEcMots,css:"mes",accent:"#9b87f5"},
+ {id:"nombres",cat:"num",ic:"🔢",bg:"#efe2ff",t:"Les nombres jusqu'à 99",d:"Dizaines, avant/après, comparer, en lettres · N3 à N7, N10",sub:"Lire, écrire, comparer",run:gameNombres,css:"mes",accent:"#a77bf0"},
+ {id:"ordre",cat:"num",ic:"🦒",bg:"#efe2ff",t:"Ranger les nombres",d:"Ordre croissant et décroissant · N8, N9",sub:"Du plus petit au plus grand… et l'inverse !",run:gameOrdre,css:"mes",accent:"#a77bf0"},
+ {id:"addsub",cat:"cal",ic:"➕",bg:"#e3f7c8",t:"Ajouter et retrancher",d:"8 + 5, 16 − 9 · Cal 2, Cal 3",sub:"J'avance, je recule sur la bande numérique",run:gameAddSub,css:"mes",accent:"#8fd14f"},
+ {id:"tables",cat:"cal",ic:"🧮",bg:"#e3f7c8",t:"Les tables d'addition",d:"Tables du 1 au 7 et sommes à 10 · Cal 4 à Cal 13",sub:"Les tables à connaître par cœur",run:gameTables,css:"mes",accent:"#8fd14f"},
+ {id:"doubles",cat:"cal",ic:"✌️",bg:"#e3f7c8",t:"Les doubles",d:"De 0 + 0 à 15 + 15 · Cal 11",sub:"Le double, c'est le nombre + lui-même",run:gameDoubles,css:"mes",accent:"#8fd14f"},
+ {id:"dix",cat:"cal",ic:"🔟",bg:"#e3f7c8",t:"Ajouter ou enlever 10",d:"51 + 10, 44 − 10 · Cal 12",sub:"Seul le chiffre des dizaines change",run:gameDix,css:"mes",accent:"#8fd14f"},
+ {id:"pb",cat:"exo",ic:"🧙",bg:"#fde2d2",t:"Les problèmes",d:"Lire, calculer, répondre par une phrase",sub:"J'entoure la question, je calcule, je réponds",run:gameProblemes,css:"mes",accent:"#f08a5d"},
+ {id:"m10",cat:"exo",ic:"🔟",bg:"#fde2d2",t:"Calcul mental + 10 / − 10",d:"55 + 10, 74 − 10…",sub:"Seules les dizaines bougent",run:gameMental10,css:"mes",accent:"#f08a5d"},
+ {id:"pyr",cat:"exo",ic:"🔺",bg:"#fde2d2",t:"La pyramide mathématique",d:"Chaque case = somme des deux du dessous",sub:"J'ajoute les deux cases du dessous",run:gamePyramide,css:"mes",accent:"#f08a5d"},
+ {id:"du",cat:"exo",ic:"🧱",bg:"#fde2d2",t:"Dizaines et unités : les pièges",d:"4d 12u, 6u 4d, 3d + 4d + 8…",sub:"Attention à l'ordre et aux unités en trop",run:gameDizUni,css:"mes",accent:"#f08a5d"},
+ {id:"geo",cat:"geo",ic:"📐",bg:"#d6f1f5",t:"Tracer et aligner",d:"Tracer à la règle, points alignés · EG1, EG3",sub:"La règle et les points alignés",run:gameGeo,css:"mes",accent:"#4cb8c9"},
+ {id:"semaine",cat:"temps",ic:"📆",bg:"#ffeccc",t:"La semaine",d:"Les 7 jours · veille, lendemain, hier, demain",sub:"Hier, aujourd'hui, demain… et le weekend",run:gameSemaine,css:"mes",accent:"#f2a541"},
+ {id:"mois",cat:"temps",ic:"🗓️",bg:"#ffeccc",t:"Les mois",d:"Les 12 mois · numéros · 30 ou 31 jours",sub:"De janvier à décembre, et le truc du poing",run:gameMois,css:"mes",accent:"#f2a541"},
+ {id:"mes",cat:"gm",ic:"📏",bg:"#fcebb0",t:"Le Défi des mesures",d:"cm, m, km · mesurer avec la règle · GM",sub:"cm · m · km — choisis, compare, mesure !",run:gameMes}
+];
+const CATS=[
+ {sub:"Français",items:[["sons","Les sons","🔊","#ffe3ef","Mots de la semaine"],["orth","Orthographe","✍️","#ffe9d6","O"],["gram","Grammaire","📝","#d7e6ff","G"],["conj","Conjugaison","⏳","#e6f0d4","C"],["voc","Vocabulaire","🔤","#d9f3e3","V"],["ecri","Écriture","🖊️","#e9e3ff","Seyès"]]},
+ {sub:"Mathématiques",items:[["num","Nombres","🔢","#efe2ff","N"],["cal","Calcul","➕","#e3f7c8","Cal"],["geo","Géométrie","📐","#d6f1f5","EG"],["gm","Mesures","📏","#fcebb0","GM"],["exo","Exercices et problèmes","🧙","#fde2d2","Entraînement"]]},
+ {sub:"Questionner le monde",items:[["temps","Le temps","⏰","#ffeccc","Semaine, mois"]]}
+];
+const CATMAP={};CATS.forEach(c=>c.items.forEach(([k,lab,ic,bg,code])=>CATMAP[k]={lab,ic,bg,code}));
+const slot=document.getElementById("stage"),ttl=document.getElementById("ttl"),sub=document.getElementById("sub"),back=document.getElementById("back");
+let where={view:"home"},CUR=null;
+const PKEY="mes-jeux-progress";
+function getP(){try{return JSON.parse(localStorage.getItem(PKEY)||"{}")}catch(e){return {}}}
+function need(n){return n>=30?24:Math.ceil(n*0.7);}
+function markDone(n,sc){if(!CUR)return;const ok=sc>=need(n);
+  if(ok){const p=getP();p[CUR]=Math.max(p[CUR]||0,n);try{localStorage.setItem(PKEY,JSON.stringify(p))}catch(e){}}
+  setTimeout(()=>{const a=document.getElementById("app");if(!a)return;const d=document.createElement("div");d.className="valid "+(ok?"yes":"no");
+    d.textContent=ok?(n>=30?"⭐ Leçon complétée !":"✓ Leçon validée en "+n+" questions !"):"Pour valider la leçon, il faut au moins "+need(n)+" / "+n+". Tu peux réessayer !";
+    a.insertBefore(d,a.querySelector(".btn"));},0);}
+function badge(id){const v=getP()[id]||0;return v>=30?["done","⭐ Leçon complétée"]:v>=10?["green","✓ Faite en "+v+" questions"]:["",""];}
+function setHash(x){try{history.replaceState(null,"",x?location.pathname+location.search+"#"+x:location.pathname+location.search)}catch(e){}}
+function menu(){
+  try{speechSynthesis.cancel()}catch(e){}
+  where={view:"home"};
+  useCss("on"); ttl.textContent="Mes jeux d'école"; sub.textContent="Choisis une matière !"; back.hidden=true;
+  slot.innerHTML=CATS.map(c=>`<section class="subj"><h2>${c.sub}</h2><div class="cats">${c.items.map(([k,lab,ic,bg,code])=>{const gs=GAMES.filter(g=>g.cat===k),n=gs.length,P=getP(),dn=gs.filter(g=>(P[g.id]||0)>=30).length,gr=gs.filter(g=>(P[g.id]||0)>=10).length;return `<button class="cat${dn===n?" alldone":""}" id="c-${k}" data-c="${k}" style="--cbg:${bg}"><span class="cic">${ic}</span><b>${lab}</b><span>${n} jeu${n>1?"x":""} · ${code}</span><span class="${gr?"prog":""}">${dn===n?"⭐ Tout est complété !":gr?`✓ ${gr}/${n} faites · ⭐ ${dn}`:"À découvrir"}</span></button>`;}).join("")}</div></section>`).join("");
+  slot.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>cat(b.dataset.c));
+  setHash("");
+}
+function cat(k){
+  try{speechSynthesis.cancel()}catch(e){}
+  const c=CATMAP[k]; if(!c) return menu();
+  where={view:"cat",k};
+  useCss("on"); ttl.textContent=c.ic+" "+c.lab; sub.textContent="Choisis une leçon !"; back.hidden=false; back.textContent="← Toutes les matières";
+  const card=g=>{const [c,t]=badge(g.id);return `<button class="game ${c}" id="g-${g.id}" data-g="${g.id}"><span class="ic" style="background:${g.bg}">${g.ic}</span><span><b>${g.t}</b><span>${g.d}</span>${t?`<em class="bdg">${t}</em>`:""}</span></button>`;};
+  slot.innerHTML=`<div class="menu">${GAMES.filter(g=>g.cat===k).map(card).join("")}</div>`;
+  slot.querySelectorAll("[data-g]").forEach(b=>b.onclick=()=>open(b.dataset.g));
+  setHash(k);
+}
+function open(id){
+  const g=GAMES.find(x=>x.id===id); if(!g) return menu();
+  where={view:"game",k:g.cat};CUR=id;
+  useCss(g.css||id); ttl.textContent=g.t; sub.textContent=g.sub; back.hidden=false; back.textContent="← "+(CATMAP[g.cat]?CATMAP[g.cat].lab:"Menu");
+  slot.innerHTML=`<div class="card" id="app"${g.accent?` style="--tape:${g.accent}"`:""}></div>`;
+  g.run();
+  setHash(id);
+}
+back.onclick=()=>{where.view==="game"?cat(where.k):menu();};
+const h=(location.hash||"").slice(1);
+GAMES.some(g=>g.id===h)?open(h):CATMAP[h]?cat(h):menu();
+</script>
+
+<script>if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});</script></body></html>
