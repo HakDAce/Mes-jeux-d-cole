@@ -1075,6 +1075,94 @@ function gameGeo(){
   });
 }
 
+/* ================= EG4 : les polygones ================= */
+// Figures : polygone (fermé, traits droits), figure ouverte, figure avec un trait courbe, rond.
+function polyPts(n){const cx=160,cy=95,out=[],step=Math.PI*2/n,base=Math.random()*Math.PI*2;
+  for(let k=0;k<n;k++){const a=base+k*step+(Math.random()-.5)*step*.45,r=(n>4&&Math.random()<.3?.55:1)*R(62,78);out.push([Math.round(cx+Math.cos(a)*r*1.45),Math.round(cy+Math.sin(a)*r)]);}
+  return out;}
+function figSvg(kind,P,o){o=o||{};const S="#1f2a5c",W=o.w||380,pk="#ff5fa2";let g="";
+  const pts=P.map(p=>p.join(",")).join(" ");
+  if(kind==="poly")g=`<polygon points="${pts}" fill="none" stroke="${S}" stroke-width="3.5" stroke-linejoin="round"/>`;
+  else if(kind==="open")g=`<polyline points="${pts}" fill="none" stroke="${S}" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+  else if(kind==="curve"){const a=P[P.length-1],b=P[0],cx=160,cy=95,mx=(a[0]+b[0])/2,my=(a[1]+b[1])/2,qx=Math.round(mx+(mx-cx)*.9),qy=Math.round(my+(my-cy)*.9);
+    g=`<path d="M${P.map(p=>p.join(" ")).join(" L")} Q${qx} ${qy} ${b[0]} ${b[1]}" fill="none" stroke="${S}" stroke-width="3.5" stroke-linejoin="round"/>`;}
+  else g=`<ellipse cx="160" cy="95" rx="${R(70,110)}" ry="${R(50,72)}" fill="none" stroke="${S}" stroke-width="3.5"/>`;
+  if(o.side!=null){const a=P[o.side],b=P[(o.side+1)%P.length];g+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${o.sideColor||pk}" stroke-width="7" stroke-linecap="round"/>`;}
+  if(o.dots)g+=P.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="6" fill="${S}"/>`).join("");
+  if(o.vertex!=null){const p=P[o.vertex];g+=`<circle cx="${p[0]}" cy="${p[1]}" r="10" fill="${pk}" stroke="${S}" stroke-width="2"/>`;}
+  return `<svg viewBox="0 0 320 190" style="width:100%;max-width:${W}px;display:block;margin:6px auto" role="img" aria-label="Une figure">${g}</svg>`;}
+function gamePolygones(){
+  const NON={open:"Elle n'est pas fermée",curve:"Elle a un trait courbe",rond:"Elle est toute ronde"};
+  const TIP={poly:"Elle est fermée et tracée à la règle : c'est un polygone.",open:"Elle n'est pas fermée : ce n'est pas un polygone.",curve:"Elle a un trait courbe : on ne peut pas tout tracer à la règle.",rond:"Un rond est courbe : on ne peut pas le tracer à la règle."};
+  const F=[["Un polygone est une figure…",["fermée","ouverte","ronde"],"Un polygone est une figure fermée."],
+    ["On peut tracer un polygone…",["à la règle","à main levée","au compas"],"Tous ses côtés sont des traits droits, tracés à la règle."],
+    ["Les traits droits d'un polygone s'appellent…",["les côtés","les sommets","les points"],"Les traits sont les côtés."],
+    ["Les coins d'un polygone s'appellent…",["les sommets","les côtés","les bords"],"Les coins, où deux côtés se rejoignent, sont les sommets."],
+    ["Un polygone à 5 côtés a…",["5 sommets","4 sommets","10 sommets"],"Un polygone a autant de sommets que de côtés."],
+    ["Un rond est-il un polygone ?",["Non, il est courbe","Oui, il est fermé"],"Il est fermé, mais il est courbe : on ne peut pas le tracer à la règle."],
+    ["Une figure ouverte est-elle un polygone ?",["Non, elle doit être fermée","Oui, si elle est tracée à la règle"],"Un polygone est toujours fermé."]];
+  const d=deck(F);
+  const ex=n=>{const P=polyPts(n);return P;};
+  quizGame({
+    lesson:`<p class="q">Les polygones (EG4)</p>
+      <div class="ladder">
+        <div class="step"><b>✅</b><span>Un <strong>polygone</strong> est une figure <strong>fermée</strong> que l'on peut tracer <strong>à la règle</strong>.${figSvg("poly",ex(5),{w:200})}</span></div>
+        <div class="step"><b>❌</b><span><strong>Pas un polygone</strong> : une figure <strong>ouverte</strong>, ou avec un trait <strong>courbe</strong>.${figSvg("open",ex(4),{w:160})}${figSvg("curve",ex(4),{w:160})}</span></div>
+        <div class="step"><b>📐</b><span>Un polygone a des <strong>côtés</strong> (les traits droits, comme le trait bleu) et des <strong>sommets</strong> (les coins, en rose). Il a <strong>autant de côtés que de sommets</strong>.${(()=>{const P=ex(4);return figSvg("poly",P,{w:200,dots:true,side:0,sideColor:"#4cb8c9"}).replace(/r="6" fill="#1f2a5c"/g,'r="7" fill="#ff5fa2"');})()}</span></div>
+      </div>`,
+    gens:[
+      sh=>{const k=sh(["poly","poly","open","curve","rond"])[0],n=R(3,6),P=polyPts(n);
+        return {label:"Est-ce un polygone ?",body:figSvg(k,P),opts:["Oui","Non"],ans:k==="poly"?"Oui":"Non",keep:true,recap:k==="poly"?"Figure fermée tracée à la règle : polygone":"Pas un polygone : "+NON[k].toLowerCase(),tip:TIP[k]};},
+      sh=>{const n=R(3,7);return {label:"Combien de côtés a ce polygone ?",body:figSvg("poly",polyPts(n)),opts:mk(n,sh([n-1,n+1,n+2].filter(x=>x>=3))),ans:String(n),recap:`Ce polygone a ${n} côtés`,tip:`Je compte chaque trait droit : ${n} côtés.`};},
+      sh=>{const n=R(3,7);return {label:"Combien de sommets a ce polygone ?",body:figSvg("poly",polyPts(n),{dots:Math.random()<.5}),opts:mk(n,sh([n-1,n+1,n+2].filter(x=>x>=3))),ans:String(n),recap:`Ce polygone a ${n} sommets`,tip:`Je compte chaque coin : ${n} sommets (autant que de côtés).`};},
+      sh=>{const k=sh(["open","curve","rond"])[0],P=polyPts(R(4,5));return {label:"Pourquoi ce n'est pas un polygone ?",body:figSvg(k,P),opts:sh([NON.open,NON.curve,NON.rond]),ans:NON[k],keep:true,col:true,recap:NON[k],tip:TIP[k]};},
+      sh=>{const n=R(3,6),P=polyPts(n),side=Math.random()<.5,i=R(0,n-1);return {label:side?"Comment s'appelle le trait rose ?":"Comment s'appelle le point rose ?",body:figSvg("poly",P,side?{side:i}:{vertex:i}),opts:["un côté","un sommet"],ans:side?"un côté":"un sommet",keep:true,recap:side?"Le trait droit est un côté":"Le coin est un sommet",tip:side?"Les traits droits du polygone sont ses côtés.":"Le point où deux côtés se rejoignent est un sommet."};},
+      sh=>{const [q,o,t]=d(sh);return {label:q,opts:o,ans:o[0],col:true,recap:`${q} ${o[0]}`,tip:t};}
+    ]
+  });
+}
+
+/* ================= N11 : le nombre 100 ================= */
+// barres de 10 cubes : n barres pleines sur 10 emplacements
+function barsSvg(n,empty){const c="#a77bf0",S="#1f2a5c";let g="";
+  for(let k=0;k<(empty?10:n);k++){const x=18+k*29;
+    if(k<n){for(let j=0;j<10;j++)g+=`<rect x="${x}" y="${12+j*16}" width="20" height="15" rx="2" fill="${c}" stroke="${S}" stroke-width="1.5"/>`;}
+    else g+=`<rect x="${x}" y="12" width="20" height="159" rx="3" fill="none" stroke="${S}" stroke-width="1.5" stroke-dasharray="4 4"/>`;}
+  return `<svg viewBox="0 0 320 185" style="width:100%;max-width:380px;display:block;margin:6px auto" role="img" aria-label="${n} barres de 10 cubes">${g}</svg>`;}
+function plaqueSvg(w){let g="";for(let i=0;i<10;i++)for(let j=0;j<10;j++)g+=`<rect x="${i*11}" y="${j*11}" width="10" height="10" fill="#a77bf0" stroke="#1f2a5c" stroke-width=".8"/>`;
+  return `<svg viewBox="-1 -1 112 112" style="width:${w}px;display:block;margin:6px 0" role="img" aria-label="Une plaque de 100 petits cubes">${g}</svg>`;}
+function gameCent(){
+  const C=[["100 + 1",101],["100 − 1",99],["100 + 10",110],["100 − 10",90],["99 + 1",100],["90 + 10",100],["101 − 1",100],["110 − 10",100]];
+  const F=[["100 s'écrit en lettres…",["cent","cents","sans"],"100 s'écrit « cent »."],
+    ["Combien de dizaines dans 100 ?",["10","1","100"],"100 = 10 dizaines."],
+    ["Combien d'unités dans 100 ?",["100","10","1"],"100 = 100 unités."],
+    ["Combien de centaines dans 100 ?",["1","10","0"],"100 = 1 centaine."],
+    ["100, c'est…",["1c 0d 0u","0c 1d 0u","10c 0d 0u"],"1 centaine, 0 dizaine, 0 unité."],
+    ["Combien de billets de 10 € pour faire 100 € ?",["10","100","5"],"10 + 10 + 10 + 10 + 10 + 10 + 10 + 10 + 10 + 10 = 100."],
+    ["Combien de pièces de 1 € pour faire 100 € ?",["100","10","1"],"100 unités de 1 € font 100 €."],
+    ["Le nombre juste après 99 est…",["100","90","101"],"99 + 1 = 100."],
+    ["Le nombre juste avant 100 est…",["99","90","101"],"100 − 1 = 99."],
+    ["Combien de fois faut-il ajouter 10 pour aller de 0 à 100 ?",["10","100","9"],"10 dizaines font 100."],
+    ["Une plaque de 100, c'est…",["10 barres de 10 cubes","10 cubes","100 barres de 10 cubes"],"10 barres de 10 cubes = 100 cubes."]];
+  const d=deck(F),dc=deck(C);
+  quizGame({
+    lesson:`<p class="q">Le nombre 100 (N11)</p>
+      <div class="ladder">
+        <div class="step"><b>100</b><span>Il s'écrit <strong>cent</strong>. C'est <strong>1c 0d 0u</strong> : 1 centaine, 0 dizaine, 0 unité.</span></div>
+        <div class="step"><b>10 d</b><span>100 = <strong>10 dizaines</strong> = <strong>100 unités</strong><br><i>10 + 10 + 10 + 10 + 10 + 10 + 10 + 10 + 10 + 10 = 100</i></span></div>
+        <div class="step"><b>🟪</b><span>La <strong>plaque de 100</strong> : 10 barres de 10 petits cubes. Et un <strong>billet de 100 €</strong> vaut 10 billets de 10 €.${plaqueSvg(90)}</span></div>
+        <div class="step"><b>±</b><span>100 + 1 = <strong>101</strong><br>100 − 1 = <strong>99</strong><br>100 + 10 = <strong>110</strong><br>100 − 10 = <strong>90</strong></span></div>
+      </div>`,
+    gens:[
+      sh=>{const [e,a]=dc(sh);return {label:"Calcule :",body:`<div class="big">${e} = <span class="blank">?</span></div>`,fill:String(a),opts:mk(a,sh([a+1,a-1,a+10,a-10,a===100?10:100])),ans:String(a),recap:`${e} = ${a}`,tip:/10/.test(e.split(" ")[2])?"Avec 10, seul le chiffre des dizaines change.":"Avec 1, on avance ou on recule d'un nombre."};},
+      sh=>{const n=R(1,9),k=n*10,r=100-k;return {label:`J'ai ${k} cubes. Combien en faut-il encore pour faire 100 ?`,body:barsSvg(n,true),opts:mk(r,sh([r+10,r-10>0?r-10:r+20,10-n])),ans:String(r),recap:`${k} + ${r} = 100`,tip:`Il manque ${10-n} barre${10-n>1?"s":""} de 10 : ${r} cubes.`};},
+      sh=>{const n=R(6,10),c=n*10;return {label:"Combien de cubes en tout ?",body:barsSvg(n,false),opts:mk(c,sh([c+10,c-10,n,c+1])),ans:String(c),recap:`${n} barres de 10 = ${c}`,tip:n===10?"10 dizaines = 100 !":`${n} dizaines = ${c}.`};},
+      sh=>{const a=sh([85,90,95,98,99,100,100,101,105,110,120])[0],s=a<100?"<":a>100?">":"=";return {label:"Quel signe ?",body:`<div class="big">${a} <span class="blank">?</span> 100</div>`,fill:s.replace("<","&lt;").replace(">","&gt;"),opts:["&lt;","=","&gt;"],ans:s.replace("<","&lt;").replace(">","&gt;"),keep:true,recap:`${a} ${s} 100`.replace("<","&lt;").replace(">","&gt;"),tip:a<100?`${a} est plus petit que 100.`:a>100?`${a} est plus grand que 100.`:"C'est le même nombre."};},
+      sh=>{const [q,o,t]=d(sh);return {label:q,opts:o,ans:o[0],col:o.some(x=>x.length>8),recap:`${q} ${o[0]}`,tip:t};}
+    ]
+  });
+}
+
 /* ================= Questionner le monde : le temps ================= */
 const JOURS=["lundi","mardi","mercredi","jeudi","vendredi","samedi","dimanche"];
 const MOIS=["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
@@ -1654,6 +1742,7 @@ const GAMES=[
  {id:"ec4",cat:"ecri",ic:"📝",bg:"#e9e3ff",t:"J'écris des mots",d:"Les jours, les mois, les sons…",sub:"Chaque lettre à la bonne hauteur",run:gameEcMots,css:"mes",accent:"#9b87f5"},
  {id:"nombres",cat:"num",ic:"🔢",bg:"#efe2ff",t:"Les nombres jusqu'à 99",d:"Dizaines, avant/après, comparer, en lettres · N3 à N7, N10",sub:"Lire, écrire, comparer",run:gameNombres,css:"mes",accent:"#a77bf0"},
  {id:"ordre",cat:"num",ic:"🦒",bg:"#efe2ff",t:"Ranger les nombres",d:"Ordre croissant et décroissant · N8, N9",sub:"Du plus petit au plus grand… et l'inverse !",run:gameOrdre,css:"mes",accent:"#a77bf0"},
+ {id:"cent",cat:"num",ic:"💯",bg:"#efe2ff",t:"Le nombre 100",d:"cent · 1c 0d 0u · 10 dizaines · ±1, ±10 · N11",sub:"10 dizaines = 100 unités",run:gameCent,css:"mes",accent:"#a77bf0"},
  {id:"addsub",cat:"cal",ic:"➕",bg:"#e3f7c8",t:"Ajouter et retrancher",d:"8 + 5, 16 − 9 · Cal 2, Cal 3",sub:"J'avance, je recule sur la bande numérique",run:gameAddSub,css:"mes",accent:"#8fd14f"},
  {id:"tables",cat:"cal",ic:"🧮",bg:"#e3f7c8",t:"Les tables d'addition",d:"Tables du 1 au 7 et sommes à 10 · Cal 4 à Cal 13",sub:"Les tables à connaître par cœur",run:gameTables,css:"mes",accent:"#8fd14f"},
  {id:"doubles",cat:"cal",ic:"✌️",bg:"#e3f7c8",t:"Les doubles",d:"De 0 + 0 à 15 + 15 · Cal 11",sub:"Le double, c'est le nombre + lui-même",run:gameDoubles,css:"mes",accent:"#8fd14f"},
@@ -1663,6 +1752,7 @@ const GAMES=[
  {id:"pyr",cat:"exo",ic:"🔺",bg:"#fde2d2",t:"La pyramide mathématique",d:"Chaque case = somme des deux du dessous",sub:"J'ajoute les deux cases du dessous",run:gamePyramide,css:"mes",accent:"#f08a5d"},
  {id:"du",cat:"exo",ic:"🧱",bg:"#fde2d2",t:"Dizaines et unités : les pièges",d:"4d 12u, 6u 4d, 3d + 4d + 8…",sub:"Attention à l'ordre et aux unités en trop",run:gameDizUni,css:"mes",accent:"#f08a5d"},
  {id:"geo",cat:"geo",ic:"📐",bg:"#d6f1f5",t:"Tracer et aligner",d:"Tracer à la règle, points alignés · EG1, EG3",sub:"La règle et les points alignés",run:gameGeo,css:"mes",accent:"#4cb8c9"},
+ {id:"poly",cat:"geo",ic:"🔷",bg:"#d6f1f5",t:"Les polygones",d:"Figure fermée tracée à la règle · côtés et sommets · EG4",sub:"Fermé, à la règle : côtés et sommets",run:gamePolygones,css:"mes",accent:"#4cb8c9"},
  {id:"semaine",cat:"temps",ic:"📆",bg:"#ffeccc",t:"La semaine",d:"Les 7 jours · veille, lendemain, hier, demain",sub:"Hier, aujourd'hui, demain… et le weekend",run:gameSemaine,css:"mes",accent:"#f2a541"},
  {id:"mois",cat:"temps",ic:"🗓️",bg:"#ffeccc",t:"Les mois",d:"Les 12 mois · numéros · 30 ou 31 jours",sub:"De janvier à décembre, et le truc du poing",run:gameMois,css:"mes",accent:"#f2a541"},
  {id:"mes",cat:"gm",ic:"📏",bg:"#fcebb0",t:"Le Défi des mesures",d:"cm, m, km · mesurer avec la règle · GM",sub:"cm · m · km — choisis, compare, mesure !",run:gameMes}
