@@ -1163,6 +1163,80 @@ function gameCent(){
   });
 }
 
+const gameSonOI=sonGame({son:"[oi]",opts:["oi","oy","oa"],rule:"Le son [oi] s'écrit <mark>oi</mark> (une boite). On l'entend au début (un oiseau), au milieu (une armoire) ou à la fin du mot (trois). Il s'écrit parfois <mark>oy</mark> (le noyau) : un voyage, joyeux.",
+  words:["un [oi]seau","des [oi]seaux","une arm[oi]re","une v[oi]ture","une ét[oi]le","madem[oi]selle","mon v[oi]sin","ma v[oi]sine","le s[oi]r","une b[oi]sson","un p[oi]sson","du p[oi]son","une hist[oi]re","n[oi]r","n[oi]re","v[oi]ci","v[oi]là","av[oi]r","v[oi]r","je v[oi]s","il v[oi]t","b[oi]re","je b[oi]s","il b[oi]t","j'ai s[oi]f","une b[oi]te","tr[oi]s","le r[oi]","le b[oi]s","le t[oi]t","le d[oi]gt","la j[oi]e","une n[oi]x","fr[oi]d","fr[oi]de","dr[oi]t","t[oi]","m[oi]","pourqu[oi]","il était une f[oi]s","le n[oy]au","un v[oy]age","une v[oy]elle","j[oy]eux","j[oy]euse","v[oy]ager"],
+  cls:[["l'oiseau",0],["les oiseaux",0],["une voiture",0],["mon voisin",0],["ma voisine",0],["une histoire",0],["le poisson",0],["une armoire",0],["boire",1],["je bois",1],["il boit",1],["voir",1],["je vois",1],["il voit",1],["avoir",1],["j'ai",1],["noir",2],["noire",2],["froid",2],["froide",2],["voici",3]]});
+const gameSonF=sonGame({son:"[f]",opts:["f","ff","ph"],rule:"Le son [f] s'écrit <mark>f</mark> (le fil), <mark>ff</mark> (l'affiche) ou <mark>ph</mark> (un phare). On l'entend au début (une fenêtre), au milieu (du café) ou à la fin du mot (neuf).",
+  words:["le [f]il","une [f]enêtre","ma [f]amille","de la [f]arine","une [f]emme","des [f]emmes","le [f]ils","la [f]ille","les [f]illes","mon [f]rère","une [f]erme","le [f]ermier","la [f]ermière","la [f]ête","les [f]êtes","le [f]eu","les [f]eux","un [f]antôme","une [f]ourmi","une [f]euille","des [f]euilles","une [f]leur","des [f]leurs","un [f]our","du [f]romage","un [f]ruit","j'ai [f]aim","[f]ort","[f]orte","[f]roid","[f]roide","[f]rançais","[f]rançaise","[f]aire","je [f]ais","il [f]ait","[f]ermer","je [f]erme","du ca[f]é","de la con[f]iture","des en[f]ants","par[f]ois","neu[f]","un œu[f]","j'ai soi[f]","l'a[ff]iche","mes a[ff]aires","un co[ff]re","un si[ff]let","un e[ff]ort","di[ff]icile","coi[ff]er","je coi[ff]e","gri[ff]er","si[ff]ler","sou[ff]ler","un [ph]are","une [ph]oto","des [ph]otos","le [ph]otographe","la [ph]armacie","un [ph]oque","un élé[ph]ant","un paragra[ph]e"],
+  cls:[["la fille",0],["les filles",0],["ma famille",0],["une femme",0],["des femmes",0],["la fête",0],["les fêtes",0],["une photo",0],["des photos",0],["faire",1],["je fais",1],["il fait",1],["coiffer",1],["je coiffe",1],["il coiffe",1],["fermer",1],["je ferme",1],["il ferme",1],["j'ai soif",2],["j'ai faim",2],["difficile",2],["parfois",3]]});
+
+/* ================= C2 : verbe à l'infinitif, verbe conjugué ================= */
+function gameVerbe(){
+  const INF=["manger","sauter","grandir","voir","finir","danser","apprendre","lire","chanter","jouer","boire","faire","courir","prendre","fermer","dormir"];
+  const CONJ=[["je mange","manger"],["il saute","sauter"],["nous grandissons","grandir"],["tu vois","voir"],["il finit","finir"],["vous dansez","danser"],["j'apprends","apprendre"],["elle lit","lire"],["nous chantons","chanter"],["tu joues","jouer"],["je bois","boire"],["il fait","faire"],["ils courent","courir"],["je prends","prendre"],["tu fermes","fermer"],["il dort","dormir"],["je mangeais","manger"],["nous mangerons","manger"],["il dansera","danser"],["je sautais","sauter"]];
+  const WRONG={manger:["mangir","mangre"],sauter:["sautir","sautre"],grandir:["grander","grandre"],voir:["voier","voire"],finir:["finer","finre"],danser:["dansir","dansre"],apprendre:["apprender","apprendir"],lire:["liser","lir"],chanter:["chantir","chantre"],jouer:["jouir","jouoir"],boire:["boiver","boir"],faire:["faiser","fair"],courir:["courer","courre"],prendre:["prender","prendir"],fermer:["fermir","fermre"],dormir:["dormer","dormre"]};
+  // verbes en -er réguliers pour « le bon costume »
+  const V=[["manger","des crêpes"],["danser","dans le salon"],["sauter","dans la flaque"],["chanter","une chanson"],["jouer","au ballon"],["regarder","un dessin animé"]];
+  const END={présent:{je:"e",il:"e",nous:"ons"},passé:{je:"ais",il:"ait",nous:"ions"}};
+  const form=(inf,t,p)=>{if(t==="futur")return inf+{je:"ai",il:"a",nous:"ons"}[p];const st=inf.slice(0,-2),e=END[t][p];return st+(st.endsWith("g")&&/^[ao]/.test(e)?"e":"")+e;};
+  const TW={passé:["Hier","Autrefois","La semaine dernière"],présent:["En ce moment","Maintenant"],futur:["Demain","Bientôt","La semaine prochaine"]};
+  const SUBJ={je:"je",il:"Tom",nous:"nous"};
+  const F=[["Les costumes des verbes conjugués s'appellent…",["des terminaisons","des infinitifs","des sommets"],"Les costumes des verbes conjugués s'appellent des terminaisons."],
+    ["Le verbe à l'infinitif…",["ne travaille pas","travaille","change de costume"],"À l'infinitif, le verbe se repose à la maison : il ne travaille pas."],
+    ["Le verbe conjugué…",["travaille et change de costume","ne change jamais","finit toujours par -er"],"Le verbe conjugué travaille : il a plein de costumes différents."],
+    ["Pour trouver l'infinitif, je dis…",["Je suis en train de…","Hier, je…","Demain, je…"],"Je suis en train de manger : manger est à l'infinitif."],
+    ["Conjuguer un verbe, c'est…",["lui trouver le bon costume","l'écrire en majuscules","le souligner"],"Conjuguer, c'est trouver le bon costume (la bonne terminaison)."],
+    ["« je mangerai », c'est…",["le futur","le passé","le présent"],"Mangerai : demain, plus tard → le futur."],
+    ["« je mangeais », c'est…",["le passé","le futur","le présent"],"Mangeais : hier, avant → le passé."],
+    ["« je mange », c'est…",["le présent","le passé","le futur"],"Mange : maintenant → le présent."],
+    ["Les verbes à l'infinitif finissent souvent par…",["-er, -ir, -oir, -re","-ons, -ez","-ais, -ait"],"manger, finir, voir, lire : -er, -ir, -oir, -re."]];
+  const d1=deck([...INF.map(v=>[v,true]),...CONJ.map(c=>[c[0],false])]),d2=deck(CONJ),d3=deck(INF),dF=deck(F);
+  quizGame({
+    lesson:`<p class="q">Verbe à l'infinitif, verbe conjugué (C2)</p>
+      <div class="ladder">
+        <div class="step"><b>🏠</b><span>Le verbe à l'<strong>infinitif</strong>, c'est le verbe <strong>qui ne travaille pas</strong>. Il finit souvent par <strong>-er, -ir, -oir, -re</strong>.<br><i>Je suis en train de… manger, sauter, grandir, voir, finir, danser, apprendre, lire.</i></span></div>
+        <div class="step"><b>🦸</b><span>Le verbe <strong>conjugué</strong>, c'est le verbe <strong>qui travaille</strong>. Il a plein de <strong>costumes différents</strong> !<br><i>mang<mark>er</mark> → je mang<mark>e</mark> (présent) · je mang<mark>eais</mark> (passé) · je mang<mark>erai</mark> (futur)</i></span></div>
+        <div class="step"><b>👕</b><span><strong>Conjuguer</strong> un verbe, c'est lui trouver <strong>le bon costume</strong> !<br><i>Demain, nous mang<mark>erons</mark> des crêpes.</i></span></div>
+        <div class="step"><b>💡</b><span>Les <strong>costumes</strong> des verbes conjugués s'appellent des <strong>terminaisons</strong>.</span></div>
+      </div>`,
+    gens:[
+      sh=>{const [w,inf]=d1(sh);return {label:"Ce verbe est…",say:w,body:`<div class="big">${w}</div>`,opts:["à l'infinitif","conjugué"],ans:inf?"à l'infinitif":"conjugué",keep:true,recap:`${w} : ${inf?"à l'infinitif":"conjugué"}`,tip:inf?`On peut dire « je suis en train de ${w} » : il ne travaille pas.`:"Il a un costume : il travaille avec quelqu'un (je, tu, il…)."};},
+      sh=>{const [c,inf]=d2(sh),f=c.split(" ").pop().replace(/^j'/,"");return {label:`Quel est l'infinitif de « ${c} » ?`,opts:mk(inf,sh([...WRONG[inf],f])),ans:inf,recap:`${c} → ${inf}`,tip:`Je suis en train de ${inf}.`};},
+      sh=>{const inf=d3(sh),c=sh(CONJ.filter(x=>x[1]!==inf)).slice(0,2).map(x=>x[0]);return {label:"Quel verbe est à l'infinitif ?",opts:sh([inf,...c]),ans:inf,keep:true,recap:`${inf} est à l'infinitif`,tip:`Je suis en train de ${inf}.`};},
+      sh=>{const [inf,cpl]=sh(V)[0],t=sh(["passé","présent","futur"])[0],p=sh(["je","il","nous"])[0],tw=sh(TW[t])[0];
+        const o=["passé","présent","futur"].map(x=>form(inf,x,p)),a=form(inf,t,p);
+        return {label:"Trouve le bon costume :",body:`<div class="big" style="font-size:1.3rem">${tw}, ${SUBJ[p]} <span class="blank">?</span> ${cpl}.</div>`,fill:a,opts:sh(o),ans:a,keep:true,recap:`${tw}, ${SUBJ[p]} ${a} ${cpl}.`,tip:`« ${tw} » → c'est le ${t} : ${a}.`};},
+      sh=>{const [q,o,t]=dF(sh);return {label:q,opts:o,ans:o[0],col:true,recap:`${q} ${o[0]}`,tip:t};}
+    ]
+  });
+}
+
+/* ================= Cal 15 : les presque-doubles ================= */
+function houseSvg(n,lines){return `<svg viewBox="0 0 220 ${92+lines.length*34}" style="width:100%;max-width:260px;display:block;margin:6px auto" role="img" aria-label="La maison du ${n}">
+  <polygon points="10,72 110,8 210,72" fill="#4a4f6a"/><circle cx="110" cy="46" r="20" fill="#fff" stroke="#1f2a5c" stroke-width="2"/><text x="110" y="53" text-anchor="middle" font-size="20" font-family="Andika,sans-serif" fill="#1f2a5c">${n}</text>
+  <rect x="18" y="72" width="184" height="${14+lines.length*34}" fill="#fff" stroke="#1f2a5c" stroke-width="2.5"/>
+  ${lines.map((l,k)=>(Array.isArray(l)?l:[l]).map((t,j,a)=>`<text x="${a.length>1?(j?158:62):110}" y="${102+k*34}" text-anchor="middle" font-size="${a.length>1?16:19}" font-family="Andika,sans-serif" fill="#1f2a5c">${t}</text>`).join("")).join("")}</svg>`;}
+function gamePresqueDoubles(){
+  const ps=a=>{const b=a+1;return Math.random()<.5?[a,b]:[b,a];};
+  const dA=deck([2,3,4,5,6,7,8]),dB=deck([2,3,4,5,6,7,8]),dC=deck([2,3,4,5,6,7,8]),dD=deck([2,3,4,5,6,7,8]);
+  quizGame({
+    lesson:`<p class="q">Les presque-doubles (Cal 15)</p>
+      <div class="rule" style="background:var(--tile);border-radius:10px;padding:12px 14px;line-height:1.6">Un <strong>presque-double</strong>, c'est deux nombres <strong>qui se suivent</strong> : 6 + 7.<br>
+      J'utilise le <strong>double</strong> que je connais :<br><i>6 + 7 = 6 + 6 <strong>+ 1</strong> = 13<br>ou 7 + 7 <strong>− 1</strong> = 13</i></div>
+      <div class="dbl">${[3,4,5,6,7,8].map(a=>`<span>${a} + ${a+1} = <b>${2*a+1}</b><br><small>${a} + ${a} + 1</small></span>`).join("")}</div>
+      ${houseSvg(13,[["6 + 7","7 + 6"],["6 + 6 + 1","7 + 7 − 1"]])}`,
+    gens:[
+      sh=>{const a=dA(sh),[x,y]=ps(a),v=2*a+1;return {label:"Calcule :",body:`<div class="big">${x} + ${y} = <span class="blank">?</span></div>`,fill:String(v),opts:mk(v,sh([v-1,v+1,2*a,2*a+2])),ans:String(v),recap:`${x} + ${y} = ${v}`,tip:`${a} + ${a} + 1 = ${v}`};},
+      sh=>{const a=dB(sh),[x,y]=ps(a),b=a+1,small=Math.random()<.5,ok=small?`${a} + ${a} + 1`:`${b} + ${b} − 1`;
+        const bad=small?[`${a} + ${a} − 1`,`${b} + ${b} + 1`]:[`${b} + ${b} + 1`,`${a} + ${a} − 1`];
+        return {label:`Pour calculer ${x} + ${y}, j'utilise…`,opts:sh([ok,...bad]),ans:ok,keep:true,col:true,recap:`${x} + ${y} = ${ok} = ${2*a+1}`,tip:`Le petit double + 1, ou le grand double − 1 : ${2*a+1}.`};},
+      sh=>{const a=dC(sh),v=2*a+1,good=`${a} + ${a+1}`;return {label:`Qui habite dans la maison du ${v} ?`,body:houseSvg(v,["?"]),opts:sh([good,`${a} + ${a+2}`,`${a-1} + ${a}`]),ans:good,keep:true,recap:`${good} = ${v}`,tip:`${a} + ${a} + 1 = ${v}`};},
+      sh=>{const a=dD(sh),b=a+1,v=2*a+1,up=Math.random()<.5,e=up?`${a} + ${a} + 1`:`${b} + ${b} − 1`;return {label:"Calcule :",body:`<div class="big">${e} = <span class="blank">?</span></div>`,fill:String(v),opts:mk(v,sh([v-1,v+1,v+2])),ans:String(v),recap:`${e} = ${v}`,tip:up?`${a} + ${a} = ${2*a}, + 1 = ${v}`:`${b} + ${b} = ${2*b}, − 1 = ${v}`};},
+      sh=>{const a=R(2,8),[x,y]=ps(a),v=2*a+1;return {label:"Complète :",body:`<div class="big">${x} + <span class="blank">?</span> = ${v}</div>`,fill:String(y),opts:mk(y,sh([x,y+1,y-1].filter(n=>n>0))),ans:String(y),recap:`${x} + ${y} = ${v}`,tip:`C'est un presque-double : ${x} et ${y} se suivent.`};}
+    ]
+  });
+}
+
 /* ================= Questionner le monde : le temps ================= */
 const JOURS=["lundi","mardi","mercredi","jeudi","vendredi","samedi","dimanche"];
 const MOIS=["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
@@ -1723,6 +1797,8 @@ const GAMES=[
  {id:"sd",cat:"sons",ic:"🥋",bg:"#ffe3ef",t:"Le son [d]",d:"Mots de la semaine · fiche 06",sub:"d, dd… le judo, l'addition",run:gameSonD,css:"mes",accent:"#ff8fb8"},
  {id:"on",cat:"sons",ic:"✏️",bg:"#ffd6ec",t:"Le son [on]",d:"Mots de la semaine · fiche 07",sub:"Leçon n°7 · 10, 20 ou 30 questions · Écoute, choisis, écris !",run:gameOn},
  {id:"sch",cat:"sons",ic:"🐄",bg:"#ffe3ef",t:"Le son [ch]",d:"Mots de la semaine · fiche 08",sub:"ch… une ruche, un cochon, une vache",run:gameSonCH,css:"mes",accent:"#ff8fb8"},
+ {id:"soi",cat:"sons",ic:"🐟",bg:"#ffe3ef",t:"Le son [oi]",d:"Mots de la semaine · fiche 09",sub:"oi, oy… une boite, un poisson, le noyau",run:gameSonOI,css:"mes",accent:"#ff8fb8"},
+ {id:"sf",cat:"sons",ic:"🧵",bg:"#ffe3ef",t:"Le son [f]",d:"Mots de la semaine · fiche 10",sub:"f, ff, ph… le fil, l'affiche, un phare",run:gameSonF,css:"mes",accent:"#ff8fb8"},
  {id:"dictee",cat:"orth",ic:"✏️",bg:"#ffe9d6",t:"La dictée du soir",d:"J'écoute, j'écris, je vérifie · carnet de mots",sub:"Mots et phrases de tout ton cahier",run:gameDictee,css:"mes",accent:"#ffb066"},
  {id:"mots",cat:"orth",ic:"🧩",bg:"#ffe9d6",t:"Les mots croisés",d:"Les mots des fiches de sons, à écrire dans la grille",sub:"J'écoute, je trouve, j'écris lettre par lettre",run:gameMots,css:"mes",accent:"#ffb066"},
  {id:"mbp",cat:"orth",ic:"🍬",bg:"#ffe9d6",t:"M devant m, b, p",d:"tomber, chambre, important · O1",sub:"Le n devient m… sauf bonbon !",run:gameMBP,css:"mes",accent:"#ffb066"},
@@ -1732,6 +1808,7 @@ const GAMES=[
  {id:"phrase",cat:"gram",ic:"📝",bg:"#d7e6ff",t:"Lettre, mot, phrase",d:"Majuscule, point, ponctuation · G1 à G4",sub:"Majuscule, point, et un sens",run:gamePhrase,css:"mes",accent:"#7aa7ff"},
  {id:"phrases",cat:"gram",ic:"❓",bg:"#d7e6ff",t:"Les types de phrases",d:"Déclaratif, interrogatif, impératif · G5",sub:"Déclaratif · interrogatif · impératif",run:gamePhrases,css:"mes",accent:"#7aa7ff"},
  {id:"temps",cat:"conj",ic:"⏳",bg:"#e6f0d4",t:"Passé, présent, futur",d:"hier, maintenant, demain · C1",sub:"Avant, maintenant, plus tard",run:gameTemps,css:"mes",accent:"#8fc06a"},
+ {id:"verbe",cat:"conj",ic:"🦸",bg:"#e6f0d4",t:"Verbe à l'infinitif, verbe conjugué",d:"Le verbe qui travaille et ses costumes · C2",sub:"Infinitif, verbe conjugué et terminaisons",run:gameVerbe,css:"mes",accent:"#8fc06a"},
  {id:"alpha",cat:"voc",ic:"🔤",bg:"#d9f3e3",t:"L'alphabet",d:"Voyelles, consonnes, ordre alphabétique · V2, V3",sub:"26 lettres, 6 voyelles",run:gameAlpha,css:"mes",accent:"#4fc489"},
  {id:"ecole",cat:"voc",ic:"🏫",bg:"#d9f3e3",t:"L'école",d:"Les consignes et le matériel · V1, V4",sub:"Entoure, souligne… et le cartable !",run:gameEcole,css:"mes",accent:"#4fc489"},
  {id:"syno",cat:"voc",ic:"🟰",bg:"#d9f3e3",t:"Les synonymes",d:"Même sens · V7",sub:"Même sens ou sens très proche",run:gameSyno,css:"mes",accent:"#4fc489"},
@@ -1746,6 +1823,7 @@ const GAMES=[
  {id:"addsub",cat:"cal",ic:"➕",bg:"#e3f7c8",t:"Ajouter et retrancher",d:"8 + 5, 16 − 9 · Cal 2, Cal 3",sub:"J'avance, je recule sur la bande numérique",run:gameAddSub,css:"mes",accent:"#8fd14f"},
  {id:"tables",cat:"cal",ic:"🧮",bg:"#e3f7c8",t:"Les tables d'addition",d:"Tables du 1 au 7 et sommes à 10 · Cal 4 à Cal 13",sub:"Les tables à connaître par cœur",run:gameTables,css:"mes",accent:"#8fd14f"},
  {id:"doubles",cat:"cal",ic:"✌️",bg:"#e3f7c8",t:"Les doubles",d:"De 0 + 0 à 15 + 15 · Cal 11",sub:"Le double, c'est le nombre + lui-même",run:gameDoubles,css:"mes",accent:"#8fd14f"},
+ {id:"pdbl",cat:"cal",ic:"🏠",bg:"#e3f7c8",t:"Les presque-doubles",d:"6 + 7 = 6 + 6 + 1 · Cal 15",sub:"Deux nombres qui se suivent : j'utilise le double",run:gamePresqueDoubles,css:"mes",accent:"#8fd14f"},
  {id:"dix",cat:"cal",ic:"🔟",bg:"#e3f7c8",t:"Ajouter ou enlever 10",d:"51 + 10, 44 − 10 · Cal 12",sub:"Seul le chiffre des dizaines change",run:gameDix,css:"mes",accent:"#8fd14f"},
  {id:"pb",cat:"exo",ic:"🧙",bg:"#fde2d2",t:"Les problèmes",d:"Lire, calculer, répondre par une phrase",sub:"J'entoure la question, je calcule, je réponds",run:gameProblemes,css:"mes",accent:"#f08a5d"},
  {id:"m10",cat:"exo",ic:"🔟",bg:"#fde2d2",t:"Calcul mental + 10 / − 10",d:"55 + 10, 74 − 10…",sub:"Seules les dizaines bougent",run:gameMental10,css:"mes",accent:"#f08a5d"},
