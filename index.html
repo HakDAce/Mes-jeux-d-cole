@@ -1274,6 +1274,45 @@ function gameCentaines(){
   });
 }
 
+/* ================= Test d'orthographe : les mots outils des fiches de sons ================= */
+function gameMotsOutils(){
+  // mot → fautes fréquentes (pour « quel mot est bien écrit ? »)
+  const MO={"avec":["avèc","avek"],"alors":["alor","alord"],"après":["aprés","aprè"],"avant":["avent","avan"],"voilà":["voila","voilat"],"là-bas":["la-bas","là bas"],"déjà":["deja","déja"],"oui":["ouie","oui'"],"pour":["pourt","pourre"],"toujours":["toujour","toujourt"],"nous":["nou","noue"],"vous":["vou","voue"],"beaucoup":["beaucou","bocoup"],"sous":["sou","souse"],"surtout":["surtou","sur tout"],"où":["oû","oü"],"parce que":["par ce que","parsque"],"peut-être":["peut être","peutêtre"],"près de":["prés de","prè de"],"bien":["bein","biens"],"très":["trés","trè"],"trop":["tro","trot"],"tôt":["tot","tôts"],"tard":["tar","tare"],"demain":["demin","deumain"],"dans":["dan","dant"],"dedans":["dedant","dedan"],"dehors":["deors","dehor"],"dessus":["desus","dessu"],"dessous":["desous","dessou"],"devant":["devent","devan"],"derrière":["derière","derrierre"],"aujourd'hui":["aujourdhui","aujour d'hui"],"pendant":["pandant","pendent"],"pendant que":["pandant que","pendent que"],"chez":["chés","chè"],"chaque":["chak","chaques"],"voici":["voisi","voissi"],"pourquoi":["pourquoa","pour quoi"],"toi":["toa","tois"],"moi":["moa","mois"],"parfois":["parfoi","par fois"]};
+  const GR=[["⏰","Quand ?",["avant","après","déjà","demain","aujourd'hui","toujours","parfois","tôt","tard","pendant","pendant que","chaque","alors"]],
+    ["📍","Où ?",["dans","dedans","dehors","dessus","dessous","devant","derrière","sous","chez","près de","là-bas","où"]],
+    ["📏","Combien, comment ?",["beaucoup","très","trop","bien","surtout","peut-être"]],
+    ["🔗","Pour relier, montrer, répondre",["avec","pour","parce que","pourquoi","voici","voilà","oui"]],
+    ["🙋","Qui ?",["moi","toi","nous","vous"]]];
+  const P=[["Je joue ___ mon frère.","avec",["chez","sous"]],["Il pleut, ___ je prends mon parapluie.","alors",["avec","sous"]],["Je me brosse les dents ___ le repas.","après",["dedans","oui"]],["Je me lave les mains ___ de manger.","avant",["dehors","toi"]],
+    ["___ est mon cartable ?","Où",["Avec","Chaque"]],["Le chat dort ___ la table.","sous",["avec","alors"]],["J'aime ___ les gâteaux.","beaucoup",["dessous","chez"]],["Ce soir, je dors ___ mamie.","chez",["très","déjà"]],
+    ["___ matin, je bois du lait.","Chaque",["Dessous","Pourquoi"]],["Il fait froid ___ : mets ton manteau !","dehors",["beaucoup","pour"]],["Mon jouet est ___ la boîte.","dans",["très","oui"]],["Je chante ___ je me lave.","pendant que",["parce que","dessous"]],
+    ["Je pleure ___ je suis triste.","parce que",["pendant que","dedans"]],["Il va ___ pleuvoir : le ciel est gris.","peut-être",["dessous","chez"]],["La boulangerie est ___ l'école.","près de",["parce que","beaucoup"]],["Ce gâteau est ___ bon !","très",["dans","chez"]],
+    ["J'ai ___ mangé : j'ai mal au ventre !","trop",["sous","chez"]],["Je me lève ___ pour aller à l'école.","tôt",["dans","avec"]],["Le samedi, je me couche ___.","tard",["dans","chez"]],["___, nous irons à la piscine.","Demain",["Dessous","Avec"]],
+    ["___, c'est mon anniversaire !","Aujourd'hui",["Dessous","Chez"]],["Dans la file, je suis ___ Léa.","derrière",["beaucoup","oui"]],["___ mon dessin, je te l'offre !","Voici",["Dessous","Pendant"]],["___ pleures-tu ?","Pourquoi",["Dessous","Chez"]],
+    ["C'est ___ qui as gagné !","toi",["dans","sous"]],["Attends-___, j'arrive !","moi",["dans","très"]],["Mon chat dort ___ sur mon lit.","parfois",["dedans","pour"]],["Le soleil se lève ___ à l'est.","toujours",["dessous","chez"]],
+    ["« Veux-tu une crêpe ? » « ___, merci ! »","Oui",["Sous","Chez"]],["Ce cadeau est ___ toi.","pour",["très","déjà"]],["Il est ___ parti : tu arrives trop tard.","déjà",["dessous","chez"]],["Regarde l'oiseau ___, sur le toit !","là-bas",["avec","pour"]],
+    ["J'aime les fruits, ___ les fraises.","surtout",["dessous","chez"]],["___ allons à l'école ensemble.","Nous",["Dessous","Très"]],["___ êtes en retard !","Vous",["Dessous","Très"]],["Tu as ___ travaillé, bravo !","bien",["dans","sous"]],
+    ["Viens ___ la maison, il fait froid !","dans",["très","oui"]],["Il pleut : reste ___ !","dedans",["beaucoup","pour"]],["J'ai fini ma soupe : je pose le couvercle ___.","dessus",["beaucoup","oui"]],["Le sapin est là, et les cadeaux sont ___.","dessous",["beaucoup","pour"]],
+    ["La voiture est garée ___ la maison.","devant",["beaucoup","oui"]],["J'ai dormi ___ toute la nuit.","pendant",["chez","oui"]],["___ le bus ! Il arrive.","Voilà",["Dessous","Chaque"]]];
+  const W=Object.keys(MO),simple=W.filter(w=>/^[a-zàâéèêëîïôûùç]{3,9}$/.test(w));
+  const dT=deck(simple),dW=deck(W),dP=deck(P);
+  const cap=w=>w.charAt(0).toUpperCase()+w.slice(1);
+  quizGame({
+    lesson:`<p class="q">Le test des mots outils</p>
+      <div class="rule">Les <strong>mots outils</strong> sont de petits mots qui aident à faire la phrase. Ils ne changent <strong>jamais</strong> : pas de s, pas de e. Il faut les apprendre par cœur !<br><i>Les ${W.length} mots outils de tes fiches de sons.</i></div>
+      <div class="ladder">${GR.map(([ic,t,l])=>`<div class="step"><b>${ic}</b><span><strong>${t}</strong><br>${l.join(" · ")}</span></div>`).join("")}</div>
+      <p style="margin:10px 0 0;color:var(--soft)">Le test : j'écoute et j'écris, je trouve le mot bien écrit, je complète la phrase. Pour le réussir, il faut au moins 7 bonnes réponses sur 10.</p>`,
+    gens:[
+      sh=>{const w=dT(sh);return {label:"Écoute et écris le mot outil :",say:w,tiles:w,ans:w,recap:w,tip:`On écrit « ${w} ».`};},
+      sh=>{const w=dW(sh);return {label:"Quel mot est bien écrit ?",say:w,opts:sh([w,...MO[w]]),ans:w,keep:true,recap:w,tip:`On écrit « ${w} ».`};},
+      sh=>{const [s,a,d]=dP(sh),full=s.replace("___",a);return {label:"Complète la phrase :",say:full,body:`<div class="big" style="font-size:1.2rem">${s.replace("___",'<span class="blank">?</span>')}</div>`,fill:a,opts:sh([a,...d]),ans:a,keep:true,col:true,recap:full,tip:`« ${a} »`};},
+      sh=>{const w=dW(sh),bad=MO[w][0],p=P.find(x=>x[1].toLowerCase()===w);
+        const ctx=p?p[0].replace("___",`<s style="color:#e05a5a">${/^___/.test(p[0])?cap(bad):bad}</s>`):`<s style="color:#e05a5a">${bad}</s>`;
+        return {label:"Corrige le mot barré :",say:p?p[0].replace("___",p[1]):w,body:`<div class="big" style="font-size:1.2rem">${ctx}</div>`,opts:sh([w,MO[w][1]]),ans:w,keep:true,recap:w,tip:`On écrit « ${w} », pas « ${bad} ».`};}
+    ]
+  });
+}
+
 /* ================= Questionner le monde : le temps ================= */
 const JOURS=["lundi","mardi","mercredi","jeudi","vendredi","samedi","dimanche"];
 const MOIS=["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
@@ -1838,6 +1877,7 @@ const GAMES=[
  {id:"sf",cat:"sons",ic:"🧵",bg:"#ffe3ef",t:"Le son [f]",d:"Mots de la semaine · fiche 10",sub:"f, ff, ph… le fil, l'affiche, un phare",run:gameSonF,css:"mes",accent:"#ff8fb8"},
  {id:"dictee",cat:"orth",ic:"✏️",bg:"#ffe9d6",t:"La dictée du soir",d:"J'écoute, j'écris, je vérifie · carnet de mots",sub:"Mots et phrases de tout ton cahier",run:gameDictee,css:"mes",accent:"#ffb066"},
  {id:"mots",cat:"orth",ic:"🧩",bg:"#ffe9d6",t:"Les mots croisés",d:"Les mots des fiches de sons, à écrire dans la grille",sub:"J'écoute, je trouve, j'écris lettre par lettre",run:gameMots,css:"mes",accent:"#ffb066"},
+ {id:"outils",cat:"orth",ic:"🔧",bg:"#ffe9d6",t:"Le test des mots outils",d:"Les mots outils de toutes les fiches de sons",sub:"avec, toujours, beaucoup, parce que… sans faute !",run:gameMotsOutils,css:"mes",accent:"#ffb066"},
  {id:"mbp",cat:"orth",ic:"🍬",bg:"#ffe9d6",t:"M devant m, b, p",d:"tomber, chambre, important · O1",sub:"Le n devient m… sauf bonbon !",run:gameMBP,css:"mes",accent:"#ffb066"},
  {id:"liaison",cat:"orth",ic:"🐘",bg:"#ffe9d6",t:"Les liaisons",d:"un‿éléphant · O3",sub:"Je les entends, je ne les écris pas",run:gameLiaison,css:"mes",accent:"#ffb066"},
  {id:"sc",cat:"orth",ic:"🐍",bg:"#ffe9d6",t:"Les lettres S et C",d:"poison / poisson · coq / glace / garçon · O3, O4",sub:"[s], [z], [k]… et la cédille",run:gameSC,css:"mes",accent:"#ffb066"},
