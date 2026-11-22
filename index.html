@@ -1237,6 +1237,43 @@ function gamePresqueDoubles(){
   });
 }
 
+/* ================= N12 : les nombres de 100 à 999 (en lettres, tirets partout) ================= */
+function lettres3(n){const h=Math.floor(n/100),r=n%100;
+  const c=(h===1?"cent":U[h]+"-cent")+(h>1&&r===0?"s":"");
+  return r===0?c:c+"-"+enLettres(r).replace(/ /g,"-");}
+function faux3(n){const h=Math.floor(n/100),r=n%100,w=lettres3(n),f=[];
+  if(h>1&&r===0)f.push(w.replace(/cents$/,"cent"));
+  if(h>1&&r>0)f.push(w.replace("-cent-","-cents-"));
+  if(h===1)f.push("un-"+w);
+  if(r===80)f.push(w.replace(/vingts$/,"vingt"));
+  if(r>80)f.push(w.replace("quatre-vingt-","quatre-vingts-"));
+  f.push(w.replace(/-/g," "));
+  return f;}
+function gameCentaines(){
+  const F=[["Entre chaque mot d'un nombre, je mets…",["un tiret","un espace","une virgule"],"Je mets des tirets entre chaque mot : deux-cent-seize."],
+    ["Je mets un s à « cent » quand…",["il n'y a rien après","il y a un nombre après","toujours"],"200 : deux-cents, mais 216 : deux-cent-seize."],
+    ["Je mets un s à « quatre-vingt » quand…",["il n'y a rien après","il y a un nombre après","jamais"],"180 : cent-quatre-vingts, mais 185 : cent-quatre-vingt-cinq."],
+    ["100 s'écrit…",["cent","un-cent","cents"],"100 s'écrit « cent », sans « un » devant."],
+    ["Dans « cent », est-ce qu'il y a un s ?",["Non, jamais pour 100","Oui, toujours"],"Le s va seulement quand il y a plusieurs cents : deux-cents, trois-cents…"]];
+  const dF=deck(F);
+  const pick=()=>{const r=Math.random(),h=R(1,9);return r<.3?h*100:r<.45?h*100+80:r<.6?h*100+R(81,89):h*100+R(1,79);};
+  const show=s=>s.replace(/(cents|vingts)/g,"<mark>$1</mark>");
+  quizGame({
+    lesson:`<p class="q">Les nombres de 100 à 999 (N12)</p>
+      <div class="dbl">${[1,2,3,4,5,6,7,8,9].map(h=>`<span>${h*100} <b style="white-space:nowrap">${lettres3(h*100)}</b></span>`).join("")}</div>
+      <div class="ladder">
+        <div class="step"><b>➖</b><span>Je mets des <strong>tirets entre chaque mot</strong>.</span></div>
+        <div class="step"><b>s</b><span>Je mets un <strong>s</strong> à <strong>cent</strong> et <strong>quatre-vingt</strong> quand <strong>il n'y a rien après</strong>.<br><i>200 : deux-cent<mark>s</mark> mais 216 : deux-cent-seize<br>180 : cent-quatre-vingt<mark>s</mark> mais 185 : cent-quatre-vingt-cinq</i></span></div>
+      </div>`,
+    gens:[
+      sh=>{const n=pick(),w=lettres3(n);return {label:`Comment s'écrit <strong>${n}</strong> ?`,say:String(n),opts:mk(w,sh([...faux3(n),lettres3(n+1>999?n-1:n+1)])),ans:w,col:true,recap:`${n} : ${w}`,tip:/s$/.test(w)?"Rien après : je mets un s.":"Des tirets entre chaque mot, et pas de s s'il y a quelque chose après."};},
+      sh=>{const n=pick(),w=lettres3(n),h=Math.floor(n/100),c=[n+1,n+10,n-10,(h%9+1)*100+n%100,n+100].filter(x=>x>=100&&x<=999&&x!==n);return {label:"Quel nombre est écrit ?",body:`<div class="big" style="font-size:1.25rem">${w}</div>`,opts:mk(n,sh(c)),ans:String(n),recap:`${w} = ${n}`,tip:`${w} = ${n}`};},
+      sh=>{const n=pick(),w=lettres3(n),bad=sh(faux3(n))[0];const okFirst=Math.random()<.5;return {label:"Quelle écriture est juste ?",say:String(n),body:`<div class="big">${n}</div>`,opts:okFirst?[w,bad]:[bad,w],ans:w,keep:true,col:true,recap:`${n} : ${w}`,tip:/s$/.test(w)?"Rien après : je mets un s.":"Des tirets entre chaque mot, et un s seulement s'il n'y a rien après."};},
+      sh=>{const [q,o,t]=dF(sh);return {label:q,opts:o,ans:o[0],col:true,recap:`${q} ${o[0]}`,tip:t};}
+    ]
+  });
+}
+
 /* ================= Questionner le monde : le temps ================= */
 const JOURS=["lundi","mardi","mercredi","jeudi","vendredi","samedi","dimanche"];
 const MOIS=["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
@@ -1820,6 +1857,7 @@ const GAMES=[
  {id:"nombres",cat:"num",ic:"🔢",bg:"#efe2ff",t:"Les nombres jusqu'à 99",d:"Dizaines, avant/après, comparer, en lettres · N3 à N7, N10",sub:"Lire, écrire, comparer",run:gameNombres,css:"mes",accent:"#a77bf0"},
  {id:"ordre",cat:"num",ic:"🦒",bg:"#efe2ff",t:"Ranger les nombres",d:"Ordre croissant et décroissant · N8, N9",sub:"Du plus petit au plus grand… et l'inverse !",run:gameOrdre,css:"mes",accent:"#a77bf0"},
  {id:"cent",cat:"num",ic:"💯",bg:"#efe2ff",t:"Le nombre 100",d:"cent · 1c 0d 0u · 10 dizaines · ±1, ±10 · N11",sub:"10 dizaines = 100 unités",run:gameCent,css:"mes",accent:"#a77bf0"},
+ {id:"c999",cat:"num",ic:"✍️",bg:"#efe2ff",t:"Les nombres de 100 à 999",d:"Écrire en lettres · tirets · le s de cent et quatre-vingt · N12",sub:"deux-cents mais deux-cent-seize",run:gameCentaines,css:"mes",accent:"#a77bf0"},
  {id:"addsub",cat:"cal",ic:"➕",bg:"#e3f7c8",t:"Ajouter et retrancher",d:"8 + 5, 16 − 9 · Cal 2, Cal 3",sub:"J'avance, je recule sur la bande numérique",run:gameAddSub,css:"mes",accent:"#8fd14f"},
  {id:"tables",cat:"cal",ic:"🧮",bg:"#e3f7c8",t:"Les tables d'addition",d:"Tables du 1 au 7 et sommes à 10 · Cal 4 à Cal 13",sub:"Les tables à connaître par cœur",run:gameTables,css:"mes",accent:"#8fd14f"},
  {id:"doubles",cat:"cal",ic:"✌️",bg:"#e3f7c8",t:"Les doubles",d:"De 0 + 0 à 15 + 15 · Cal 11",sub:"Le double, c'est le nombre + lui-même",run:gameDoubles,css:"mes",accent:"#8fd14f"},
