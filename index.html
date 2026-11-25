@@ -1313,6 +1313,111 @@ function gameMotsOutils(){
   });
 }
 
+/* ================= EG5 : triangle et quadrilatère ================= */
+function gameTriQuad(){
+  const NOM={3:"un triangle",4:"un quadrilatère"};
+  const F=[["Une figure qui a 3 côtés et 3 sommets est…",["un triangle","un quadrilatère","un rond"],"3 côtés et 3 sommets : c'est un triangle."],
+    ["Une figure qui a 4 côtés et 4 sommets est…",["un quadrilatère","un triangle","un rond"],"4 côtés et 4 sommets : c'est un quadrilatère."],
+    ["Un triangle a…",["3 côtés et 3 sommets","4 côtés et 4 sommets","3 côtés et 4 sommets"],"TRIangle : TRois côtés, TRois sommets."],
+    ["Un quadrilatère a…",["4 côtés et 4 sommets","3 côtés et 3 sommets","4 côtés et 3 sommets"],"QUAdrilatère : QUAtre côtés, QUAtre sommets."],
+    ["Dans « triangle », « tri » fait penser à…",["trois","quatre","dix"],"TRIangle → TRois."],
+    ["Dans « quadrilatère », « qua » fait penser à…",["quatre","trois","cinq"],"QUAdrilatère → QUAtre."],
+    ["Un triangle et un quadrilatère sont des…",["polygones","ronds","lignes ouvertes"],"Ce sont des figures fermées tracées à la règle : des polygones."]];
+  const dF=deck(F);
+  quizGame({
+    lesson:`<p class="q">Les polygones particuliers (EG5)</p>
+      <div class="ladder">
+        <div class="step"><b>3</b><span>Une figure qui a <strong>trois côtés</strong> et <strong>trois sommets</strong> est un <strong>triangle</strong>. <i>(<u>tr</u>ois → <u>tr</u>iangle)</i>${figSvg("poly",polyPts(3),{w:200,dots:true,side:0,sideColor:"#4cb8c9"}).replace(/r="6" fill="#1f2a5c"/g,'r="7" fill="#ff5fa2"')}</span></div>
+        <div class="step"><b>4</b><span>Une figure qui a <strong>quatre côtés</strong> et <strong>quatre sommets</strong> est un <strong>quadrilatère</strong>. <i>(<u>qua</u>tre → <u>qua</u>drilatère)</i>${figSvg("poly",polyPts(4),{w:200,dots:true,side:0,sideColor:"#4cb8c9"}).replace(/r="6" fill="#1f2a5c"/g,'r="7" fill="#ff5fa2"')}</span></div>
+      </div><p style="margin:6px 0 0;color:var(--soft)">En bleu : un côté. En rose : les sommets.</p>`,
+    gens:[
+      sh=>{const n=sh([3,4])[0];return {label:"Comment s'appelle cette figure ?",body:figSvg("poly",polyPts(n)),opts:["un triangle","un quadrilatère"],ans:NOM[n],keep:true,recap:`${n} côtés : ${NOM[n]}`,tip:n===3?"Je compte 3 côtés : c'est un triangle.":"Je compte 4 côtés : c'est un quadrilatère."};},
+      sh=>{const n=sh([3,4,4,5,6,3])[0],t=sh([3,4])[0],ok=n===t;return {label:`Est-ce ${NOM[t]} ?`,body:figSvg("poly",polyPts(n),{dots:true}),opts:["Oui","Non"],ans:ok?"Oui":"Non",keep:true,recap:`Cette figure a ${n} côtés`,tip:ok?`Elle a ${n} côtés et ${n} sommets : c'est ${NOM[t]}.`:`Elle a ${n} côtés : ce n'est pas ${NOM[t]}.`};},
+      sh=>{const n=sh([3,4])[0],P=polyPts(n),side=Math.random()<.5,i=R(0,n-1);return {label:side?"Le trait rose est…":"Le point rose est…",body:figSvg("poly",P,side?{side:i}:{vertex:i}),opts:["un côté","un sommet"],ans:side?"un côté":"un sommet",keep:true,recap:side?"Le trait droit est un côté":"Le coin est un sommet",tip:side?"Les traits droits sont les côtés.":"Les coins sont les sommets."};},
+      sh=>{const n=sh([3,4])[0],w=Math.random()<.5;return {label:`Combien de ${w?"sommets":"côtés"} a ${NOM[n]} ?`,opts:mk(n,sh([3,4,5].filter(x=>x!==n))),ans:String(n),recap:`${NOM[n]} a ${n} côtés et ${n} sommets`,tip:n===3?"TRIangle : TRois.":"QUAdrilatère : QUAtre."};},
+      sh=>{const [q,o,t]=dF(sh);return {label:q,opts:o,ans:o[0],col:true,recap:`${q} ${o[0]}`,tip:t};}
+    ]
+  });
+}
+
+/* ================= Cal 17 : la table d'addition du 9 ================= */
+function gameTable9(){
+  const dA=deck([0,1,2,3,4,5,6,7,8,9,10]),dB=deck([0,1,2,3,4,5,6,7,8,9,10]),dC=deck([1,2,3,4,5,6,7,8,9,10]);
+  quizGame({
+    lesson:`<p class="q">La table d'addition du 9 (Cal 17)</p>
+      <div class="dbl">${[0,1,2,3,4,5,6,7,8,9,10].map(a=>`<span>${a} + 9 = <b>${a+9}</b></span>`).join("")}</div>
+      <div class="rule" style="margin-top:8px">Astuce : ajouter 9, c'est ajouter <strong>10</strong> puis enlever <strong>1</strong>.<br><i>6 + 9 → 6 + 10 = 16, puis 16 − 1 = <strong>15</strong></i></div>`,
+    gens:[
+      sh=>{const a=dA(sh),s=a+9;return {label:"Calcule :",body:`<div class="big">${a} + 9 = <span class="blank">?</span></div>`,fill:String(s),opts:mk(s,sh([s+1,s-1,a+10,s+2].filter(x=>x>=0))),ans:String(s),recap:`${a} + 9 = ${s}`,tip:`${a} + 10 = ${a+10}, moins 1 = ${s}.`};},
+      sh=>{const a=dB(sh),s=a+9;return {label:"Calcule :",body:`<div class="big">9 + ${a} = <span class="blank">?</span></div>`,fill:String(s),opts:mk(s,sh([s+1,s-1,s+2].filter(x=>x>=0))),ans:String(s),recap:`9 + ${a} = ${s}`,tip:`9 + ${a} = ${a} + 9 = ${s}.`};},
+      sh=>{const a=dC(sh),s=a+9;return {label:"Complète :",body:`<div class="big"><span class="blank">?</span> + 9 = ${s}</div>`,fill:String(a),opts:mk(a,sh([a+1,a-1,a+2].filter(x=>x>=0))),ans:String(a),recap:`${a} + 9 = ${s}`,tip:`${s} − 9 = ${a}.`};},
+      sh=>{const a=R(1,10),s=a+9;return {label:`Pour calculer ${a} + 9, je fais…`,opts:sh([`${a} + 10 − 1`,`${a} + 10 + 1`,`${a} + 9 + 1`]),ans:`${a} + 10 − 1`,keep:true,col:true,recap:`${a} + 9 = ${a} + 10 − 1 = ${s}`,tip:"Ajouter 9, c'est ajouter 10 puis enlever 1."};}
+    ]
+  });
+}
+
+/* ================= Cal 18 : les moitiés ================= */
+function gameMoities(){
+  const dA=deck([1,2,3,4,5,6,7,8,9,10]),dB=deck([1,2,3,4,5,6,7,8,9,10]),dC=deck([2,3,4,5,6,7,8,9]),dD=deck([1,2,3,4,5,6,7,8,9,10]);
+  const ITEMS=["🍬","🍓","🍪","🧸","⭐","🍎"];
+  quizGame({
+    lesson:`<p class="q">Les moitiés (Cal 18)</p>
+      <div class="rule">La moitié, c'est <strong>deux fois moins</strong>. Je partage en <strong>deux parts égales</strong>.<br><i>La moitié de 14, c'est 7, car 7 + 7 = 14.</i></div>
+      <div class="dbl">${[1,2,3,4,5,6,7,8,9,10].map(k=>`<span>La moitié de ${2*k}, c'est <b>${k}</b></span>`).join("")}</div>`,
+    gens:[
+      sh=>{const k=dA(sh),n=2*k;return {label:`La moitié de ${n}, c'est…`,opts:mk(k,sh([k+1,k-1,n,k+2].filter(x=>x>0))),ans:String(k),recap:`La moitié de ${n}, c'est ${k}`,tip:`${k} + ${k} = ${n}.`};},
+      sh=>{const k=dB(sh),n=2*k;return {label:`${k} est la moitié de…`,opts:mk(n,sh([n+1,n-2,n+2,k].filter(x=>x>0&&x!==n))),ans:String(n),recap:`${k} est la moitié de ${n}`,tip:`Le double de ${k}, c'est ${n}.`};},
+      sh=>{const k=dC(sh),n=2*k,it=sh(ITEMS)[0];return {label:`Je partage ces ${n} ${it} en deux parts égales. Combien dans chaque part ?`,body:`<div class="big" style="font-size:1.5rem;letter-spacing:4px;line-height:1.6">${it.repeat(n)}</div>`,opts:mk(k,sh([k+1,k-1,n].filter(x=>x>0))),ans:String(k),recap:`${n} partagé en deux : ${k} chacun`,tip:`${k} + ${k} = ${n}.`};},
+      sh=>{const k=dD(sh),n=2*k;return {label:"Complète :",body:`<div class="big" style="font-size:1.3rem">Le double de ${k} est ${n},<br>donc la moitié de ${n} est <span class="blank">?</span></div>`,fill:String(k),opts:mk(k,sh([n,k+1,k-1].filter(x=>x>0))),ans:String(k),recap:`La moitié de ${n}, c'est ${k}`,tip:"La moitié, c'est l'inverse du double."};}
+    ]
+  });
+}
+
+/* ================= V9 : les familles de mots ================= */
+function gameFamilles(){
+  // [nom, radical (ou ""), mots de la famille, mot piège qui a l'air de la famille]
+  const FAM=[["neige","neig",["neige","neiger","enneigé","déneiger","neigeux"],""],
+    ["terre","terr",["terre","territoire","terrain","terrier","terrestre","enterrer"],"terrible"],
+    ["dent","dent",["dent","dentiste","dentifrice","dentier"],"accident"],
+    ["jardin","jardin",["jardin","jardiner","jardinier","jardinage"],""],
+    ["lait","lait",["lait","laitier","laitage","allaiter"],"laid"],
+    ["fleur","fleur",["fleur","fleuriste","fleurir","fleuri"],"fleuve"],
+    ["chant","chant",["chant","chanter","chanteur","chanteuse"],"chantier"],
+    ["dessin","dessin",["dessin","dessiner","dessinateur"],"dessous"],
+    ["poisson","poisson",["poisson","poissonnier","poissonnerie"],"poison"],
+    ["école","écol",["école","écolier","écolière"],""],
+    ["montagne","montagn",["montagne","montagnard","montagneux"],"montrer"],
+    ["froid","froid",["froid","refroidir","froidement"],""],
+    ["glace","",["glace","glacé","glacier","glaçon"],""],
+    ["laver","lav",["laver","lavage","lavabo","lave-linge"],"lavande"]];
+  const PIEGE=[["politesse","police","potiron"]];
+  const F=[["Les mots de la même famille ont…",["une partie identique et un rapport de sens","seulement les mêmes premières lettres","le même nombre de lettres"],"Une partie identique (le radical) ET un rapport de sens."],
+    ["La partie identique des mots d'une famille s'appelle…",["le radical","la terminaison","le sommet"],"neige, neiger, enneigé : le radical est « neig »."],
+    ["politesse, police, potiron sont-ils de la même famille ?",["Non, ils ne font pas penser à la même chose","Oui, ils commencent pareil"],"Ils ont l'air de la même famille, mais leur sens n'a rien à voir."],
+    ["neige, neiger, enneigé, déneiger sont…",["de la même famille","des contraires","des mots outils"],"Ils ont tous « neig » et parlent de la neige."],
+    ["territoire, terrain, terrier, terrestre sont de la famille…",["terre","terrible","tirer"],"La famille TERRE !"]];
+  const dA=deck(FAM),dB=deck(FAM),dC=deck(FAM.filter(f=>f[1])),dF=deck(F);
+  const other=(sh,f)=>sh(FAM.filter(x=>x!==f))[0];
+  quizGame({
+    lesson:`<p class="q">Les familles de mots (V9)</p>
+      <div class="rule">Les mots de la même famille ont une <strong>partie identique</strong> (= le <strong>radical</strong>) et <strong>un rapport de sens</strong>.<br><i>Exemple : <mark>neig</mark>e – <mark>neig</mark>er – en<mark>neig</mark>é – dé<mark>neig</mark>er</i></div>
+      <div class="ladder">
+        <div class="step"><b>⚠️</b><span>Certains mots <strong>ont l'air</strong> de la même famille mais ils ne le sont pas, car ils ne font <strong>pas penser à la même chose</strong>.<br><i>politesse – potiron – police</i></span></div>
+        <div class="step"><b>👨‍👩‍👧‍👦</b><span>La famille <strong>TERRE</strong> : <mark>terr</mark>itoire · <mark>terr</mark>ain · <mark>terr</mark>ier · <mark>terr</mark>estre</span></div>
+      </div>`,
+    gens:[
+      sh=>{const f=dA(sh),[base,,ws,trap]=f,good=sh(ws.filter(w=>w!==base))[0],o=other(sh,f),bad=[trap||sh(o[2])[0],sh(o[2])[0]].filter((x,i,a)=>a.indexOf(x)===i);
+        while(bad.length<2)bad.push(sh(other(sh,f)[2])[0]);
+        return {label:`Quel mot est de la famille de « ${base} » ?`,say:base,opts:sh([good,...bad.slice(0,2)]),ans:good,keep:true,recap:`${base} → ${good}`,tip:`« ${good} » a la même partie et parle aussi de ${base}.`};},
+      sh=>{const f=dB(sh),[base,,ws,trap]=f,three=sh(ws).slice(0,3),intr=trap||sh(other(sh,f)[2])[0];
+        return {label:"Quel mot n'est pas de la même famille ?",opts:sh([...three,intr]),ans:intr,keep:true,recap:`« ${intr} » n'est pas de la famille de ${base}`,tip:trap?`« ${intr} » a l'air de la famille, mais il ne fait pas penser à ${base}.`:`« ${intr} » n'a pas la même partie ni le même sens.`};},
+      sh=>{const f=dC(sh),[base,rad,ws]=f,show=sh(ws).slice(0,3),fake1=rad.slice(0,-1)||rad+"e",fake2=base.length>3?base.slice(0,2):base+"s";
+        return {label:"Quelle est la partie identique (le radical) ?",body:`<div class="big" style="font-size:1.3rem">${show.join(" · ")}</div>`,opts:sh(uniq([rad,fake1,fake2]).filter(x=>x)),ans:rad,keep:true,recap:`${show.join(", ")} : radical « ${rad} »`,tip:`On retrouve « ${rad} » dans chaque mot.`};},
+      sh=>{const [q,o,t]=dF(sh);return {label:q,opts:o,ans:o[0],col:true,recap:`${q} ${o[0]}`,tip:t};}
+    ]
+  });
+}
+
 /* ================= Questionner le monde : le temps ================= */
 const JOURS=["lundi","mardi","mercredi","jeudi","vendredi","samedi","dimanche"];
 const MOIS=["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
@@ -1890,6 +1995,7 @@ const GAMES=[
  {id:"ecole",cat:"voc",ic:"🏫",bg:"#d9f3e3",t:"L'école",d:"Les consignes et le matériel · V1, V4",sub:"Entoure, souligne… et le cartable !",run:gameEcole,css:"mes",accent:"#4fc489"},
  {id:"syno",cat:"voc",ic:"🟰",bg:"#d9f3e3",t:"Les synonymes",d:"Même sens · V7",sub:"Même sens ou sens très proche",run:gameSyno,css:"mes",accent:"#4fc489"},
  {id:"contr",cat:"voc",ic:"↔️",bg:"#d9f3e3",t:"Les contraires",d:"Sens opposé · V8",sub:"Sens opposé : mot différent, ne…pas, préfixe",run:gameContr,css:"mes",accent:"#4fc489"},
+ {id:"fam",cat:"voc",ic:"👨‍👩‍👧",bg:"#d9f3e3",t:"Les familles de mots",d:"Radical et rapport de sens · V9",sub:"neige, neiger, enneigé, déneiger",run:gameFamilles,css:"mes",accent:"#4fc489"},
  {id:"ec1",cat:"ecri",ic:"🐌",bg:"#e9e3ff",t:"Les lettres courtes",d:"a, c, e, i, m, n, o… · 1 interligne",sub:"Elles restent dans le premier interligne",run:gameEcCourtes,css:"mes",accent:"#9b87f5"},
  {id:"ec2",cat:"ecri",ic:"⬆️",bg:"#e9e3ff",t:"Les lettres qui montent",d:"t, d → 2 · b, h, k, l → 3",sub:"Jusqu'où monte ma lettre ?",run:gameEcMontent,css:"mes",accent:"#9b87f5"},
  {id:"ec3",cat:"ecri",ic:"⬇️",bg:"#e9e3ff",t:"Les lettres qui descendent",d:"p, q → 2 · g, j, y, z → 3 · f",sub:"Jusqu'où descend ma lettre ?",run:gameEcDescendent,css:"mes",accent:"#9b87f5"},
@@ -1900,8 +2006,10 @@ const GAMES=[
  {id:"c999",cat:"num",ic:"✍️",bg:"#efe2ff",t:"Les nombres de 100 à 999",d:"Écrire en lettres · tirets · le s de cent et quatre-vingt · N12",sub:"deux-cents mais deux-cent-seize",run:gameCentaines,css:"mes",accent:"#a77bf0"},
  {id:"addsub",cat:"cal",ic:"➕",bg:"#e3f7c8",t:"Ajouter et retrancher",d:"8 + 5, 16 − 9 · Cal 2, Cal 3",sub:"J'avance, je recule sur la bande numérique",run:gameAddSub,css:"mes",accent:"#8fd14f"},
  {id:"tables",cat:"cal",ic:"🧮",bg:"#e3f7c8",t:"Les tables d'addition",d:"Tables du 1 au 7 et sommes à 10 · Cal 4 à Cal 13",sub:"Les tables à connaître par cœur",run:gameTables,css:"mes",accent:"#8fd14f"},
+ {id:"t9",cat:"cal",ic:"9️⃣",bg:"#e3f7c8",t:"La table d'addition du 9",d:"0 + 9 à 10 + 9 · Cal 17",sub:"+ 9, c'est + 10 puis − 1",run:gameTable9,css:"mes",accent:"#8fd14f"},
  {id:"doubles",cat:"cal",ic:"✌️",bg:"#e3f7c8",t:"Les doubles",d:"De 0 + 0 à 15 + 15 · Cal 11",sub:"Le double, c'est le nombre + lui-même",run:gameDoubles,css:"mes",accent:"#8fd14f"},
  {id:"pdbl",cat:"cal",ic:"🏠",bg:"#e3f7c8",t:"Les presque-doubles",d:"6 + 7 = 6 + 6 + 1 · Cal 15",sub:"Deux nombres qui se suivent : j'utilise le double",run:gamePresqueDoubles,css:"mes",accent:"#8fd14f"},
+ {id:"moit",cat:"cal",ic:"✂️",bg:"#e3f7c8",t:"Les moitiés",d:"La moitié de 2 à 20 · Cal 18",sub:"La moitié, c'est deux fois moins",run:gameMoities,css:"mes",accent:"#8fd14f"},
  {id:"dix",cat:"cal",ic:"🔟",bg:"#e3f7c8",t:"Ajouter ou enlever 10",d:"51 + 10, 44 − 10 · Cal 12",sub:"Seul le chiffre des dizaines change",run:gameDix,css:"mes",accent:"#8fd14f"},
  {id:"pb",cat:"exo",ic:"🧙",bg:"#fde2d2",t:"Les problèmes",d:"Lire, calculer, répondre par une phrase",sub:"J'entoure la question, je calcule, je réponds",run:gameProblemes,css:"mes",accent:"#f08a5d"},
  {id:"m10",cat:"exo",ic:"🔟",bg:"#fde2d2",t:"Calcul mental + 10 / − 10",d:"55 + 10, 74 − 10…",sub:"Seules les dizaines bougent",run:gameMental10,css:"mes",accent:"#f08a5d"},
@@ -1909,6 +2017,7 @@ const GAMES=[
  {id:"du",cat:"exo",ic:"🧱",bg:"#fde2d2",t:"Dizaines et unités : les pièges",d:"4d 12u, 6u 4d, 3d + 4d + 8…",sub:"Attention à l'ordre et aux unités en trop",run:gameDizUni,css:"mes",accent:"#f08a5d"},
  {id:"geo",cat:"geo",ic:"📐",bg:"#d6f1f5",t:"Tracer et aligner",d:"Tracer à la règle, points alignés · EG1, EG3",sub:"La règle et les points alignés",run:gameGeo,css:"mes",accent:"#4cb8c9"},
  {id:"poly",cat:"geo",ic:"🔷",bg:"#d6f1f5",t:"Les polygones",d:"Figure fermée tracée à la règle · côtés et sommets · EG4",sub:"Fermé, à la règle : côtés et sommets",run:gamePolygones,css:"mes",accent:"#4cb8c9"},
+ {id:"triq",cat:"geo",ic:"🔺",bg:"#d6f1f5",t:"Triangle et quadrilatère",d:"3 côtés, 4 côtés · les polygones particuliers · EG5",sub:"TRois côtés : triangle · QUAtre côtés : quadrilatère",run:gameTriQuad,css:"mes",accent:"#4cb8c9"},
  {id:"semaine",cat:"temps",ic:"📆",bg:"#ffeccc",t:"La semaine",d:"Les 7 jours · veille, lendemain, hier, demain",sub:"Hier, aujourd'hui, demain… et le weekend",run:gameSemaine,css:"mes",accent:"#f2a541"},
  {id:"mois",cat:"temps",ic:"🗓️",bg:"#ffeccc",t:"Les mois",d:"Les 12 mois · numéros · 30 ou 31 jours",sub:"De janvier à décembre, et le truc du poing",run:gameMois,css:"mes",accent:"#f2a541"},
  {id:"mes",cat:"gm",ic:"📏",bg:"#fcebb0",t:"Le Défi des mesures",d:"cm, m, km · mesurer avec la règle · GM",sub:"cm · m · km — choisis, compare, mesure !",run:gameMes}
