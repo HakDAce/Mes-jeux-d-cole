@@ -1418,6 +1418,95 @@ function gameFamilles(){
   });
 }
 
+/* ================= N14 : centaines, dizaines, unités ================= */
+function cduSvg(c,d,u){const G="#1f6b45",O="#f2a541",B="#2f5bd3",S="#1f2a5c";let g="",x=8;
+  for(let k=0;k<c;k++){g+=`<rect x="${x}" y="30" width="46" height="46" rx="3" fill="${G}" stroke="${S}" stroke-width="1.5"/>`;for(let t=1;t<10;t++)g+=`<line x1="${x+t*4.6}" y1="30" x2="${x+t*4.6}" y2="76" stroke="#ffffff55" stroke-width=".6"/>`;x+=52;}
+  x+=6;for(let k=0;k<d;k++){g+=`<rect x="${x}" y="8" width="9" height="90" rx="2" fill="${O}" stroke="${S}" stroke-width="1.2"/>`;x+=13;}
+  x+=8;const ux=x;for(let k=0;k<u;k++){const cx=ux+(k%3)*15+7,cy=20+Math.floor(k/3)*15;g+=`<circle cx="${cx}" cy="${cy}" r="6" fill="${B}"/>`;}
+  const W=Math.max(320,ux+52);
+  return `<svg viewBox="0 0 ${W} 106" style="width:100%;max-width:420px;display:block;margin:6px auto" role="img" aria-label="${c} plaques, ${d} barres, ${u} unités">${g}</svg>`;}
+function gameCDU(){
+  const pick=()=>{const r=Math.random();const c=R(1,9);return r<.2?c*100+R(1,9):r<.35?c*100+R(1,9)*10:c*100+R(10,99);};
+  const col=n=>{const s=String(n);return `<span style="color:#1f6b45">${s[0]}</span><span style="color:#d64545">${s[1]}</span><span style="color:#2f5bd3">${s[2]}</span>`;};
+  const NOM=["centaines","dizaines","unités"];
+  const F=[["Dans 157, le chiffre des dizaines est…",["5","15","1"],"Le chiffre des dizaines, c'est le chiffre du milieu : 5."],
+    ["Dans 157, le nombre de dizaines est…",["15","5","157"],"1 centaine = 10 dizaines, + 5 dizaines = 15 dizaines."],
+    ["Une centaine, c'est…",["10 dizaines","10 unités","100 dizaines"],"1 centaine = 10 dizaines = 100 unités."],
+    ["Une dizaine, c'est…",["10 unités","100 unités","1 unité"],"1 dizaine = 10 unités."],
+    ["157 = …",["100 + 50 + 7","1 + 5 + 7","100 + 5 + 7"],"1 centaine = 100, 5 dizaines = 50, 7 unités = 7."]];
+  const dF=deck(F);
+  quizGame({
+    lesson:`<p class="q">Centaines, dizaines, unités (N14)</p>
+      <div class="rule"><strong>${col(157)}</strong> se lit <span style="color:#1f6b45">cent</span> <span style="color:#d64545">cinquante</span>-<span style="color:#2f5bd3">sept</span>.</div>
+      ${cduSvg(1,5,7)}
+      <div class="big" style="font-size:1.3rem"><span style="color:#1f6b45">100</span> + <span style="color:#d64545">50</span> + <span style="color:#2f5bd3">7</span></div>
+      <div class="ladder">
+        <div class="step"><b>🔢</b><span>Dans 157, le <strong>chiffre</strong> des centaines est le <strong>1</strong>, des dizaines le <strong>5</strong>, des unités le <strong>7</strong>.</span></div>
+        <div class="step"><b>📦</b><span>Dans 157, j'ai : <strong>1 centaine</strong> · <strong>15 dizaines</strong> et 7 unités · <strong>157 unités</strong>.<br><i>Le <u>nombre</u> de dizaines est 15 (le chiffre des dizaines est 5).</i></span></div>
+      </div>`,
+    gens:[
+      sh=>{const n=pick(),k=R(0,2),s=String(n),a=s[k],oth=uniq([...s.split(""),"0",String((+a+1)%10)]).filter(x=>x!==a);return {label:`Dans <strong>${n}</strong>, quel est le chiffre des ${NOM[k]} ?`,say:String(n),opts:sh([a,...sh(oth).slice(0,2)]),ans:a,keep:true,recap:`${n} : chiffre des ${NOM[k]} = ${a}`,tip:`${col(n)} : centaines · dizaines · unités.`};},
+      sh=>{const n=pick(),nd=Math.floor(n/10),cd=String(n)[1],oth=uniq([cd,String(nd+1),String(n)]).filter(x=>x!==String(nd)).slice(0,2);return {label:`Dans <strong>${n}</strong>, combien y a-t-il de dizaines en tout ?`,say:String(n),opts:sh([String(nd),...oth]),ans:String(nd),keep:true,recap:`${n} : ${nd} dizaines en tout`,tip:`${Math.floor(n/100)} centaine${n>=200?"s":""} = ${Math.floor(n/100)*10} dizaines, + ${cd} = ${nd} dizaines. (Le chiffre des dizaines, lui, est ${cd}.)`};},
+      sh=>{const n=pick(),c=Math.floor(n/100),d=Math.floor(n/10)%10,u=n%10;return {label:"Quel nombre est représenté ?",body:cduSvg(c,d,u),opts:mk(n,sh([c*100+u*10+d,n+10,n+100>999?n-100:n+100,c*10+d+u].filter(x=>x!==n))),ans:String(n),recap:`${c} centaine${c>1?"s":""}, ${d} dizaine${d>1?"s":""}, ${u} unité${u>1?"s":""} = ${n}`,tip:`Plaques = centaines, barres = dizaines, points = unités : ${n}.`};},
+      sh=>{const n=pick(),c=Math.floor(n/100),d=Math.floor(n/10)%10,u=n%10,ok=`${c*100} + ${d*10} + ${u}`,oth=uniq([`${c} + ${d} + ${u}`,`${c*100} + ${d} + ${u}`,`${c*10} + ${d*10} + ${u}`]).filter(x=>x!==ok).slice(0,2);return {label:`<strong>${n}</strong> = …`,opts:sh([ok,...oth]),ans:ok,keep:true,recap:`${n} = ${ok}`,tip:`${c} centaine${c>1?"s":""} = ${c*100}, ${d} dizaine${d>1?"s":""} = ${d*10}, ${u} unité${u>1?"s":""} = ${u}.`};},
+      sh=>{const n=pick(),c=Math.floor(n/100),d=Math.floor(n/10)%10,u=n%10;return {label:`${c}c ${d}d ${u}u, c'est…`,opts:mk(n,sh([c*100+u*10+d,u*100+d*10+c,c*100+d+u].filter(x=>x!==n&&x>0))),ans:String(n),recap:`${c}c ${d}d ${u}u = ${n}`,tip:`Je mets les centaines, puis les dizaines, puis les unités : ${n}.`};},
+      sh=>{const [q,o,t]=dF(sh);return {label:q,opts:o,ans:o[0],col:true,recap:`${q} ${o[0]}`,tip:t};}
+    ]
+  });
+}
+
+/* ================= N13 : lexique de comparaison ================= */
+function gameComparaison(){
+  const OBJ=[["🍭","sucettes"],["🧁","gâteaux"],["👟","baskets"],["🍎","pommes"],["⚽","ballons"],["🐟","poissons"],["⭐","étoiles"],["🌸","fleurs"],["🚗","voitures"],["🧸","nounours"]];
+  const two=sh=>sh(OBJ).slice(0,2);
+  const row=(e,n)=>`<div style="font-size:1.6rem;letter-spacing:3px;line-height:1.5;text-align:center">${e.repeat(n)}</div>`;
+  quizGame({
+    lesson:`<p class="q">Lexique de comparaison (N13)</p>
+      <div class="ladder">
+        <div class="step"><b>➕</b><span>🩷 👟👟👟 · 🩵 👟👟<br>Il y a <strong>plus de</strong> baskets roses que de baskets bleues.</span></div>
+        <div class="step"><b>➖</b><span>Il y a <strong>moins de</strong> baskets bleues que de baskets roses.</span></div>
+        <div class="step"><b>🟰</b><span>${row("🍭",5).replace("1.6rem","1.2rem")}${row("🧁",5).replace("1.6rem","1.2rem")}Il y a <strong>autant de</strong> sucettes que de gâteaux.</span></div>
+      </div>`,
+    gens:[
+      sh=>{const [[e1,n1],[e2,n2]]=two(sh),a=R(1,8),b=Math.random()<.3?a:R(1,8),w=a>b?"plus":a<b?"moins":"autant";
+        return {label:"Complète :",body:`${row(e1,a)}${row(e2,b)}<div class="big" style="font-size:1.2rem">Il y a <span class="blank">?</span> de ${n1} que de ${n2}.</div>`,fill:w,opts:["plus","moins","autant"],ans:w,keep:true,recap:`${a} ${n1}, ${b} ${n2} : ${w} de ${n1}`,tip:a===b?`${a} et ${b} : c'est pareil, autant.`:`${a} ${a>b?">":"<"} ${b} : il y a ${w} de ${n1}.`};},
+      sh=>{const [[e1,n1],[e2,n2]]=two(sh),a=R(1,8);let b=R(1,8);if(b===a)b=a===8?7:a+1;const most=a>b?n1:n2;
+        return {label:"De quoi y a-t-il le plus ?",body:`${row(e1,a)}${row(e2,b)}`,opts:[n1,n2],ans:most,keep:true,recap:`Il y a plus de ${most}`,tip:`${Math.max(a,b)} > ${Math.min(a,b)}.`};},
+      sh=>{const [[e1,n1],[e2,n2]]=two(sh),a=R(2,8);let b=R(1,8);if(b===a)b=a-1;const least=a<b?n1:n2;
+        return {label:"De quoi y a-t-il le moins ?",body:`${row(e1,a)}${row(e2,b)}`,opts:[n1,n2],ans:least,keep:true,recap:`Il y a moins de ${least}`,tip:`${Math.min(a,b)} < ${Math.max(a,b)}.`};},
+      sh=>{const [[e1,n1],[e2,n2]]=two(sh),a=R(2,7),b=Math.random()<.5?a:a+sh([1,-1])[0],w=sh(["plus","moins","autant"])[0],ok=(w==="plus"&&a>b)||(w==="moins"&&a<b)||(w==="autant"&&a===b);
+        return {label:"Cette phrase est-elle vraie ?",body:`${row(e1,a)}${row(e2,b)}<div class="big" style="font-size:1.2rem">Il y a ${w} de ${n1} que de ${n2}.</div>`,opts:["Vrai","Faux"],ans:ok?"Vrai":"Faux",keep:true,recap:`${a} ${n1} et ${b} ${n2}`,tip:a===b?"Il y en a autant.":a>b?`Il y a plus de ${n1}.`:`Il y a moins de ${n1}.`};},
+      sh=>{const [[e1,n1],[e2,n2]]=two(sh),a=R(2,7),w=sh(["plus","moins","autant"])[0],good=w==="autant"?a:w==="plus"?a-1:a+1;
+        return {label:`Il y a ${w} de ${n1} que de ${n2}. Combien peut-il y avoir de ${n2} ?`,body:row(e1,a),opts:sh([good,a===good?a+1:a,w==="plus"?a+2:Math.max(1,a-2)].map(String)).filter((x,i,arr)=>arr.indexOf(x)===i),ans:String(good),keep:true,recap:`${a} ${n1} : ${w} de ${n1} que de ${n2} → ${good} ${n2}`,tip:w==="autant"?"Autant = le même nombre.":w==="plus"?`Il faut moins de ${n2} que ${a}.`:`Il faut plus de ${n2} que ${a}.`};}
+    ]
+  });
+}
+
+/* ================= C2 (suite) : trouver l'infinitif avec « Que va-t-il faire ? » ================= */
+function gameInfinitif(){
+  // [sujet, verbe conjugué, suite, infinitif, pronom, fausses réponses]
+  const P=[["Le crabe","mord","Paul.","mordre","il",["mordir","morder"]],["Le chat","attrape","la souris.","attraper","il",["attrapir","attrapre"]],["Léa","chante","une chanson.","chanter","elle",["chantir","chantre"]],["Tom","finit","son dessin.","finir","il",["finer","finre"]],
+    ["Le chien","court","dans le jardin.","courir","il",["courer","courre"]],["Maman","lit","une histoire.","lire","elle",["liser","lir"]],["Le bébé","boit","son lait.","boire","il",["boiver","boir"]],["Papa","prend","le bus.","prendre","il",["prender","prendir"]],
+    ["L'oiseau","voit","le chat.","voir","il",["voier","voire"]],["Mon frère","fait","ses devoirs.","faire","il",["faiser","fair"]],["Les enfants","jouent","au ballon.","jouer","ils",["jouir","jouoir"]],["Le lapin","mange","une carotte.","manger","il",["mangir","mangre"]],
+    ["Le soleil","brille","dans le ciel.","briller","il",["brillir","brillre"]],["Léa","grandit","vite.","grandir","elle",["grander","grandre"]],["Le maître","écrit","au tableau.","écrire","il",["écriter","écrir"]],["Le chat","dort","sur le lit.","dormir","il",["dormer","dorre"]],
+    ["Les poissons","nagent","dans l'eau.","nager","ils",["nagir","nagre"]],["Ma sœur","dessine","une fleur.","dessiner","elle",["dessinir","dessinre"]],["Les filles","dansent","dans le salon.","danser","elles",["dansir","dansre"]],["Le fermier","ouvre","la porte.","ouvrir","il",["ouvrer","ouvrire"]]];
+  const dA=deck(P),dB=deck(P),dC=deck(P),dD=deck(P);
+  const va=p=>p==="ils"||p==="elles"?"vont":"va";
+  const Q=p=>p==="ils"||p==="elles"?`Que vont-${p} faire ?`:`Que va-t-${p} faire ?`;
+  const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+  quizGame({
+    lesson:`<p class="q">Trouver l'infinitif (C2, suite)</p>
+      <div class="rule">Pour <strong>trouver l'infinitif</strong>, j'utilise la question <strong>« Que va-t-il faire ? »</strong><br>Je réponds avec <strong>« Il va … »</strong><br><i>« Il va <u>attraper</u> la souris. » → l'infinitif, c'est <strong>attraper</strong>.</i></div>
+      <div class="ladder"><div class="step"><b>🦀</b><span>Le crabe <u>mord</u> Paul.<br>« Que va faire le crabe ? »<br>« Il va <strong>mordre</strong> Paul. »<br>L'infinitif, c'est <strong>mordre</strong>.</span></div></div>`,
+    gens:[
+      sh=>{const [s,v,r,inf,p,bad]=dA(sh);return {label:`${s} <u>${v}</u> ${r}<br>${Q(p)}`,say:`${s} ${v} ${r}`,body:`<div class="big" style="font-size:1.2rem">${cap(p)} ${va(p)} <span class="blank">?</span> ${r}</div>`,fill:inf,opts:sh([inf,...bad]),ans:inf,keep:true,recap:`${cap(p)} ${va(p)} ${inf} ${r} → infinitif : ${inf}`,tip:`« ${cap(p)} ${va(p)} ${inf} » : l'infinitif, c'est ${inf}.`};},
+      sh=>{const [s,v,r,inf,p,bad]=dB(sh);return {label:"Quel est l'infinitif du verbe souligné ?",say:`${s} ${v} ${r}`,body:`<div class="big" style="font-size:1.25rem">${s} <u>${v}</u> ${r}</div>`,opts:sh([inf,v,bad[0]]),ans:inf,keep:true,recap:`${v} → ${inf}`,tip:`${Q(p)} ${cap(p)} ${va(p)} ${inf}.`};},
+      sh=>{const [s,v,r,inf]=dC(sh),words=r.replace(".","").split(" ").filter(w=>w.length>2),o=sh([v,s.split(" ").pop(),sh(words)[0]||"la"]);return {label:"Quel est le verbe conjugué dans cette phrase ?",say:`${s} ${v} ${r}`,body:`<div class="big" style="font-size:1.25rem">${s} ${v} ${r}</div>`,opts:uniq(o),ans:v,keep:true,recap:`Le verbe conjugué est « ${v} » (infinitif : ${inf})`,tip:`On peut dire « il va ${inf} » : c'est le verbe.`};},
+      sh=>{const [s,v,r,inf,p]=dD(sh);return {label:"Quelle question m'aide à trouver l'infinitif ?",body:`<div class="big" style="font-size:1.2rem">${s} <u>${v}</u> ${r}</div>`,opts:sh([Q(p),`Où ${s.toLowerCase()} ?`,`Quand ${s.toLowerCase()} ?`]),ans:Q(p),keep:true,col:true,recap:`${Q(p)} → ${cap(p)} ${va(p)} ${inf}.`,tip:`Je réponds « ${cap(p)} ${va(p)} ${inf} » : l'infinitif est ${inf}.`};}
+    ]
+  });
+}
+
 /* ================= Questionner le monde : le temps ================= */
 const JOURS=["lundi","mardi","mercredi","jeudi","vendredi","samedi","dimanche"];
 const MOIS=["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
@@ -1991,6 +2080,7 @@ const GAMES=[
  {id:"phrases",cat:"gram",ic:"❓",bg:"#d7e6ff",t:"Les types de phrases",d:"Déclaratif, interrogatif, impératif · G5",sub:"Déclaratif · interrogatif · impératif",run:gamePhrases,css:"mes",accent:"#7aa7ff"},
  {id:"temps",cat:"conj",ic:"⏳",bg:"#e6f0d4",t:"Passé, présent, futur",d:"hier, maintenant, demain · C1",sub:"Avant, maintenant, plus tard",run:gameTemps,css:"mes",accent:"#8fc06a"},
  {id:"verbe",cat:"conj",ic:"🦸",bg:"#e6f0d4",t:"Verbe à l'infinitif, verbe conjugué",d:"Le verbe qui travaille et ses costumes · C2",sub:"Infinitif, verbe conjugué et terminaisons",run:gameVerbe,css:"mes",accent:"#8fc06a"},
+ {id:"inf",cat:"conj",ic:"🦀",bg:"#e6f0d4",t:"Trouver l'infinitif",d:"« Que va-t-il faire ? Il va… » · C2 (suite)",sub:"Le crabe mord Paul → il va mordre",run:gameInfinitif,css:"mes",accent:"#8fc06a"},
  {id:"alpha",cat:"voc",ic:"🔤",bg:"#d9f3e3",t:"L'alphabet",d:"Voyelles, consonnes, ordre alphabétique · V2, V3",sub:"26 lettres, 6 voyelles",run:gameAlpha,css:"mes",accent:"#4fc489"},
  {id:"ecole",cat:"voc",ic:"🏫",bg:"#d9f3e3",t:"L'école",d:"Les consignes et le matériel · V1, V4",sub:"Entoure, souligne… et le cartable !",run:gameEcole,css:"mes",accent:"#4fc489"},
  {id:"syno",cat:"voc",ic:"🟰",bg:"#d9f3e3",t:"Les synonymes",d:"Même sens · V7",sub:"Même sens ou sens très proche",run:gameSyno,css:"mes",accent:"#4fc489"},
@@ -2002,8 +2092,10 @@ const GAMES=[
  {id:"ec4",cat:"ecri",ic:"📝",bg:"#e9e3ff",t:"J'écris des mots",d:"Les jours, les mois, les sons…",sub:"Chaque lettre à la bonne hauteur",run:gameEcMots,css:"mes",accent:"#9b87f5"},
  {id:"nombres",cat:"num",ic:"🔢",bg:"#efe2ff",t:"Les nombres jusqu'à 99",d:"Dizaines, avant/après, comparer, en lettres · N3 à N7, N10",sub:"Lire, écrire, comparer",run:gameNombres,css:"mes",accent:"#a77bf0"},
  {id:"ordre",cat:"num",ic:"🦒",bg:"#efe2ff",t:"Ranger les nombres",d:"Ordre croissant et décroissant · N8, N9",sub:"Du plus petit au plus grand… et l'inverse !",run:gameOrdre,css:"mes",accent:"#a77bf0"},
+ {id:"comp",cat:"num",ic:"⚖️",bg:"#efe2ff",t:"Plus, moins, autant",d:"Lexique de comparaison · N13",sub:"Il y a plus de… moins de… autant de…",run:gameComparaison,css:"mes",accent:"#a77bf0"},
  {id:"cent",cat:"num",ic:"💯",bg:"#efe2ff",t:"Le nombre 100",d:"cent · 1c 0d 0u · 10 dizaines · ±1, ±10 · N11",sub:"10 dizaines = 100 unités",run:gameCent,css:"mes",accent:"#a77bf0"},
  {id:"c999",cat:"num",ic:"✍️",bg:"#efe2ff",t:"Les nombres de 100 à 999",d:"Écrire en lettres · tirets · le s de cent et quatre-vingt · N12",sub:"deux-cents mais deux-cent-seize",run:gameCentaines,css:"mes",accent:"#a77bf0"},
+ {id:"cdu",cat:"num",ic:"🧮",bg:"#efe2ff",t:"Centaines, dizaines, unités",d:"Chiffre ou nombre de dizaines · 157 = 100 + 50 + 7 · N14",sub:"Le chiffre des dizaines est 5, le nombre de dizaines est 15",run:gameCDU,css:"mes",accent:"#a77bf0"},
  {id:"addsub",cat:"cal",ic:"➕",bg:"#e3f7c8",t:"Ajouter et retrancher",d:"8 + 5, 16 − 9 · Cal 2, Cal 3",sub:"J'avance, je recule sur la bande numérique",run:gameAddSub,css:"mes",accent:"#8fd14f"},
  {id:"tables",cat:"cal",ic:"🧮",bg:"#e3f7c8",t:"Les tables d'addition",d:"Tables du 1 au 7 et sommes à 10 · Cal 4 à Cal 13",sub:"Les tables à connaître par cœur",run:gameTables,css:"mes",accent:"#8fd14f"},
  {id:"t9",cat:"cal",ic:"9️⃣",bg:"#e3f7c8",t:"La table d'addition du 9",d:"0 + 9 à 10 + 9 · Cal 17",sub:"+ 9, c'est + 10 puis − 1",run:gameTable9,css:"mes",accent:"#8fd14f"},
